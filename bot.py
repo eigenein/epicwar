@@ -16,9 +16,25 @@ import click
 import requests
 
 
+class BuildingType(enum.Enum):
+    castle = 1  # замок
+    gold_mine = 2  # шахта
+    treasury = 3  # казна
+    mill = 4  # мельница
+    granary = 5  # амбар
+    headquarters = 7  # штаб
+    tower = 10  # башня
+    wall = 11  # стена
+
+
 class ResourceType(enum.Enum):
     gold = 1  # золото
     food = 2  # еда
+
+
+class SpellType:
+    lightning = 1  # небесная молния
+    death_breathing = 9  # дыхание смерти
 
 
 class Error(enum.Enum):
@@ -26,6 +42,8 @@ class Error(enum.Enum):
     building_dependency = "BuildingDependency"  # higher level of another building is required
 
 
+Building = collections.namedtuple(
+    "Building", "id type level is_completed complete_time hitpoints storage_fill")
 Resource = collections.namedtuple("Resource", "type amount")
 
 
@@ -52,11 +70,34 @@ class EpicWar:
         """
         return self.parse_reward(self.post("cemeteryFarm")["reward"])
 
+    def get_buildings(self) -> typing.List[Building]:
+        """
+        Gets all buildings.
+        """
+        return [
+            Building(
+                id=building["id"],
+                type=BuildingType(building["typeId"]),
+                level=building["level"],
+                is_completed=building["completed"],
+                complete_time=building["completeTime"],
+                hitpoints=building["hitpoints"],
+                storage_fill=building.get("storageFill"),
+            )
+            for building in self.post("getBuildings")["building"]
+        ]
+
     def upgrade_building(self, building_id: int):
         """
         Upgrades building to the next level.
         """
         return self.parse_error(self.post("upgradeBuilding", buildingId=building_id))
+
+    def send_alliance_help(self):
+        """
+        Helps your alliance.
+        """
+        self.post("alliance_help_sendHelp")
 
     @staticmethod
     def parse_reward(reward: typing.Optional[dict]) -> typing.List[Resource]:
@@ -186,7 +227,7 @@ def run(obj: ContextObject):
     Run the bot.
     """
     with contextlib.closing(EpicWar(obj.user_id, obj.auth_token)) as epic_war:
-        logging.info("%s", epic_war.upgrade_building(100))
+        logging.info("%s", epic_war.get_buildings())
 
 
 if __name__ == "__main__":
