@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+import collections
 import contextlib
+import enum
 import hashlib
 import json
 import logging
@@ -14,6 +16,19 @@ import click
 import requests
 
 
+class ResourceType(enum.Enum):
+    gold = 1  # золото
+    food = 2  # еда
+
+
+class Error(enum.Enum):
+    ok = "Ok"  # not a real error code
+    building_dependency = "BuildingDependency"  # higher level of another building is required
+
+
+Resource = collections.namedtuple("Resource", "type amount")
+
+
 class EpicWar:
     """
     Epic War API.
@@ -24,6 +39,43 @@ class EpicWar:
         self.session = requests.Session()
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
         self.request_id = 0
+
+    def collect_resource(self, building_id: int) -> typing.List[Resource]:
+        """
+        Collects resource from the building.
+        """
+        return self.parse_reward(self.post("collectResource", buildingId=building_id)["reward"])
+
+    def cemetery_farm(self):
+        """
+        Collects died enemy army.
+        """
+        return self.parse_reward(self.post("cemeteryFarm")["reward"])
+
+    def upgrade_building(self, building_id: int):
+        """
+        Upgrades building to the next level.
+        """
+        return self.parse_error(self.post("upgradeBuilding", buildingId=building_id))
+
+    @staticmethod
+    def parse_reward(reward: typing.Optional[dict]) -> typing.List[Resource]:
+        """
+        Parses collection method result.
+        """
+        return [
+            Resource(ResourceType(resource["id"]), resource["amount"])
+            for resource in reward["resource"]
+        ] if reward else []
+
+    @staticmethod
+    def parse_error(result: typing.Union[bool, dict]) -> Error:
+        if "result" in result:
+            if result["result"]:
+                return Error.ok
+        if "errorCode" in result:
+            return Error(result["errorCode"])
+        raise ValueError(result)
 
     def post(self, name: str, **args) -> dict:
         """
@@ -52,7 +104,7 @@ class EpicWar:
         response = self.session.post(
             "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers)
         logging.debug("%s", response.text)
-        return response.json()["results"][0]
+        return response.json()["results"][0]["result"]
 
     @staticmethod
     def sign_request(data: str, headers: typing.Dict[str, typing.Any]):
@@ -134,7 +186,7 @@ def run(obj: ContextObject):
     Run the bot.
     """
     with contextlib.closing(EpicWar(obj.user_id, obj.auth_token)) as epic_war:
-        epic_war.post("collectResource", buildingId=4)
+        logging.info("%s", epic_war.upgrade_building(100))
 
 
 if __name__ == "__main__":
