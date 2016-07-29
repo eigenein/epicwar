@@ -439,9 +439,6 @@ class Bot:
                 "Upgrading %s #%s: %s.",
                 building.type.name, building.id, error.name,
             )
-            if error == Error.not_available:
-                logging.info("Breaking since a builder is not available.")
-                break
 
         logging.info("Trying to upgrade units…")
         research = sorted(self.self_info.research.items())
