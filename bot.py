@@ -15,7 +15,7 @@ import string
 import time
 import typing
 
-from typing import Dict, Iterable, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import click
 import requests
@@ -256,6 +256,24 @@ class EpicWar:
         """
         self.post("alliance_help_sendHelp")
 
+    def get_my_alliance_helpers(self) -> Set[int]:
+        """
+        Gets building IDs with alliance help available.
+        """
+        return {
+            helper["job"]["buildingId"]
+            for helper in self.post("alliance_help_getMyHelpers")["helpers"]
+        }
+
+    def farm_alliance_help(self, building_id: int) -> List[int]:
+        """
+        Farms help from alliance member. Gets time per help for each job in list.
+        """
+        return [
+            job["timePerHelp"]
+            for job in self.post("alliance_help_farm", buildingId=building_id)["jobs"]
+        ]
+
     def parse_resource(self, resource: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
         Helper method to parse a resource collection method result.
@@ -385,6 +403,14 @@ class Bot:
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
 
+        building_ids_with_help = self.epic_war.get_my_alliance_helpers()
+        logging.info("%s buildings with alliance help.", len(building_ids_with_help))
+        for building_id in building_ids_with_help:
+            logging.info(
+                "Farmed alliance help: %s.",
+                datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id))),
+            )
+
         logging.info("Activating alliance daily gift…")
         self.epic_war.click_alliance_daily_gift()
 
@@ -412,6 +438,7 @@ class Bot:
         # Upgrade low-level buildings first.
         buildings = sorted(buildings, key=operator.attrgetter("level"))
         for building in buildings:  # type: Building
+            time.sleep(0.05)  # just to be on safe side
             if building.type in self.NOT_UPGRADABLE_BUILDING_TYPES:
                 # Ignore these special buildings.
                 continue
@@ -438,6 +465,7 @@ class Bot:
             if building_.type == BuildingType.forge
         ][0]
         for unit_id, level in research:
+            time.sleep(0.05)  # just to be on safe side
             error = self.epic_war.start_research(unit_id, level + 1, forge_id)
             logging.info("Upgrading unit #%s to level %s: %s.", unit_id, level + 1, error.name)
             if error == Error.ok:
