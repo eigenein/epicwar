@@ -52,7 +52,15 @@ Gets a lot of information about the current user such as resource amount, unit r
 ## `getTime`
 ## `getUserEvents`
 ## `giftGetAvailable`
+
 ## `giftGetReceivers`
+
+Gets possible free gift receivers.
+
+## `giftSend`
+
+Sends free help to your friends.
+
 ## `globalNewsGet`
 ## `heroesGetList`
 ## `heroesQuest_state`

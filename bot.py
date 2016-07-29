@@ -118,6 +118,21 @@ class EpicWar:
             resources=self.parse_resource(result["user"]["resource"]),
         )
 
+    def get_gift_receivers(self) -> List[str]:
+        """
+        Gets possible gift receivers.
+        """
+        return [
+            receiver["toUserId"]
+            for receiver in self.post("giftGetReceivers")["receivers"]
+        ]
+
+    def send_gift(self, users: List[str]):
+        """
+        Sends gift to users.
+        """
+        return self.parse_error(self.post("giftSend", users=users))
+
     def collect_resource(self, building_id: int) -> Dict[ResourceType, int]:
         """
         Collects resource from the building.
@@ -282,6 +297,14 @@ class Bot:
         logging.info("Welcome %s!", self.self_info.caption.strip())
         self.print_self_info()
 
+        logging.info("Sending help to your alliance…")
+        self.epic_war.send_alliance_help()
+
+        gift_receivers = self.epic_war.get_gift_receivers()
+        logging.info("%s users are waiting for your gift: %s.", len(gift_receivers), gift_receivers)
+        if gift_receivers:
+            logging.info("Sent gifts: %s.", self.epic_war.send_gift(gift_receivers))
+
     def print_self_info(self):
         logging.info(
             "Your resources: Gold: %s, Food: %s, Runes: %s, Enchanted coins: %s.",
@@ -350,6 +373,19 @@ def step(obj: ContextObject):
         epic_war.authenticate()
         Bot(epic_war).step()
 
+
+@main.command()
+@click.argument("name", required=True)
+@click.option("-a", "--args", help="Optional JSON with arguments.")
+@click.pass_obj
+def call(obj: ContextObject, name: str, args: str):
+    """
+    Make API call.
+    """
+    with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
+        epic_war.authenticate()
+        result = epic_war.post(name, **(json.loads(args) if args else {}))
+        print(json.dumps(result, indent=2))
 
 if __name__ == "__main__":
     main(obj=ContextObject())
