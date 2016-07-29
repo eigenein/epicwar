@@ -8,6 +8,7 @@ import enum
 import hashlib
 import json
 import logging
+import operator
 import random
 import re
 import string
@@ -89,6 +90,8 @@ class EpicWar:
     """
     Epic War API.
     """
+    IGNORE_BUILDINGS = {37, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 147}
+
     def __init__(self, cookies: Dict[str, str]):
         self.cookies = cookies
         self.user_id = None
@@ -208,7 +211,7 @@ class EpicWar:
         for building in self.post("getBuildings")["building"]:  # type: dict
             type_id = building["typeId"]
             # Exclude some weird buildings I'm not interested in.
-            if type_id in {37, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 147}:
+            if type_id in self.IGNORE_BUILDINGS:
                 continue
             try:
                 building_type = BuildingType(type_id)
@@ -358,16 +361,13 @@ class Bot:
     """
     Epic War bot.
     """
-    UPGRADE_PRIORITY = {
-        # Higher is sooner (0 by default is the lowest).
-        BuildingType.forge: 93,
-        BuildingType.barracks: 94,
-        BuildingType.headquarters: 95,
-        BuildingType.granary: 96,
-        BuildingType.treasury: 97,
-        BuildingType.mill: 98,
-        BuildingType.gold_mine: 99,
-        BuildingType.wall: 100,
+    NOT_UPGRADABLE_BUILDING_TYPES = {
+        BuildingType.castle,
+        BuildingType.builder_house,
+        BuildingType.alchemist_house,
+        BuildingType.alliance_house,
+        BuildingType.jeweler_house,
+        BuildingType.tavern,
     }
 
     def __init__(self, epic_war: EpicWar):
@@ -409,21 +409,10 @@ class Bot:
         logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
 
         logging.info("Trying to upgrade buildings…")
-        # Sort by upgrade priority.
-        buildings = sorted(
-            buildings,
-            key=lambda building_: self.UPGRADE_PRIORITY.get(building_.type, 0),
-            reverse=True,
-        )
-        for building in buildings:
-            if building.type in {
-                BuildingType.castle,
-                BuildingType.builder_house,
-                BuildingType.alchemist_house,
-                BuildingType.alliance_house,
-                BuildingType.jeweler_house,
-                BuildingType.tavern,
-            }:
+        # Upgrade low-level buildings first.
+        buildings = sorted(buildings, key=operator.attrgetter("level"))
+        for building in buildings:  # type: Building
+            if building.type in self.NOT_UPGRADABLE_BUILDING_TYPES:
                 # Ignore these special buildings.
                 continue
             if not building.is_completed:
@@ -436,8 +425,8 @@ class Bot:
             # Ok, let's try to upgrade.
             error = self.epic_war.upgrade_building(building.id)
             logging.info(
-                "Upgrading %s #%s: %s.",
-                building.type.name, building.id, error.name,
+                "Upgrading %s #%s to level %s: %s.",
+                building.type.name, building.id, building.level + 1, error.name,
             )
 
         logging.info("Trying to upgrade units…")
