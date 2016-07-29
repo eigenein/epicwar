@@ -8,6 +8,7 @@ import hashlib
 import json
 import logging
 import random
+import re
 import string
 import time
 import typing
@@ -51,12 +52,42 @@ class EpicWar:
     """
     Epic War API.
     """
-    def __init__(self, user_id: str, auth_token: str):
-        self.user_id = user_id
-        self.auth_token = auth_token
+    def __init__(self, cookies: typing.Dict[str, str]):
+        self.cookies = cookies
+        self.user_id = None
+        self.auth_token = None
         self.session = requests.Session()
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
         self.request_id = 0
+
+    def authenticate(self):
+        """
+        Initializes Epic War authentication token.
+
+        VK.com passes some access token to the game so we need to open the game page in order to obtain it.
+
+        Then, Epic War generates its own authentication token.
+        """
+        logging.info("Loading game page on VK.com…")
+        app_page = self.session.get("https://vk.com/app3644106_372249748", cookies=self.cookies).text
+
+        # Look for params variable in the script.
+        match = re.search(r"var params\s?=\s?(\{[^\}]+\})", app_page)
+        if not match:
+            raise ValueError("params not found")
+        params = json.loads(match.group(1))
+        logging.debug("Found params: %s", params)
+        self.user_id = str(params["user_id"])
+
+        # Load the proxy page and look for Epic War authentication token.
+        logging.info("Authenticating in Epic War…")
+        iframe_new = self.session.get(
+            "https://i-epicwar-vk.progrestar.net/iframe/vkontakte/iframe.new.php", params=params).text
+        match = re.search(r"auth_key=([a-zA-Z0-9.\-]+)", iframe_new)
+        if not match:
+            raise ValueError("authentication key is not found")
+        self.auth_token = match.group(1)
+        logging.debug("Authentication token: %s", self.auth_token)
 
     def collect_resource(self, building_id: int) -> typing.List[Resource]:
         """
@@ -122,6 +153,8 @@ class EpicWar:
         """
         Makes request to the game API.
         """
+        if not self.auth_token:
+            raise ValueError("not authenticated")
         self.request_id += 1
         logging.debug("#%s %s(%s)", self.request_id, name, args)
         data = json.dumps({"session": None, "calls": [{"ident": "group_0_body", "name": name, "args": args}]})
@@ -193,21 +226,18 @@ class ColorStreamHandler(logging.StreamHandler):
 
 
 class ContextObject:
-    user_id = None  # type: str
-    auth_token = None  # type: str
+    cookies = None  # type: typing.Dict[str, str]
 
 
 @click.group()
 @click.option("-v", "--verbose", help="Log debug info.", is_flag=True)
-@click.option("-u", "--user-id", help="VKontakte user ID.", required=True)
-@click.option("-t", "--token", help="Epic War authentication token.", required=True)
+@click.option("-c", "--cookies", help="VK.com cookies.", type=click.File("rt", encoding="utf-8"), required=True)
 @click.pass_obj
-def main(obj: ContextObject, verbose: True, user_id: str, token: str):
+def main(obj: ContextObject, verbose: True, cookies: typing.io.TextIO):
     """
     Epic War bot.
     """
-    obj.user_id = user_id
-    obj.auth_token = token
+    obj.cookies = json.load(cookies)
 
     handler = ColorStreamHandler(click.get_text_stream("stderr"))
     handler.setFormatter(logging.Formatter(
@@ -226,7 +256,8 @@ def run(obj: ContextObject):
     """
     Run the bot.
     """
-    with contextlib.closing(EpicWar(obj.user_id, obj.auth_token)) as epic_war:
+    with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
+        epic_war.authenticate()
         logging.info("%s", epic_war.get_buildings())
 
 
