@@ -13,6 +13,8 @@ import string
 import time
 import typing
 
+from typing import Dict, Iterable, List, Optional, Tuple, Union
+
 import click
 import requests
 
@@ -46,6 +48,8 @@ class BuildingType(enum.Enum):
 class ResourceType(enum.Enum):
     gold = 1  # золото
     food = 2  # еда
+    runes = 50  # руны бастиона ужаса
+    enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
 
 
 class SpellType:
@@ -60,14 +64,14 @@ class Error(enum.Enum):
 
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
-Resource = collections.namedtuple("Resource", "type amount")
+SelfInfo = collections.namedtuple("SelfInfo", "caption resources")
 
 
 class EpicWar:
     """
     Epic War API.
     """
-    def __init__(self, cookies: typing.Dict[str, str]):
+    def __init__(self, cookies: Dict[str, str]):
         self.cookies = cookies
         self.user_id = None
         self.auth_token = None
@@ -104,7 +108,17 @@ class EpicWar:
         self.auth_token = match.group(1)
         logging.debug("Authentication token: %s", self.auth_token)
 
-    def collect_resource(self, building_id: int) -> typing.List[Resource]:
+    def get_self_info(self):
+        """
+        Gets information about the player and its village.
+        """
+        result = self.post("getSelfInfo")
+        return SelfInfo(
+            caption=result["user"]["villageCaption"],
+            resources=self.parse_resource(result["user"]["resource"]),
+        )
+
+    def collect_resource(self, building_id: int) -> Dict[ResourceType, int]:
         """
         Collects resource from the building.
         """
@@ -116,7 +130,7 @@ class EpicWar:
         """
         return self.parse_reward(self.post("cemeteryFarm")["reward"])
 
-    def get_buildings(self) -> typing.List[Building]:
+    def get_buildings(self) -> List[Building]:
         """
         Gets all buildings.
         """
@@ -161,18 +175,30 @@ class EpicWar:
         """
         self.post("alliance_help_sendHelp")
 
-    @staticmethod
-    def parse_reward(reward: typing.Optional[dict]) -> typing.List[Resource]:
+    def parse_resource(self, resource: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
         Helper method to parse a resource collection method result.
         """
-        return [
-            Resource(ResourceType(resource["id"]), resource["amount"])
-            for resource in reward["resource"]
-        ] if reward else []
+        return dict(self._parse_resource(resource))
 
     @staticmethod
-    def parse_error(result: typing.Union[bool, dict]) -> Error:
+    def _parse_resource(resources: List[Dict[str, int]]) -> Iterable[Tuple[ResourceType, int]]:
+        for resource in resources:
+            try:
+                resource_type = ResourceType(resource["id"])
+            except ValueError:
+                logging.debug("Unknown resource type: id=%s, amount=%s", resource["id"], resource["amount"])
+            else:
+                yield (resource_type, resource["amount"])
+
+    def parse_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
+        """
+        Helper method to parse a reward.
+        """
+        return self.parse_resource(reward["resource"]) if reward else []
+
+    @staticmethod
+    def parse_error(result: Union[bool, dict]) -> Error:
         """
         Helper method to parse an error.
         """
@@ -215,7 +241,7 @@ class EpicWar:
         return response.json()["results"][0]["result"]
 
     @staticmethod
-    def sign_request(data: str, headers: typing.Dict[str, typing.Any]):
+    def sign_request(data: str, headers: Dict[str, typing.Any]):
         """
         Generates X-Auth-Signature header value.
         """
@@ -246,12 +272,24 @@ class Bot:
     """
     def __init__(self, epic_war: EpicWar):
         self.epic_war = epic_war
+        self.self_info = None  # type: SelfInfo
 
     def step(self):
         """
         Makes one step.
         """
-        pass
+        self.self_info = self.epic_war.get_self_info()
+        logging.info("Welcome %s!", self.self_info.caption.strip())
+        self.print_self_info()
+
+    def print_self_info(self):
+        logging.info(
+            "Your resources: Gold: %s, Food: %s, Runes: %s, Enchanted coins: %s.",
+            self.self_info.resources[ResourceType.gold],
+            self.self_info.resources[ResourceType.food],
+            self.self_info.resources[ResourceType.runes],
+            self.self_info.resources[ResourceType.enchanted_coins],
+        )
 
 
 class ColorStreamHandler(logging.StreamHandler):
@@ -274,7 +312,7 @@ class ColorStreamHandler(logging.StreamHandler):
 
 
 class ContextObject:
-    cookies = None  # type: typing.Dict[str, str]
+    cookies = None  # type: Dict[str, str]
 
 
 @click.group()

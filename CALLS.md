@@ -43,7 +43,11 @@ Gets your building list.
 ## `getQuests`
 ## `getRecoverableUnits`
 ## `getResearchQueue`
+
 ## `getSelfInfo`
+
+Gets a lot of information about the current user such as resource amount, unit research, members of alliance etc.
+
 ## `getSettings`
 ## `getTime`
 ## `getUserEvents`
