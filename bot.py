@@ -137,6 +137,18 @@ class EpicWar:
         """
         return self.parse_error(self.post("giftSend", users=users))
 
+    def get_gift_available(self) -> List[str]:
+        """
+        Gets available gifts.
+        """
+        return [gift["body"]["fromUserId"] for gift in self.post("giftGetAvailable")["gift"]]
+
+    def farm_gift(self, user_id: str) -> Error:
+        """
+        Farms gift from the user.
+        """
+        return self.parse_error(self.post("giftFarm", userId=user_id))
+
     def collect_resource(self, building_id: int) -> Dict[ResourceType, int]:
         """
         Collects resource from the building.
@@ -310,8 +322,13 @@ class Bot:
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
 
-        logging.info("Activating daily gift…")
+        logging.info("Activating alliance daily gift…")
         self.epic_war.click_alliance_daily_gift()
+
+        gifts_user_ids = self.epic_war.get_gift_available()
+        logging.info("%s gifts are waiting for you.", len(gifts_user_ids))
+        for user_id in gifts_user_ids:
+            logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
 
         gift_receivers = self.epic_war.get_gift_receivers()
         logging.info("%s users are waiting for your gift: %s.", len(gift_receivers), gift_receivers)
