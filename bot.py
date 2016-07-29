@@ -189,7 +189,7 @@ class EpicWar:
         """
         return self.parse_reward(self.post("collectResource", buildingId=building_id)["reward"])
 
-    def cemetery_farm(self):
+    def farm_cemetery(self) -> Dict[ResourceType, int]:
         """
         Collects died enemy army.
         """
@@ -273,7 +273,7 @@ class EpicWar:
         """
         Helper method to parse a reward.
         """
-        return self.parse_resource(reward["resource"]) if reward else []
+        return self.parse_resource(reward["resource"]) if reward else {}
 
     @staticmethod
     def parse_error(result: Union[bool, dict]) -> Error:
@@ -405,6 +405,8 @@ class Bot:
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from your %s.", amount, resource_type.name, building.type.name)
+
+        logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
 
         logging.info("Trying to upgrade buildings…")
         # Sort by upgrade priority.
