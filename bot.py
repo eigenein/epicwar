@@ -88,7 +88,8 @@ class EpicWar:
         Then, Epic War generates its own authentication token.
         """
         logging.info("Loading game page on VK.com…")
-        app_page = self.session.get("https://vk.com/app3644106_372249748", cookies=self.cookies).text
+        app_page = self.session.get(
+            "https://vk.com/app3644106_372249748", cookies=self.cookies, timeout=10).text
 
         # Look for params variable in the script.
         match = re.search(r"var params\s?=\s?(\{[^\}]+\})", app_page)
@@ -101,7 +102,10 @@ class EpicWar:
         # Load the proxy page and look for Epic War authentication token.
         logging.info("Authenticating in Epic War…")
         iframe_new = self.session.get(
-            "https://i-epicwar-vk.progrestar.net/iframe/vkontakte/iframe.new.php", params=params).text
+            "https://i-epicwar-vk.progrestar.net/iframe/vkontakte/iframe.new.php",
+            params=params,
+            timeout=10,
+        ).text
         match = re.search(r"auth_key=([a-zA-Z0-9.\-]+)", iframe_new)
         if not match:
             raise ValueError("authentication key is not found")
@@ -251,7 +255,7 @@ class EpicWar:
             headers["X-Auth-Session-Init"] = "1"
         headers["X-Auth-Signature"] = self.sign_request(data, headers)
         response = self.session.post(
-            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers)
+            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
         logging.debug("%s", response.text)
         return response.json()["results"][0]["result"]
 
@@ -303,7 +307,19 @@ class Bot:
         gift_receivers = self.epic_war.get_gift_receivers()
         logging.info("%s users are waiting for your gift: %s.", len(gift_receivers), gift_receivers)
         if gift_receivers:
-            logging.info("Sent gifts: %s.", self.epic_war.send_gift(gift_receivers))
+            logging.info("Sent gifts: %s.", self.epic_war.send_gift(gift_receivers).name)
+
+        buildings = self.epic_war.get_buildings()
+        logging.info("You have %s buildings. Collecting resources…", len(buildings))
+        for building in buildings:
+            if building.type in {BuildingType.gold_mine, BuildingType.mill}:
+                resources = self.epic_war.collect_resource(building.id)
+                for resource_type, amount in resources.items():
+                    logging.info("%s %s collected from your %s.", amount, resource_type.name, building.type.name)
+
+        self.self_info = self.epic_war.get_self_info()
+        self.print_self_info()
+        logging.info("Bye!")
 
     def print_self_info(self):
         logging.info(
