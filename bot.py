@@ -60,6 +60,8 @@ class SpellType:
 class Error(enum.Enum):
     ok = "Ok"  # not a real error code
     building_dependency = "BuildingDependency"  # higher level of another building is required
+    not_enough_resources = r"error\NotEnoughResources"  # not enough resources
+    not_available = r"error\NotAvailable"  # all builders are busy
 
 
 Building = collections.namedtuple(
@@ -244,6 +246,8 @@ class EpicWar:
                 return Error.ok
         if "errorCode" in result:
             return Error(result["errorCode"])
+        if "error" in result:
+            return Error(result["name"])
         raise ValueError(result)
 
     def post(self, name: str, **args) -> dict:
@@ -272,10 +276,18 @@ class EpicWar:
         if self.request_id == 1:
             headers["X-Auth-Session-Init"] = "1"
         headers["X-Auth-Signature"] = self.sign_request(data, headers)
+
         response = self.session.post(
             "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
+
         logging.debug("%s", response.text)
-        return response.json()["results"][0]["result"]
+        result = response.json()
+        if "results" in result:
+            return result["results"][0]["result"]
+        if "error" in result:
+            # API developers are strange people… In different cases they return error in different fields…
+            return result
+        raise ValueError(result)
 
     @staticmethod
     def sign_request(data: str, headers: Dict[str, typing.Any]):
@@ -426,8 +438,12 @@ def call(obj: ContextObject, name: str, args: str):
     """
     with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
         epic_war.authenticate()
-        result = epic_war.post(name, **(json.loads(args) if args else {}))
-        print(json.dumps(result, indent=2))
+        try:
+            result = epic_war.post(name, **(json.loads(args) if args else {}))
+        except json.JSONDecodeError as ex:
+            logging.error("Invalid arguments: %s.", str(ex))
+        else:
+            print(json.dumps(result, indent=2))
 
 if __name__ == "__main__":
     main(obj=ContextObject())
