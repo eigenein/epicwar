@@ -256,6 +256,12 @@ class EpicWar:
         """
         self.post("alliance_help_sendHelp")
 
+    def ask_alliance_help(self):
+        """
+        Asks alliance for help.
+        """
+        self.post("alliance_help_askForHelp")
+
     def get_my_alliance_helpers(self) -> Set[int]:
         """
         Gets building IDs with alliance help available.
@@ -399,6 +405,9 @@ class Bot:
         self.self_info = self.epic_war.get_self_info()
         logging.info("Welcome %s!", self.self_info.caption.strip())
         self.print_self_info()
+
+        logging.info("Asking alliance for help…")
+        self.epic_war.ask_alliance_help()
 
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
