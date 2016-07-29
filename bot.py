@@ -105,9 +105,22 @@ class EpicWar:
 
         Then, Epic War generates its own authentication token.
         """
+        logging.info("Loading VK.com to obtain the user ID…")
+        profile_page = self.session.get(
+            "https://vk.com",
+            cookies=self.cookies,
+            timeout=10,
+            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:47.0) Gecko/20100101 Firefox/47.0"},
+        ).text
+        match = re.search(r"id:\s?(\d+)", profile_page)
+        if not match:
+            raise ValueError("user ID not found")
+        self.user_id = match.group(1)
+        logging.info("User ID: %s.", self.user_id)
+
         logging.info("Loading game page on VK.com…")
         app_page = self.session.get(
-            "https://vk.com/app3644106_372249748", cookies=self.cookies, timeout=10).text
+            "https://vk.com/app3644106_{}".format(self.user_id), cookies=self.cookies, timeout=10).text
 
         # Look for params variable in the script.
         match = re.search(r"var params\s?=\s?(\{[^\}]+\})", app_page)
@@ -115,7 +128,6 @@ class EpicWar:
             raise ValueError("params not found")
         params = json.loads(match.group(1))
         logging.debug("Found params: %s", params)
-        self.user_id = str(params["user_id"])
 
         # Load the proxy page and look for Epic War authentication token.
         logging.info("Authenticating in Epic War…")
