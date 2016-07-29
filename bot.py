@@ -18,14 +18,29 @@ import requests
 
 
 class BuildingType(enum.Enum):
+    """
+    Building type. Don't forget to check the ignore list while adding any new types.
+    """
     castle = 1  # замок
     gold_mine = 2  # шахта
     treasury = 3  # казна
     mill = 4  # мельница
     granary = 5  # амбар
+    barracks = 6  # казарма
     headquarters = 7  # штаб
+    builder_house = 8  # дом строителя
+    forge = 9  # кузница
     tower = 10  # башня
     wall = 11  # стена
+    archer_tower = 12  # башня лучников
+    gun = 13  # пушка
+    storm_spire = 14  # штормовой шпиль
+    ziggurat = 15  # зиккурат
+    alliance_house = 17  # дом братства
+    tavern = 19  # таверна
+    alchemist_house = 20  # дом алхимика
+    jeweler_house = 158  # дом ювелира
+    ice_obelisk = 631  # ледяной обелиск
 
 
 class ResourceType(enum.Enum):
@@ -105,18 +120,34 @@ class EpicWar:
         """
         Gets all buildings.
         """
-        return [
-            Building(
-                id=building["id"],
-                type=BuildingType(building["typeId"]),
-                level=building["level"],
-                is_completed=building["completed"],
-                complete_time=building["completeTime"],
-                hitpoints=building["hitpoints"],
-                storage_fill=building.get("storageFill"),
-            )
-            for building in self.post("getBuildings")["building"]
-        ]
+        return list(self._get_buildings())
+
+    def _get_buildings(self):
+        """
+        Gets all buildings as a generator.
+        """
+        for building in self.post("getBuildings")["building"]:  # type: dict
+            type_id = building["typeId"]
+            # Exclude some weird buildings I'm not interested in.
+            if type_id in {37, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 147}:
+                continue
+            try:
+                building_type = BuildingType(type_id)
+            except ValueError:
+                logging.debug(
+                    "Unknown building type: id=%s, type=%s, level=%s, hitpoints=%s",
+                    building["id"], type_id, building["level"], building["hitpoints"],
+                )
+            else:
+                yield Building(
+                    id=building["id"],
+                    type=building_type,
+                    level=building["level"],
+                    is_completed=building["completed"],
+                    complete_time=building["completeTime"],
+                    hitpoints=building["hitpoints"],
+                    storage_fill=building.get("storageFill"),
+                )
 
     def upgrade_building(self, building_id: int):
         """
@@ -133,7 +164,7 @@ class EpicWar:
     @staticmethod
     def parse_reward(reward: typing.Optional[dict]) -> typing.List[Resource]:
         """
-        Parses collection method result.
+        Helper method to parse a resource collection method result.
         """
         return [
             Resource(ResourceType(resource["id"]), resource["amount"])
@@ -142,6 +173,9 @@ class EpicWar:
 
     @staticmethod
     def parse_error(result: typing.Union[bool, dict]) -> Error:
+        """
+        Helper method to parse an error.
+        """
         if "result" in result:
             if result["result"]:
                 return Error.ok
@@ -252,13 +286,13 @@ def main(obj: ContextObject, verbose: True, cookies: typing.io.TextIO):
 
 @main.command()
 @click.pass_obj
-def run(obj: ContextObject):
+def step(obj: ContextObject):
     """
-    Run the bot.
+    Perform a step.
     """
     with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
         epic_war.authenticate()
-        logging.info("%s", epic_war.get_buildings())
+        epic_war.get_buildings()
 
 
 if __name__ == "__main__":
