@@ -528,11 +528,11 @@ def call(obj: ContextObject, name: str, args: str):
     with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
         epic_war.authenticate()
         try:
-            result = epic_war.post(name, **(json.loads(args) if args else {}))
+            kwargs = json.loads(args) if args else {}
         except json.JSONDecodeError as ex:
             logging.error("Invalid arguments: %s.", str(ex))
         else:
-            print(json.dumps(result, indent=2))
+            print(json.dumps(epic_war.post(name, **kwargs), indent=2))
 
 if __name__ == "__main__":
     main(obj=ContextObject())
