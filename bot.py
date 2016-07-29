@@ -3,6 +3,7 @@
 
 import collections
 import contextlib
+import datetime
 import enum
 import hashlib
 import json
@@ -52,21 +53,36 @@ class ResourceType(enum.Enum):
     enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
 
 
-class SpellType:
+class SpellType(enum.Enum):
+    """
+    Spell type. Not used yet.
+    """
     lightning = 1  # небесная молния
     death_breathing = 9  # дыхание смерти
+
+
+class UnitType(enum.Enum):
+    """
+    Unit type. Not used yet.
+    """
+    knight = 1  # рыцарь
+    goblin = 2  # гоблин
+    orc = 3  # орк
+    elf = 4  # эльф
+    troll = 5  # тролль
 
 
 class Error(enum.Enum):
     ok = "Ok"  # not a real error code
     building_dependency = "BuildingDependency"  # higher level of another building is required
     not_enough_resources = r"error\NotEnoughResources"  # not enough resources
-    not_available = r"error\NotAvailable"  # all builders are busy
+    not_available = r"error\NotAvailable"  # all builders are busy or invalid unit level
+    vip_required = r"error\VipRequired"  # VIP status is required
 
 
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
-SelfInfo = collections.namedtuple("SelfInfo", "caption resources")
+SelfInfo = collections.namedtuple("SelfInfo", "caption resources research")
 
 
 class EpicWar:
@@ -122,6 +138,10 @@ class EpicWar:
         return SelfInfo(
             caption=result["user"]["villageCaption"],
             resources=self.parse_resource(result["user"]["resource"]),
+            research={
+                unit["unitId"]: unit["level"]
+                for unit in result["user"]["research"]
+            },
         )
 
     def get_gift_receivers(self) -> List[str]:
@@ -202,6 +222,13 @@ class EpicWar:
         """
         return self.parse_error(self.post("upgradeBuilding", buildingId=building_id))
 
+    def start_research(self, unit_id: int, level: int, forge_building_id: int):
+        """
+        Start unit research.
+        """
+        return self.parse_error(self.post(
+            "startResearch", level=level, unitId=unit_id, buildingId=forge_building_id))
+
     def click_alliance_daily_gift(self):
         """
         Activates alliance daily gift.
@@ -247,7 +274,7 @@ class EpicWar:
         if "errorCode" in result:
             return Error(result["errorCode"])
         if "error" in result:
-            return Error(result["name"])
+            return Error(result["error"]["name"])
         raise ValueError(result)
 
     def post(self, name: str, **args) -> dict:
@@ -319,6 +346,18 @@ class Bot:
     """
     Epic War bot.
     """
+    UPGRADE_PRIORITY = {
+        # Higher is sooner (0 by default is the lowest).
+        BuildingType.forge: 93,
+        BuildingType.barracks: 94,
+        BuildingType.headquarters: 95,
+        BuildingType.granary: 96,
+        BuildingType.treasury: 97,
+        BuildingType.mill: 98,
+        BuildingType.gold_mine: 99,
+        BuildingType.wall: 100,
+    }
+
     def __init__(self, epic_war: EpicWar):
         self.epic_war = epic_war
         self.self_info = None  # type: SelfInfo
@@ -354,6 +393,56 @@ class Bot:
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from your %s.", amount, resource_type.name, building.type.name)
+
+        logging.info("Trying to upgrade buildings…")
+        # Sort by upgrade priority.
+        buildings = sorted(
+            buildings,
+            key=lambda building_: self.UPGRADE_PRIORITY.get(building_.type, 0),
+            reverse=True,
+        )
+        for building in buildings:
+            if building.type in {
+                BuildingType.castle,
+                BuildingType.builder_house,
+                BuildingType.alchemist_house,
+                BuildingType.alliance_house,
+                BuildingType.jeweler_house,
+                BuildingType.tavern,
+            }:
+                # Ignore these special buildings.
+                continue
+            if not building.is_completed:
+                # In progress.
+                logging.info(
+                    "Building %s #%s is in progress: complete at %s.",
+                    building.type.name, building.id, datetime.datetime.fromtimestamp(building.complete_time),
+                )
+                continue
+            # Ok, let's try to upgrade.
+            error = self.epic_war.upgrade_building(building.id)
+            logging.info(
+                "Upgrading %s #%s: %s.",
+                building.type.name, building.id, error.name,
+            )
+            if error == Error.not_available:
+                logging.info("Breaking since a builder is not available.")
+                break
+
+        logging.info("Trying to upgrade units…")
+        research = sorted(self.self_info.research.items())
+        # For some reason I need to pass forge building ID to this call.
+        forge_id = [
+            building_.id
+            for building_ in buildings
+            if building_.type == BuildingType.forge
+        ][0]
+        for unit_id, level in research:
+            error = self.epic_war.start_research(unit_id, level + 1, forge_id)
+            logging.info("Upgrading unit #%s to level %s: %s.", unit_id, level + 1, error.name)
+            if error == Error.ok:
+                # One research per time and we've just started a one.
+                break
 
         self.self_info = self.epic_war.get_self_info()
         self.print_self_info()
