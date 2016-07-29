@@ -240,6 +240,20 @@ class EpicWar:
         self.session.close()
 
 
+class Bot:
+    """
+    Epic War bot.
+    """
+    def __init__(self, epic_war: EpicWar):
+        self.epic_war = epic_war
+
+    def step(self):
+        """
+        Makes one step.
+        """
+        pass
+
+
 class ColorStreamHandler(logging.StreamHandler):
     """
     Colored logging stream handler.
@@ -296,7 +310,7 @@ def step(obj: ContextObject):
     """
     with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
         epic_war.authenticate()
-        epic_war.get_buildings()
+        Bot(epic_war).step()
 
 
 if __name__ == "__main__":
