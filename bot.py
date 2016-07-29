@@ -266,14 +266,18 @@ class ContextObject:
 @click.group()
 @click.option("-v", "--verbose", help="Log debug info.", is_flag=True)
 @click.option("-c", "--cookies", help="VK.com cookies.", type=click.File("rt", encoding="utf-8"), required=True)
+@click.option("-l", "--log-file", help="Log file.", type=click.File("at", encoding="utf-8"))
 @click.pass_obj
-def main(obj: ContextObject, verbose: True, cookies: typing.io.TextIO):
+def main(obj: ContextObject, verbose: True, cookies: typing.io.TextIO, log_file: typing.io.TextIO):
     """
     Epic War bot.
     """
     obj.cookies = json.load(cookies)
 
-    handler = ColorStreamHandler(click.get_text_stream("stderr"))
+    handler = (
+        ColorStreamHandler(click.get_text_stream("stderr"))
+        if not log_file else logging.StreamHandler(log_file)
+    )
     handler.setFormatter(logging.Formatter(
         fmt="%(asctime)s [%(levelname).1s] %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
