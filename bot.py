@@ -188,6 +188,12 @@ class EpicWar:
         """
         return self.parse_error(self.post("upgradeBuilding", buildingId=building_id))
 
+    def click_alliance_daily_gift(self):
+        """
+        Activates alliance daily gift.
+        """
+        return self.post("alliance_level_clickDailyGift")
+
     def send_alliance_help(self):
         """
         Helps your alliance.
@@ -303,6 +309,9 @@ class Bot:
 
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
+
+        logging.info("Activating daily gift…")
+        self.epic_war.click_alliance_daily_gift()
 
         gift_receivers = self.epic_war.get_gift_receivers()
         logging.info("%s users are waiting for your gift: %s.", len(gift_receivers), gift_receivers)

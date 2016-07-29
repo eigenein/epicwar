@@ -1,4 +1,9 @@
 ## `achievementGetList`
+
+## `alliance_level_clickDailyGift`
+
+Activates alliance daily gift.
+
 ## `alliance_help_getJobs`
 ## `alliance_help_getMyHelpers`
 ## `alliance_help_getRequests`
