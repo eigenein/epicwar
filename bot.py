@@ -546,5 +546,6 @@ def call(obj: ContextObject, name: str, args: str):
         else:
             print(json.dumps(epic_war.post(name, **kwargs), indent=2))
 
+
 if __name__ == "__main__":
     main(obj=ContextObject())
