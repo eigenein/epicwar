@@ -74,16 +74,18 @@ class UnitType(enum.Enum):
 
 
 class Error(enum.Enum):
-    ok = "Ok"  # not a real error code
+    ok = True  # not a real error code
+    fail = False  # not a real error code
     building_dependency = "BuildingDependency"  # higher level of another building is required
     not_enough_resources = r"error\NotEnoughResources"  # not enough resources
     not_available = r"error\NotAvailable"  # all builders are busy or invalid unit level
     vip_required = r"error\VipRequired"  # VIP status is required
 
 
+Alliance = collections.namedtuple("Alliance", "member_ids")
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
-SelfInfo = collections.namedtuple("SelfInfo", "caption resources research")
+SelfInfo = collections.namedtuple("SelfInfo", "caption resources research alliance")
 
 
 class EpicWar:
@@ -157,11 +159,19 @@ class EpicWar:
                 unit["unitId"]: unit["level"]
                 for unit in result["user"]["research"]
             },
+            alliance=Alliance(
+                member_ids=[
+                    member["id"]
+                    for member in result["user"]["alliance"]["members"]
+                ],
+            ),
         )
 
     def get_gift_receivers(self) -> List[str]:
         """
         Gets possible gift receivers.
+
+        Note: this method is buggy – sometimes it returns no users.
         """
         return [
             receiver["toUserId"]
@@ -309,7 +319,7 @@ class EpicWar:
         """
         if "result" in result:
             if result["result"]:
-                return Error.ok
+                return Error(bool(result["result"]))
         if "errorCode" in result:
             return Error(result["errorCode"])
         if "error" in result:
@@ -428,10 +438,10 @@ class Bot:
         for user_id in gifts_user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
 
-        gift_receivers = self.epic_war.get_gift_receivers()
-        logging.info("%s users are waiting for your gift: %s.", len(gift_receivers), gift_receivers)
-        if gift_receivers:
-            logging.info("Sent gifts: %s.", self.epic_war.send_gift(gift_receivers).name)
+        logging.info(
+            "Sent gifts to alliance members: %s.",
+            self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
+        )
 
         buildings = self.epic_war.get_buildings()
         logging.info("You have %s buildings. Collecting resources…", len(buildings))
