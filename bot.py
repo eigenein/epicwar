@@ -43,34 +43,133 @@ class BuildingType(enum.Enum):
     alliance_house = 17  # дом братства
     tavern = 19  # таверна
     alchemist_house = 20  # дом алхимика
-    jeweler_house = 158  # дом ювелира
+    jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
+
+    @classmethod
+    def not_upgradable(cls):
+        return {
+            cls.builder_house,
+            cls.alchemist_house,
+            cls.alliance_house,
+            cls.jeweler_house,
+            cls.tavern,
+        }
 
 
 class ResourceType(enum.Enum):
     gold = 1  # золото
     food = 2  # еда
+    mana = 3  # мана
+    unknown_4 = 4
+    unknown_5 = 5
+    unknown_6 = 6
+    unknown_7 = 7
+    unknown_8 = 8
+    unknown_9 = 9
+    unknown_26 = 26
     runes = 50  # руны бастиона ужаса
+    unknown_58 = 58
+    unknown_59 = 59
+    unknown_60 = 60
+    unknown_68 = 68
+    unknown_69 = 69
+    unknown_70 = 70
+    unknown_78 = 78
+    unknown_79 = 79
+    unknown_88 = 88
+    unknown_89 = 89
     enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
+    alliance_runes = 161  # руны братства
+    unknown_162 = 162
+    unknown_163 = 163
+    unknown_164 = 164
+    unknown_167 = 167
+    unknown_169 = 169
 
 
 class SpellType(enum.Enum):
     """
-    Spell type. Not used yet.
+    Spell type.
     """
     lightning = 1  # небесная молния
+    unknown_2 = 2
     death_breathing = 9  # дыхание смерти
+    unknown_12 = 12
+    magic_trap = 14  # магическая ловушка
+    unknown_102 = 102
+    unknown_103 = 103
+    thunder_dome = 104  # купол грозы
+    unknown_105 = 105
+    unknown_106 = 106
+    unknown_108 = 108
 
 
 class UnitType(enum.Enum):
     """
-    Unit type. Not used yet.
+    Unit type.
     """
     knight = 1  # рыцарь
     goblin = 2  # гоблин
     orc = 3  # орк
     elf = 4  # эльф
     troll = 5  # тролль
+    eagle = 6  # орел
+    unknown_7 = 7
+    unknown_8 = 8
+    ifrit = 21  # ифрит
+    unknown_23 = 23
+    cursed_dwarf = 47  # проклятый гном
+    predator = 48  # хищник
+    mort_shooter = 49  # стрелок мора
+    uruk = 50  # урук
+    unknown_102 = 102
+    unknown_104 = 104
+    unknown_105 = 105
+    unknown_106 = 106
+    unknown_107 = 107
+    unknown_109 = 109
+    defender_sergeant = 110  # защитник-сержант
+    unknown_111 = 111
+    unknown_112 = 112
+    unknown_113 = 113
+    guard_sergeant = 114  # страж-сержант
+    unknown_115 = 115
+    unknown_116 = 116
+    uruk_ordinary = 117  # урук-рядовой
+    unknown_118 = 118
+    unknown_119 = 119
+    unknown_120 = 120
+    hunter_ordinary = 121  # охотник-рядовой
+    unknown_122 = 122
+    unknown_123 = 123
+    unknown_124 = 124
+    unknown_150 = 150
+    unknown_151 = 151
+    unknown_152 = 152
+    unknown_153 = 153
+    unknown_154 = 154
+    unknown_155 = 155
+    unknown_156 = 156
+    unknown_157 = 157
+
+    @classmethod
+    def not_upgradable(cls):
+        return {
+            cls.cursed_dwarf,
+            cls.defender_sergeant,
+            cls.guard_sergeant,
+            cls.hunter_ordinary,
+            cls.mort_shooter,
+            cls.predator,
+            cls.uruk,
+            cls.uruk_ordinary,
+        }
+
+
+class NoticeType(enum.Enum):
+    alliance_level_daily_gift = "allianceLevelDailyGift"  # ежедневный подарок братства
+    fair_tournament_result = "fairTournamentResult"
 
 
 class Error(enum.Enum):
@@ -156,7 +255,7 @@ class EpicWar:
             caption=result["user"]["villageCaption"],
             resources=self.parse_resource(result["user"]["resource"]),
             research={
-                unit["unitId"]: unit["level"]
+                UnitType(unit["unitId"]): unit["level"]
                 for unit in result["user"]["research"]
             },
             alliance=Alliance(
@@ -212,34 +311,19 @@ class EpicWar:
         """
         Gets all buildings.
         """
-        return list(self._get_buildings())
-
-    def _get_buildings(self):
-        """
-        Gets all buildings as a generator.
-        """
-        for building in self.post("getBuildings")["building"]:  # type: dict
-            type_id = building["typeId"]
-            # Exclude some weird buildings I'm not interested in.
-            if type_id in self.IGNORE_BUILDINGS:
-                continue
-            try:
-                building_type = BuildingType(type_id)
-            except ValueError:
-                logging.debug(
-                    "Unknown building type: id=%s, type=%s, level=%s, hitpoints=%s",
-                    building["id"], type_id, building["level"], building["hitpoints"],
-                )
-            else:
-                yield Building(
-                    id=building["id"],
-                    type=building_type,
-                    level=building["level"],
-                    is_completed=building["completed"],
-                    complete_time=building["completeTime"],
-                    hitpoints=building["hitpoints"],
-                    storage_fill=building.get("storageFill"),
-                )
+        return [
+            Building(
+                id=building["id"],
+                type=BuildingType(building["typeId"]),
+                level=building["level"],
+                is_completed=building["completed"],
+                complete_time=building["completeTime"],
+                hitpoints=building["hitpoints"],
+                storage_fill=building.get("storageFill"),
+            )
+            for building in self.post("getBuildings")["building"]
+            if building["typeId"] not in self.IGNORE_BUILDINGS
+        ]
 
     def upgrade_building(self, building_id: int):
         """
@@ -290,21 +374,40 @@ class EpicWar:
             for job in self.post("alliance_help_farm", buildingId=building_id)["jobs"]
         ]
 
-    def parse_resource(self, resource: List[Dict[str, int]]) -> Dict[ResourceType, int]:
+    def get_notices(self):
+        """
+        Experimental.
+        Gets all notices.
+        """
+        return dict(self._get_notices())
+
+    def _get_notices(self) -> Iterable[Tuple[str, NoticeType]]:
+        for notice in self.post("getNotices"):
+            try:
+                notice_type = NoticeType(notice["type"])
+            except ValueError:
+                logging.warning("Unknown notice type: %s.", notice["type"])
+            else:
+                yield (notice["id"], notice_type)
+
+    def notice_farm_reward(self, notice_id: int) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+        """
+        Experimental.
+        Collects notice reward.
+        """
+        result = self.post("noticeFarmReward", id=notice_id)["result"]
+        return {
+            enum_type(obj["id"]): obj["amount"]
+            for key, enum_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
+            for obj in result[key]
+        }
+
+    @staticmethod
+    def parse_resource(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
         Helper method to parse a resource collection method result.
         """
-        return dict(self._parse_resource(resource))
-
-    @staticmethod
-    def _parse_resource(resources: List[Dict[str, int]]) -> Iterable[Tuple[ResourceType, int]]:
-        for resource in resources:
-            try:
-                resource_type = ResourceType(resource["id"])
-            except ValueError:
-                logging.debug("Unknown resource type: id=%s, amount=%s", resource["id"], resource["amount"])
-            else:
-                yield (resource_type, resource["amount"])
+        return {ResourceType(resource["id"]): resource["amount"] for resource in resources}
 
     def parse_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
         """
@@ -395,15 +498,6 @@ class Bot:
     """
     Epic War bot.
     """
-    NOT_UPGRADABLE_BUILDING_TYPES = {
-        BuildingType.castle,
-        BuildingType.builder_house,
-        BuildingType.alchemist_house,
-        BuildingType.alliance_house,
-        BuildingType.jeweler_house,
-        BuildingType.tavern,
-    }
-
     def __init__(self, epic_war: EpicWar):
         self.epic_war = epic_war
         self.self_info = None  # type: SelfInfo
@@ -414,7 +508,7 @@ class Bot:
         """
         self.self_info = self.epic_war.get_self_info()
         logging.info("Welcome %s!", self.self_info.caption.strip())
-        self.print_self_info()
+        self.print_resources()
 
         logging.info("Asking alliance for help…")
         self.epic_war.ask_alliance_help()
@@ -457,8 +551,10 @@ class Bot:
         # Upgrade low-level buildings first.
         buildings = sorted(buildings, key=operator.attrgetter("level"))
         for building in buildings:  # type: Building
-            time.sleep(0.05)  # just to be on safe side
-            if building.type in self.NOT_UPGRADABLE_BUILDING_TYPES:
+            if building.type == BuildingType.castle:
+                # Upgrade castle only manually.
+                continue
+            if building.type in BuildingType.not_upgradable():
                 # Ignore these special buildings.
                 continue
             if not building.is_completed:
@@ -474,35 +570,42 @@ class Bot:
                 "Upgrading %s #%s to level %s: %s.",
                 building.type.name, building.id, building.level + 1, error.name,
             )
+            time.sleep(0.05)  # just to be on safe side
 
         logging.info("Trying to upgrade units…")
-        research = sorted(self.self_info.research.items())
+        # Start with low-level units.
+        research = sorted(self.self_info.research.items(), key=operator.itemgetter(1))  # type: List[Tuple[UnitType, int]]
         # For some reason I need to pass forge building ID to this call.
         forge_id = [
             building_.id
             for building_ in buildings
             if building_.type == BuildingType.forge
         ][0]
-        for unit_id, level in research:
-            time.sleep(0.05)  # just to be on safe side
-            error = self.epic_war.start_research(unit_id, level + 1, forge_id)
-            logging.info("Upgrading unit #%s to level %s: %s.", unit_id, level + 1, error.name)
+        for unit_type, level in research:
+            if unit_type in UnitType.not_upgradable():
+                # Some units are not upgradable.
+                continue
+            error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
+            logging.info("Upgrading unit %s to level %s: %s.", unit_type.name, level + 1, error.name)
             if error == Error.ok:
                 # One research per time and we've just started a one.
                 break
+            time.sleep(0.05)  # just to be on safe side
 
         self.self_info = self.epic_war.get_self_info()
-        self.print_self_info()
+        self.print_resources()
         logging.info("Bye!")
 
-    def print_self_info(self):
-        logging.info(
-            "Your resources: Gold: %s, Food: %s, Runes: %s, Enchanted coins: %s.",
-            self.self_info.resources[ResourceType.gold],
-            self.self_info.resources[ResourceType.food],
-            self.self_info.resources[ResourceType.runes],
-            self.self_info.resources[ResourceType.enchanted_coins],
-        )
+    def print_resources(self):
+        logging.info("Your resources: %s.", ", ".join(
+            "{}: {}".format(resource_type.name, self.self_info.resources[resource_type])
+            for resource_type in (
+                ResourceType.gold,
+                ResourceType.food,
+                ResourceType.mana,
+                ResourceType.runes,
+            )
+        ))
 
 
 class ColorStreamHandler(logging.StreamHandler):
