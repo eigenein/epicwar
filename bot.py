@@ -101,7 +101,6 @@ class UnitType(LookupEnum):
     magician = 7  # маг
     ghost = 8  # призрак
     ifrit = 21  # ифрит
-    unknown_23 = 23
     cursed_dwarf = 47  # проклятый гном
     predator = 48  # хищник
     mort_shooter = 49  # стрелок мора
@@ -137,6 +136,7 @@ class Error(enum.Enum):
     not_enough_resources = r"error\NotEnoughResources"  # not enough resources
     not_available = r"error\NotAvailable"  # all builders are busy or invalid unit level
     vip_required = r"error\VipRequired"  # VIP status is required
+    not_enough = r"error\NotEnough"  # not enough… score?
 
 
 Alliance = collections.namedtuple("Alliance", "member_ids")
@@ -149,8 +149,6 @@ class EpicWar:
     """
     Epic War API.
     """
-    IGNORE_BUILDINGS = {37, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 147}
-
     def __init__(self, cookies: Dict[str, str]):
         self.cookies = cookies
         self.user_id = None
@@ -281,7 +279,7 @@ class EpicWar:
                 storage_fill=building.get("storageFill"),
             )
             for building in self.post("getBuildings")["building"]
-            if building["typeId"] not in self.IGNORE_BUILDINGS
+            if BuildingType.has_value(building["typeId"])
         ]
 
     def upgrade_building(self, building_id: int):
@@ -347,13 +345,17 @@ class EpicWar:
         """
         Collects notice reward.
         """
-        result = self.post("noticeFarmReward", id=notice_id)["result"]
-        return {
-            reward_type(obj["id"]): obj["amount"]
-            for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
-            for obj in result[key]
-            if reward_type.has_value(obj["id"])
-        }
+        result = self.post("noticeFarmReward", id=notice_id)
+        if "result" in result:
+            return {
+                reward_type(obj["id"]): obj["amount"]
+                for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
+                for obj in result[key]
+                if reward_type.has_value(obj["id"])
+            }
+        if "error" in result and result["error"]["name"] == Error.not_enough.value:
+            return {}
+        raise ValueError(result)
 
     @staticmethod
     def parse_resource(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
@@ -455,6 +457,10 @@ class Bot:
     """
     Epic War bot.
     """
+    MAX_BUILDING_LEVEL = {
+        BuildingType.barracks: 10,
+    }
+
     def __init__(self, epic_war: EpicWar):
         self.epic_war = epic_war
         self.self_info = None  # type: SelfInfo
@@ -508,7 +514,7 @@ class Bot:
             if building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry}:
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
-                    logging.info("%s %s collected from your %s.", amount, resource_type.name, building.type.name)
+                    logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
 
         logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
 
@@ -516,6 +522,9 @@ class Bot:
         # Upgrade low-level buildings first.
         buildings = sorted(buildings, key=operator.attrgetter("level"))
         for building in buildings:  # type: Building
+            if building.level >= self.MAX_BUILDING_LEVEL.get(building.type, 100):
+                logging.info("%s #%s achieved its maximum level.", building.type.name, building.id)
+                continue
             if building.type == BuildingType.castle:
                 # Upgrade castle only manually.
                 continue
@@ -530,11 +539,10 @@ class Bot:
                 )
                 continue
             # Ok, let's try to upgrade.
-            error = self.epic_war.upgrade_building(building.id)
             logging.info(
-                "Upgrading %s #%s to level %s: %s.",
-                building.type.name, building.id, building.level + 1, error.name,
-            )
+                "Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
+            error = self.epic_war.upgrade_building(building.id)
+            logging.info("Upgrade: %s.", error)
             time.sleep(0.05)  # just to be on safe side
 
         logging.info("Trying to upgrade units…")
@@ -550,8 +558,9 @@ class Bot:
             if unit_type in UnitType.not_upgradable():
                 # Some units are not upgradable.
                 continue
+            logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
             error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
-            logging.info("Upgrading unit %s to level %s: %s.", unit_type.name, level + 1, error.name)
+            logging.info("Upgrade: %s.", error.name)
             if error == Error.ok:
                 # One research per time and we've just started a one.
                 break
