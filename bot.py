@@ -15,13 +15,23 @@ import string
 import time
 import typing
 
-from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Tuple, Union
 
 import click
 import requests
 
 
-class BuildingType(enum.Enum):
+class LookupEnum(enum.Enum):
+    """
+    Adds fast lookup of values.
+    """
+    @classmethod
+    def has_value(cls, value) -> bool:
+        # noinspection PyProtectedMember
+        return value in cls._value2member_map_
+
+
+class BuildingType(LookupEnum):
     """
     Building type. Don't forget to check the ignore list while adding any new types.
     """
@@ -43,6 +53,7 @@ class BuildingType(enum.Enum):
     alliance_house = 17  # дом братства
     tavern = 19  # таверна
     alchemist_house = 20  # дом алхимика
+    sand_quarry = 31  # песчаный карьер
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
 
@@ -57,55 +68,27 @@ class BuildingType(enum.Enum):
         }
 
 
-class ResourceType(enum.Enum):
+class ResourceType(LookupEnum):
     gold = 1  # золото
     food = 2  # еда
     mana = 3  # мана
-    unknown_4 = 4
-    unknown_5 = 5
-    unknown_6 = 6
-    unknown_7 = 7
-    unknown_8 = 8
-    unknown_9 = 9
-    unknown_26 = 26
+    sand = 26  # песок
     runes = 50  # руны бастиона ужаса
-    unknown_58 = 58
-    unknown_59 = 59
-    unknown_60 = 60
-    unknown_68 = 68
-    unknown_69 = 69
-    unknown_70 = 70
-    unknown_78 = 78
-    unknown_79 = 79
-    unknown_88 = 88
-    unknown_89 = 89
     enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
     alliance_runes = 161  # руны братства
-    unknown_162 = 162
-    unknown_163 = 163
-    unknown_164 = 164
-    unknown_167 = 167
-    unknown_169 = 169
 
 
-class SpellType(enum.Enum):
+class SpellType(LookupEnum):
     """
     Spell type.
     """
     lightning = 1  # небесная молния
-    unknown_2 = 2
     death_breathing = 9  # дыхание смерти
-    unknown_12 = 12
     magic_trap = 14  # магическая ловушка
-    unknown_102 = 102
-    unknown_103 = 103
     thunder_dome = 104  # купол грозы
-    unknown_105 = 105
-    unknown_106 = 106
-    unknown_108 = 108
 
 
-class UnitType(enum.Enum):
+class UnitType(LookupEnum):
     """
     Unit type.
     """
@@ -115,43 +98,18 @@ class UnitType(enum.Enum):
     elf = 4  # эльф
     troll = 5  # тролль
     eagle = 6  # орел
-    unknown_7 = 7
-    unknown_8 = 8
+    magician = 7  # маг
+    ghost = 8  # призрак
     ifrit = 21  # ифрит
     unknown_23 = 23
     cursed_dwarf = 47  # проклятый гном
     predator = 48  # хищник
     mort_shooter = 49  # стрелок мора
     uruk = 50  # урук
-    unknown_102 = 102
-    unknown_104 = 104
-    unknown_105 = 105
-    unknown_106 = 106
-    unknown_107 = 107
-    unknown_109 = 109
     defender_sergeant = 110  # защитник-сержант
-    unknown_111 = 111
-    unknown_112 = 112
-    unknown_113 = 113
     guard_sergeant = 114  # страж-сержант
-    unknown_115 = 115
-    unknown_116 = 116
     uruk_ordinary = 117  # урук-рядовой
-    unknown_118 = 118
-    unknown_119 = 119
-    unknown_120 = 120
     hunter_ordinary = 121  # охотник-рядовой
-    unknown_122 = 122
-    unknown_123 = 123
-    unknown_124 = 124
-    unknown_150 = 150
-    unknown_151 = 151
-    unknown_152 = 152
-    unknown_153 = 153
-    unknown_154 = 154
-    unknown_155 = 155
-    unknown_156 = 156
-    unknown_157 = 157
 
     @classmethod
     def not_upgradable(cls):
@@ -167,7 +125,7 @@ class UnitType(enum.Enum):
         }
 
 
-class NoticeType(enum.Enum):
+class NoticeType(LookupEnum):
     alliance_level_daily_gift = "allianceLevelDailyGift"  # ежедневный подарок братства
     fair_tournament_result = "fairTournamentResult"
 
@@ -257,6 +215,7 @@ class EpicWar:
             research={
                 UnitType(unit["unitId"]): unit["level"]
                 for unit in result["user"]["research"]
+                if UnitType.has_value(unit["unitId"])
             },
             alliance=Alliance(
                 member_ids=[
@@ -376,30 +335,24 @@ class EpicWar:
 
     def get_notices(self):
         """
-        Experimental.
         Gets all notices.
         """
-        return dict(self._get_notices())
+        return {
+            notice["id"]: NoticeType(notice["type"])
+            for notice in self.post("getNotices")["notices"]
+            if NoticeType.has_value(notice["type"])
+        }
 
-    def _get_notices(self) -> Iterable[Tuple[str, NoticeType]]:
-        for notice in self.post("getNotices"):
-            try:
-                notice_type = NoticeType(notice["type"])
-            except ValueError:
-                logging.warning("Unknown notice type: %s.", notice["type"])
-            else:
-                yield (notice["id"], notice_type)
-
-    def notice_farm_reward(self, notice_id: int) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+    def notice_farm_reward(self, notice_id: str) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
         """
-        Experimental.
         Collects notice reward.
         """
         result = self.post("noticeFarmReward", id=notice_id)["result"]
         return {
-            enum_type(obj["id"]): obj["amount"]
-            for key, enum_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
+            reward_type(obj["id"]): obj["amount"]
+            for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
             for obj in result[key]
+            if reward_type.has_value(obj["id"])
         }
 
     @staticmethod
@@ -407,7 +360,11 @@ class EpicWar:
         """
         Helper method to parse a resource collection method result.
         """
-        return {ResourceType(resource["id"]): resource["amount"] for resource in resources}
+        return {
+            ResourceType(resource["id"]): resource["amount"]
+            for resource in resources
+            if ResourceType.has_value(resource["id"])
+        }
 
     def parse_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
         """
@@ -527,6 +484,14 @@ class Bot:
         logging.info("Activating alliance daily gift…")
         self.epic_war.click_alliance_daily_gift()
 
+        logging.info("Collecting alliance daily gift…")
+        notices = self.epic_war.get_notices()
+        for notice_id, notice_type in notices.items():
+            if notice_type != NoticeType.alliance_level_daily_gift:
+                continue
+            for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
+                logging.info("Collected %s %s.", amount, reward_type.name)
+
         gifts_user_ids = self.epic_war.get_gift_available()
         logging.info("%s gifts are waiting for you.", len(gifts_user_ids))
         for user_id in gifts_user_ids:
@@ -540,7 +505,7 @@ class Bot:
         buildings = self.epic_war.get_buildings()
         logging.info("You have %s buildings. Collecting resources…", len(buildings))
         for building in buildings:
-            if building.type in {BuildingType.gold_mine, BuildingType.mill}:
+            if building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry}:
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from your %s.", amount, resource_type.name, building.type.name)
