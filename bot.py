@@ -54,6 +54,7 @@ class BuildingType(LookupEnum):
     tavern = 19  # таверна
     alchemist_house = 20  # дом алхимика
     sand_quarry = 31  # песчаный карьер
+    territory = 69  # территория для очистки
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
 
@@ -65,6 +66,7 @@ class BuildingType(LookupEnum):
             cls.alliance_house,
             cls.jeweler_house,
             cls.tavern,
+            cls.territory,
         }
 
 
@@ -328,6 +330,12 @@ class EpicWar:
         """
         return self.parse_error(self.post("upgradeBuilding", buildingId=building_id))
 
+    def destruct_building(self, building_id: int, instant: bool):
+        """
+        Destructs building. Used to clean territories.
+        """
+        return self.parse_error(self.post("destructBuilding", buildingId=building_id, instant=instant))
+
     def start_research(self, unit_id: int, level: int, forge_building_id: int):
         """
         Start unit research.
@@ -548,52 +556,40 @@ class Bot:
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
         )
 
+        logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
+
         buildings = self.epic_war.get_buildings()
-        logging.info("You have %s buildings. Collecting resources…", len(buildings))
-        for building in buildings:
+        logging.info("Serve %s buildings…", len(buildings))
+        # Sort to upgrade low-level buildings first.
+        buildings = sorted(buildings, key=operator.attrgetter("level"))
+        for building in buildings:  # type: Building
+            # Collect resources.
             if building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry}:
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
-
-        logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
-
-        logging.info("Trying to upgrade buildings…")
-        # Upgrade low-level buildings first.
-        buildings = sorted(buildings, key=operator.attrgetter("level"))
-        for building in buildings:  # type: Building
-            if building.level >= self.MAX_BUILDING_LEVEL.get(building.type, 100):
-                logging.info("%s #%s achieved its maximum level.", building.type.name, building.id)
-                continue
-            if building.type == BuildingType.castle:
-                # Upgrade castle only manually.
-                continue
-            if building.type in BuildingType.not_upgradable():
-                # Ignore these special buildings.
-                continue
-            if not building.is_completed:
-                # In progress.
-                logging.info(
-                    "Building %s #%s is in progress: complete at %s.",
-                    building.type.name, building.id, datetime.datetime.fromtimestamp(building.complete_time),
-                )
-                continue
-            # Ok, let's try to upgrade.
-            logging.info(
-                "Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
-            error = self.epic_war.upgrade_building(building.id)
-            logging.info("Upgrade: %s.", error)
-            time.sleep(0.05)  # just to be on safe side
+            # Upgrade building.
+            if (
+                building.level < self.MAX_BUILDING_LEVEL.get(building.type, 100) and
+                building.type != BuildingType.castle and
+                building.type not in BuildingType.not_upgradable() and
+                building.is_completed
+            ):
+                logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
+                error = self.epic_war.upgrade_building(building.id)
+                logging.info("Upgrade: %s.", error)
+                time.sleep(0.05)  # just to be on safe side
+            # Clean territory.
+            if building.type == BuildingType.territory:
+                logging.info("Cleaning territory #s…", building.id)
+                clean_error = self.epic_war.destruct_building(building.id, False)
+                logging.info("Clean: %s.", clean_error.name)
 
         logging.info("Trying to upgrade units…")
         # Start with low-level units.
         research = sorted(self.self_info.research.items(), key=operator.itemgetter(1))  # type: List[Tuple[UnitType, int]]
         # For some reason I need to pass forge building ID to this call.
-        forge_id = [
-            building_.id
-            for building_ in buildings
-            if building_.type == BuildingType.forge
-        ][0]
+        forge_id = [building_.id for building_ in buildings if building_.type == BuildingType.forge][0]
         for unit_type, level in research:
             if unit_type in UnitType.not_upgradable():
                 # Some units are not upgradable.
