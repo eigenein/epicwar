@@ -580,8 +580,8 @@ class Bot:
                 logging.info("Upgrade: %s.", error)
                 time.sleep(0.05)  # just to be on safe side
             # Clean territory.
-            if building.type == BuildingType.territory:
-                logging.info("Cleaning territory #s…", building.id)
+            if building.type == BuildingType.territory and building.is_completed:
+                logging.info("Cleaning territory #%s…", building.id)
                 clean_error = self.epic_war.destruct_building(building.id, False)
                 logging.info("Clean: %s.", clean_error.name)
 
