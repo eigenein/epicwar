@@ -672,9 +672,14 @@ def step(obj: ContextObject):
     """
     Perform a step.
     """
-    with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
-        epic_war.authenticate()
-        Bot(epic_war).step()
+    try:
+        with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
+            epic_war.authenticate()
+            Bot(epic_war).step()
+    except Exception as ex:
+        if not isinstance(ex, click.ClickException):
+            logging.critical("Critical error.", exc_info=ex)
+        raise
 
 
 @main.command()
