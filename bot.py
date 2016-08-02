@@ -572,7 +572,10 @@ class Bot:
         buildings = sorted(buildings, key=operator.attrgetter("level"))
         for building in buildings:  # type: Building
             # Collect resources.
-            if building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry}:
+            if (
+                building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry} and
+                building.storage_fill > 0.5
+            ):
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
