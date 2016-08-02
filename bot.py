@@ -191,10 +191,13 @@ class EpicWar:
     """
     Epic War API.
     """
-    def __init__(self, cookies: Dict[str, str]):
+    def __init__(self, cookies: Dict[str, str], random_generator=None):
         self.cookies = cookies
+        self.random_generator = random_generator
+        # Authentication parameters.
         self.user_id = None
         self.auth_token = None
+        # Session state.
         self.session = requests.Session()
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
         self.request_id = 0
@@ -398,7 +401,7 @@ class EpicWar:
             return {
                 reward_type(obj["id"]): obj["amount"]
                 for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
-                for obj in result[key]
+                for obj in result["result"][key]
                 if reward_type.has_value(obj["id"])
             }
         if "error" in result and result["error"]["name"] == Error.not_enough.value:
@@ -463,6 +466,11 @@ class EpicWar:
             headers["X-Auth-Session-Init"] = "1"
         headers["X-Auth-Signature"] = self.sign_request(data, headers)
 
+        if self.random_generator:
+            # Perform random delay that emulates a real user behaviour.
+            seconds = self.random_generator()
+            logging.debug("Sleeping for %.3f seconds…", seconds)
+            time.sleep(seconds)
         response = self.session.post(
             "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
 
@@ -578,7 +586,6 @@ class Bot:
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
                 error = self.epic_war.upgrade_building(building.id)
                 logging.info("Upgrade: %s.", error)
-                time.sleep(0.05)  # just to be on safe side
             # Clean territory.
             if building.type == BuildingType.territory and building.is_completed:
                 logging.info("Cleaning territory #%s…", building.id)
@@ -600,7 +607,6 @@ class Bot:
             if error == Error.ok:
                 # One research per time and we've just started a one.
                 break
-            time.sleep(0.05)  # just to be on safe side
 
         self.self_info = self.epic_war.get_self_info()
         self.print_resources()
@@ -616,6 +622,24 @@ class Bot:
                 ResourceType.runes,
             )
         ))
+
+
+class StudentTRandomGenerator:
+    """
+    Random number generator based on Student's t-distribution.
+    """
+    def __init__(self, nu: float, loc: float, scale: float, minimum: float, maximum: float):
+        self.nu = nu
+        self.loc = loc
+        self.scale = scale
+        self.minimum = minimum
+        self.maximum = maximum
+
+    def __call__(self):
+        while True:
+            x = self.scale * (self.loc + 0.5 * random.gauss(0.0, 1.0) / random.gammavariate(0.5 * self.nu, 2.0))
+            if self.minimum < x < self.maximum:
+                return x
 
 
 class ColorStreamHandler(logging.StreamHandler):
@@ -672,8 +696,9 @@ def step(obj: ContextObject):
     """
     Perform a step.
     """
+    random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)  # based on a human play session
     try:
-        with contextlib.closing(EpicWar(obj.cookies)) as epic_war:
+        with contextlib.closing(EpicWar(obj.cookies, random_generator)) as epic_war:
             epic_war.authenticate()
             Bot(epic_war).step()
     except Exception as ex:
