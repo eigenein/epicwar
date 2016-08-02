@@ -610,6 +610,7 @@ class Bot:
 
         self.self_info = self.epic_war.get_self_info()
         self.print_resources()
+        logging.info("Made %s requests.", self.epic_war.request_id)
         logging.info("Bye!")
 
     def print_resources(self):
