@@ -513,9 +513,8 @@ class Bot:
     """
     Epic War bot.
     """
-    MAX_BUILDING_LEVEL = {
-        BuildingType.barracks: 10,
-    }
+    INFINITE_LEVEL = 100
+    MIN_STORAGE_FILL = 0.5
 
     def __init__(self, epic_war: EpicWar):
         self.epic_war = epic_war
@@ -525,17 +524,101 @@ class Bot:
         """
         Makes one step.
         """
+
+        # Welcome info.
         self.self_info = self.epic_war.get_self_info()
         logging.info("Welcome %s!", self.self_info.caption.strip())
         self.print_resources()
 
+        # Collect some food.
+        logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
+
+        # Check help and gifts.
+        self.check_alliance_help()
+        self.check_alliance_daily_gift()
+        self.check_gifts()
+
+        # Check buildings and units.
+        buildings = self.epic_war.get_buildings()
+        self.check_buildings(buildings)
+        self.check_units([building_.id for building_ in buildings if building_.type == BuildingType.forge][0])
+
+        # Exit info.
+        self.self_info = self.epic_war.get_self_info()
+        self.print_resources()
+        logging.info("Made %s requests. Bye!", self.epic_war.request_id)
+
+    def check_buildings(self, buildings: List[Building]):
+        """
+        Checks all buildings and collects resources, performs upgrades and etc.
+        """
+        logging.info("Checking %s buildings…", len(buildings))
+        # Sort to upgrade low-level buildings first. This helps to optimize request count.
+        buildings = sorted(buildings, key=operator.attrgetter("level"))  # type: List[Building]
+
+        # FIXME: need to figure out how to reliably know if the building is upgradable at the moment.
+        max_building_level = {BuildingType.barracks: 10}
+        for building in buildings:
+            # Collect resources.
+            if (
+                building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry} and
+                building.storage_fill > self.MIN_STORAGE_FILL
+            ):
+                resources = self.epic_war.collect_resource(building.id)
+                for resource_type, amount in resources.items():
+                    logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
+
+            # Upgrade building.
+            if (
+                building.level < max_building_level.get(building.type, self.INFINITE_LEVEL) and
+                building.type != BuildingType.castle and
+                building.type not in BuildingType.not_upgradable() and
+                building.is_completed
+            ):
+                logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
+                error = self.epic_war.upgrade_building(building.id)
+                logging.info("Upgrade: %s.", error)
+                if error != Error.ok:
+                    # Failed to upgrade that means that I'll fail to upgrade other buildings of the same type and level.
+                    max_building_level[building.type] = building.level
+
+            # Clean territory.
+            if building.type == BuildingType.territory and building.is_completed:
+                logging.info("Cleaning territory #%s…", building.id)
+                clean_error = self.epic_war.destruct_building(building.id, False)
+                logging.info("Clean: %s.", clean_error.name)
+
+    def check_units(self, forge_id: int):
+        """
+        Checks unit types and tries to upgrade them.
+        """
+        logging.info("Trying to upgrade units…")
+        # Start with low-level units.
+        research = sorted(self.self_info.research.items(), key=operator.itemgetter(1))  # type: List[Tuple[UnitType, int]]
+
+        for unit_type, level in research:
+            if unit_type in UnitType.not_upgradable():
+                # Some unit types are not upgradable.
+                continue
+            logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
+            # FIXME: need to reliably know if the unit type is upgradable at the moment.
+            error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
+            logging.info("Upgrade: %s.", error.name)
+            if error == Error.ok:
+                # One research per time and we've just started a one.
+                break
+
+    def check_alliance_help(self):
+        """
+        Asks, sends and farms alliance help.
+        """
         logging.info("Asking alliance for help…")
         self.epic_war.ask_alliance_help()
 
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
-
         building_ids_with_help = self.epic_war.get_my_alliance_helpers()
+
         logging.info("%s buildings with alliance help.", len(building_ids_with_help))
         for building_id in building_ids_with_help:
             logging.info(
@@ -543,6 +626,10 @@ class Bot:
                 datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id))),
             )
 
+    def check_alliance_daily_gift(self):
+        """
+        Activates and collects alliance daily gift.
+        """
         logging.info("Activating alliance daily gift…")
         self.epic_war.click_alliance_daily_gift()
 
@@ -554,67 +641,18 @@ class Bot:
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
 
+    def check_gifts(self):
+        """
+        Collects and sends free mana.
+        """
         gifts_user_ids = self.epic_war.get_gift_available()
         logging.info("%s gifts are waiting for you.", len(gifts_user_ids))
         for user_id in gifts_user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
-
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
         )
-
-        logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
-
-        buildings = self.epic_war.get_buildings()
-        logging.info("Serve %s buildings…", len(buildings))
-        # Sort to upgrade low-level buildings first.
-        buildings = sorted(buildings, key=operator.attrgetter("level"))
-        for building in buildings:  # type: Building
-            # Collect resources.
-            if (
-                building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry} and
-                building.storage_fill > 0.5
-            ):
-                resources = self.epic_war.collect_resource(building.id)
-                for resource_type, amount in resources.items():
-                    logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
-            # Upgrade building.
-            if (
-                building.level < self.MAX_BUILDING_LEVEL.get(building.type, 100) and
-                building.type != BuildingType.castle and
-                building.type not in BuildingType.not_upgradable() and
-                building.is_completed
-            ):
-                logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
-                error = self.epic_war.upgrade_building(building.id)
-                logging.info("Upgrade: %s.", error)
-            # Clean territory.
-            if building.type == BuildingType.territory and building.is_completed:
-                logging.info("Cleaning territory #%s…", building.id)
-                clean_error = self.epic_war.destruct_building(building.id, False)
-                logging.info("Clean: %s.", clean_error.name)
-
-        logging.info("Trying to upgrade units…")
-        # Start with low-level units.
-        research = sorted(self.self_info.research.items(), key=operator.itemgetter(1))  # type: List[Tuple[UnitType, int]]
-        # For some reason I need to pass forge building ID to this call.
-        forge_id = [building_.id for building_ in buildings if building_.type == BuildingType.forge][0]
-        for unit_type, level in research:
-            if unit_type in UnitType.not_upgradable():
-                # Some units are not upgradable.
-                continue
-            logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
-            error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
-            logging.info("Upgrade: %s.", error.name)
-            if error == Error.ok:
-                # One research per time and we've just started a one.
-                break
-
-        self.self_info = self.epic_war.get_self_info()
-        self.print_resources()
-        logging.info("Made %s requests.", self.epic_war.request_id)
-        logging.info("Bye!")
 
     def print_resources(self):
         logging.info("Your resources: %s.", ", ".join(
