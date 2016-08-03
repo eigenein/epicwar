@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
+"""
+Epic War bot.
+"""
+
 import collections
 import contextlib
 import datetime
@@ -524,11 +528,7 @@ class Bot:
         """
         Makes one step.
         """
-
-        # Welcome info.
-        self.self_info = self.epic_war.get_self_info()
-        logging.info("Welcome %s!", self.self_info.caption.strip())
-        self.print_resources()
+        self.update_self_info()
 
         # Collect some food.
         logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
@@ -543,10 +543,14 @@ class Bot:
         self.check_buildings(buildings)
         self.check_units([building_.id for building_ in buildings if building_.type == BuildingType.forge][0])
 
-        # Exit info.
+        logging.info("Made %s requests. Bye!", self.epic_war.request_id)
+
+    def update_self_info(self):
+        """
+        Updates and prints self info.
+        """
         self.self_info = self.epic_war.get_self_info()
         self.print_resources()
-        logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
     def check_buildings(self, buildings: List[Building]):
         """
