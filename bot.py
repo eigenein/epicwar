@@ -9,10 +9,12 @@ import collections
 import contextlib
 import datetime
 import enum
+import gzip
 import hashlib
 import json
 import logging
 import operator
+import os.path
 import random
 import re
 import string
@@ -58,6 +60,7 @@ class BuildingType(LookupEnum):
     tavern = 19  # таверна
     alchemist_house = 20  # дом алхимика
     sand_quarry = 31  # песчаный карьер
+    sand_forge = 36
     territory = 69  # территория для очистки
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
@@ -120,7 +123,7 @@ class ResourceType(LookupEnum):
     crystal_blue_9 = 96  # синий кристалл 9-го уровня
     crystal_blue_10 = 97  # синий кристалл 10-го уровня
     enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
-    alliance_runes = 161  # руны братства
+    alliance_runes = 161  # руна знаний (клановый ресурс)
 
 
 class SpellType(LookupEnum):
@@ -144,29 +147,23 @@ class UnitType(LookupEnum):
     elf = 4  # эльф
     troll = 5  # тролль
     eagle = 6  # орел
-    magician = 7  # маг
+    mage = 7  # маг
     ghost = 8  # призрак
-    ifrit = 21  # ифрит
-    cursed_dwarf = 47  # проклятый гном
-    predator = 48  # хищник
-    mort_shooter = 49  # стрелок мора
-    uruk = 50  # урук
-    defender_sergeant = 110  # защитник-сержант
-    guard_sergeant = 114  # страж-сержант
-    uruk_ordinary = 117  # урук-рядовой
-    hunter_ordinary = 121  # охотник-рядовой
+    ent = 9  # энт
+    dragon = 10  # дракон
+    scorpion = 20  # скорпион
+    afreet = 21  # ифрит
+    spider = 22  # арахнит
+    elephant = 23  # слон
 
     @classmethod
-    def not_upgradable(cls):
+    def upgradable(cls) -> Set["UnitType"]:
+        """
+        Gets upgradable unit types.
+        """
         return {
-            cls.cursed_dwarf,
-            cls.defender_sergeant,
-            cls.guard_sergeant,
-            cls.hunter_ordinary,
-            cls.mort_shooter,
-            cls.predator,
-            cls.uruk,
-            cls.uruk_ordinary,
+            cls.knight, cls.goblin, cls.orc, cls.elf, cls.troll, cls.eagle, cls.mage, cls.ghost, cls.ent, cls.dragon,
+            cls.scorpion, cls.afreet, cls.spider, cls.elephant,
         }
 
 
@@ -513,15 +510,91 @@ class EpicWar:
         self.session.close()
 
 
+class Library:
+    """
+    In-game library.
+    """
+    @staticmethod
+    def load(path: str) -> "Library":
+        logging.info("Loading library…")
+        return Library(json.load(gzip.open(path, "rt", encoding="utf-8")))
+
+    def __init__(self, library: Dict):
+        self.requirements = collections.defaultdict(dict)
+        # Process buildings.
+        for building_level in library["buildingLevel"]:
+            if building_level["cost"].get("starmoney", 0) != 0:
+                # Skip buildings that require star money.
+                continue
+            try:
+                type_ = BuildingType(building_level["buildingId"])
+            except ValueError:
+                type_ = None
+            level = building_level["level"]
+            # Process cost.
+            if type_:
+                for resource in building_level["cost"].get("resource", []):
+                    try:
+                        resource_type = ResourceType(resource["id"])
+                    except ValueError:
+                        continue
+                    self.requirements[(type_, level)][resource_type] = resource["amount"]
+            if "unlock" not in building_level:
+                continue
+            # Process dependent buildings.
+            for unlock in building_level["unlock"].get("building", []):
+                try:
+                    unlocked_type = BuildingType(unlock["typeId"])
+                except ValueError:
+                    continue
+                assert type_
+                for unlocked_level in range(1, unlock["maxLevel"] + 1):
+                    try:
+                        existing_level = self.requirements[(unlocked_type, unlocked_level)][type_]
+                    except KeyError:
+                        self.requirements[(unlocked_type, unlocked_level)][type_] = level
+                    else:
+                        self.requirements[(unlocked_type, unlocked_level)][type_] = min(level, existing_level)
+            # Process dependent units.
+            for unlock in building_level["unlock"].get("unit", []):
+                try:
+                    unlocked_type = UnitType(unlock["unitId"])
+                except ValueError:
+                    continue
+                assert type_
+                for unlocked_level in range(1, unlock["maxLevel"] + 1):
+                    try:
+                        existing_level = self.requirements[(unlocked_type, unlocked_level)][type_]
+                    except KeyError:
+                        self.requirements[(unlocked_type, unlocked_level)][type_] = level
+                    else:
+                        self.requirements[(unlocked_type, unlocked_level)][type_] = min(level, existing_level)
+        # Process units.
+        for unit_level in library["unitLevel"]:
+            try:
+                type_ = UnitType(unit_level["unitId"])
+            except ValueError:
+                continue
+            if "researchCost" not in unit_level:
+                continue
+            for resource in unit_level["researchCost"]["resource"]:
+                try:
+                    resource_type = ResourceType(resource["id"])
+                except ValueError:
+                    continue
+                self.requirements[(type_, unit_level["level"])][resource_type] = resource["amount"]
+
+
 class Bot:
     """
     Epic War bot.
     """
-    INFINITE_LEVEL = 100
+    INFINITE_LEVEL = 1000
     MIN_STORAGE_FILL = 0.5
 
-    def __init__(self, epic_war: EpicWar):
+    def __init__(self, epic_war: EpicWar, library: Library):
         self.epic_war = epic_war
+        self.library = library
         self.self_info = None  # type: SelfInfo
 
     def step(self):
@@ -540,8 +613,12 @@ class Bot:
 
         # Check buildings and units.
         buildings = self.epic_war.get_buildings()
-        self.check_buildings(buildings)
-        self.check_units([building_.id for building_ in buildings if building_.type == BuildingType.forge][0])
+        building_levels = self.get_building_levels(buildings)
+        self.check_buildings(buildings, building_levels)
+        self.check_units(
+            [building_.id for building_ in buildings if building_.type == BuildingType.forge][0],
+            building_levels,
+        )
 
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
@@ -552,39 +629,36 @@ class Bot:
         self.self_info = self.epic_war.get_self_info()
         self.print_resources()
 
-    def check_buildings(self, buildings: List[Building]):
+    def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]):
         """
         Checks all buildings and collects resources, performs upgrades and etc.
         """
         logging.info("Checking %s buildings…", len(buildings))
-        # Sort to upgrade low-level buildings first. This helps to optimize request count.
-        buildings = sorted(buildings, key=operator.attrgetter("level"))  # type: List[Building]
 
-        # FIXME: need to figure out how to reliably know if the building is upgradable at the moment.
-        max_building_level = {BuildingType.barracks: 10}
         for building in buildings:
             # Collect resources.
             if (
                 building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry} and
                 building.storage_fill > self.MIN_STORAGE_FILL
             ):
+                logging.debug("Collecting resources from %s…", building)
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
 
             # Upgrade building.
             if (
-                building.level < max_building_level.get(building.type, self.INFINITE_LEVEL) and
                 building.type != BuildingType.castle and
                 building.type not in BuildingType.not_upgradable() and
-                building.is_completed
+                building.is_completed and
+                self.can_upgrade(building.type, building.level + 1, building_levels)
             ):
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
                 error = self.epic_war.upgrade_building(building.id)
-                logging.info("Upgrade: %s.", error)
-                if error != Error.ok:
-                    # Failed to upgrade that means that I'll fail to upgrade other buildings of the same type and level.
-                    max_building_level[building.type] = building.level
+                if error == Error.ok:
+                    self.update_self_info()
+                else:
+                    logging.error("Failed to upgrade: %s.", error.name)
 
             # Clean territory.
             if building.type == BuildingType.territory and building.is_completed:
@@ -592,25 +666,25 @@ class Bot:
                 clean_error = self.epic_war.destruct_building(building.id, False)
                 logging.info("Clean: %s.", clean_error.name)
 
-    def check_units(self, forge_id: int):
+    def check_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
         """
         Checks unit types and tries to upgrade them.
         """
         logging.info("Trying to upgrade units…")
-        # Start with low-level units.
-        research = sorted(self.self_info.research.items(), key=operator.itemgetter(1))  # type: List[Tuple[UnitType, int]]
 
-        for unit_type, level in research:
-            if unit_type in UnitType.not_upgradable():
-                # Some unit types are not upgradable.
+        for unit_type, level in self.self_info.research.items():
+            if (
+                unit_type not in UnitType.upgradable() or
+                not self.can_upgrade(unit_type, level + 1, building_levels)
+            ):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
-            # FIXME: need to reliably know if the unit type is upgradable at the moment.
             error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
-            logging.info("Upgrade: %s.", error.name)
             if error == Error.ok:
                 # One research per time and we've just started a one.
                 break
+            else:
+                logging.error("Failed to upgrade: %s.", error.name)
 
     def check_alliance_help(self):
         """
@@ -657,6 +731,34 @@ class Bot:
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
         )
+
+    @staticmethod
+    def get_building_levels(buildings: List[Building]) -> Dict[BuildingType, int]:
+        """
+        Gets maximum level of each building type.
+        """
+        levels = collections.defaultdict(int)
+        for building in buildings:
+            levels[building.type] = max(levels[building.type], building.level)
+        return levels
+
+    def can_upgrade(self, entity_type: Union[BuildingType, UnitType], level: int, building_levels: Dict[BuildingType, int]) -> bool:
+        """
+        Determines if all requirements are met to upgrade a building or a unit.
+        """
+        if (entity_type, level) not in self.library.requirements:
+            logging.warning("Unknown requirements to upgrade %s to level %s.", entity_type.name, level)
+            return False
+        # Dictionaries to match resources against.
+        current_values = {
+            BuildingType: building_levels,
+            ResourceType: self.self_info.resources,
+        }
+        for type_, argument in self.library.requirements[entity_type, level].items():
+            if current_values[type(type_)].get(type_, 0) < argument:
+                logging.debug("Skip %s (level %s): depends on %s (%s).", entity_type.name, level, type_.name, argument)
+                return False
+        return True
 
     def print_resources(self):
         logging.info("Your resources: %s.", ", ".join(
@@ -742,11 +844,14 @@ def step(obj: ContextObject):
     """
     Perform a step.
     """
-    random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)  # based on a human play session
     try:
-        with contextlib.closing(EpicWar(obj.cookies, random_generator)) as epic_war:
+        library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
+        with contextlib.closing(EpicWar(
+            obj.cookies,
+            StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000),
+        )) as epic_war:
             epic_war.authenticate()
-            Bot(epic_war).step()
+            Bot(epic_war, library).step()
     except Exception as ex:
         if not isinstance(ex, click.ClickException):
             logging.critical("Critical error.", exc_info=ex)
