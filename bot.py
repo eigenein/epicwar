@@ -13,7 +13,6 @@ import gzip
 import hashlib
 import json
 import logging
-import operator
 import os.path
 import random
 import re
@@ -21,7 +20,7 @@ import string
 import time
 import typing
 
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, List, Optional, Set, Union
 
 import click
 import requests
@@ -634,6 +633,8 @@ class Bot:
         Checks all buildings and collects resources, performs upgrades and etc.
         """
         logging.info("Checking %s buildings…", len(buildings))
+        incomplete_count = sum(not building.is_completed for building in buildings)
+        logging.info("%s builders are busy.", incomplete_count)
 
         for building in buildings:
             # Collect resources.
@@ -648,15 +649,28 @@ class Bot:
 
             # Upgrade building.
             if (
+                # Builder is available.
+                incomplete_count < building_levels[BuildingType.builder_house] and
+                # Castle is upgraded only manually.
                 building.type != BuildingType.castle and
+                # Building type is not ignored explicitly.
                 building.type not in BuildingType.not_upgradable() and
+                # Building is not in progress.
                 building.is_completed and
+                # Requirements are met.
                 self.can_upgrade(building.type, building.level + 1, building_levels)
             ):
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
                 error = self.epic_war.upgrade_building(building.id)
                 if error == Error.ok:
+                    # Update resource info.
                     self.update_self_info()
+                    # Update builders count.
+                    incomplete_count = sum(
+                        not building.is_completed
+                        for building in self.epic_war.get_buildings()
+                    )
+                    logging.info("%s builders are busy.", incomplete_count)
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
