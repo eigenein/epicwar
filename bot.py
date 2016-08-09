@@ -772,14 +772,12 @@ class Bot:
         return True
 
     def print_resources(self):
+        """
+        Prints last known resource amounts.
+        """
         logging.info("Your resources: %s.", ", ".join(
             "{}: {}".format(resource_type.name, self.self_info.resources[resource_type])
-            for resource_type in (
-                ResourceType.gold,
-                ResourceType.food,
-                ResourceType.mana,
-                ResourceType.runes,
-            )
+            for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand)
         ))
 
 
