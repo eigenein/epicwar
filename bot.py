@@ -667,8 +667,8 @@ class Bot:
                     # Update resource info.
                     self.update_self_info()
                     # Update builders count.
-                    incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
-                    logging.info("%s builders are busy.", incomplete_count)
+                    self.incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
+                    logging.info("%s buildings are incomplete.", self.incomplete_count)
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
