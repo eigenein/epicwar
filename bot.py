@@ -20,7 +20,7 @@ import string
 import time
 import typing
 
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, Iterable, List, Optional, Set, Union
 
 import click
 import requests
@@ -592,12 +592,14 @@ class Bot:
         self.epic_war = epic_war
         self.library = library
         self.self_info = None  # type: SelfInfo
+        self.incomplete_count = None  # type: int
 
     def step(self):
         """
         Makes one step.
         """
         self.update_self_info()
+        logging.info("Welcome %s!", self.self_info.caption)
 
         # Collect some food.
         logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
@@ -616,6 +618,9 @@ class Bot:
             building_levels,
         )
 
+        logging.info("Summary for %s:", self.self_info.caption)
+        self.print_resources()
+        logging.info("%s buildings are incomplete.", self.incomplete_count)
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
     def update_self_info(self):
@@ -630,8 +635,7 @@ class Bot:
         Checks all buildings and collects resources, performs upgrades and etc.
         """
         logging.info("Checking %s buildings…", len(buildings))
-        incomplete_count = sum(not building.is_completed for building in buildings)
-        logging.info("%s builders are busy.", incomplete_count)
+        self.incomplete_count = self.get_incomplete_count(buildings)
 
         for building in buildings:
             # Collect resources.
@@ -647,7 +651,7 @@ class Bot:
             # Upgrade building.
             if (
                 # Builder is available.
-                incomplete_count < building_levels[BuildingType.builder_house] and
+                self.incomplete_count < building_levels[BuildingType.builder_house] and
                 # Castle is upgraded only manually.
                 building.type != BuildingType.castle and
                 # Building type is not ignored explicitly.
@@ -663,10 +667,7 @@ class Bot:
                     # Update resource info.
                     self.update_self_info()
                     # Update builders count.
-                    incomplete_count = sum(
-                        not building.is_completed
-                        for building in self.epic_war.get_buildings()
-                    )
+                    incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
                     logging.info("%s builders are busy.", incomplete_count)
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
@@ -771,11 +772,15 @@ class Bot:
                 return False
         return True
 
+    @staticmethod
+    def get_incomplete_count(buildings: Iterable[Building]) -> int:
+        return sum(not building.is_completed for building in buildings)
+
     def print_resources(self):
         """
         Prints last known resource amounts.
         """
-        logging.info("Your resources: %s.", ", ".join(
+        logging.info("Resources: %s.", ", ".join(
             "{}: {}".format(resource_type.name, self.self_info.resources[resource_type])
             for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand)
         ))
