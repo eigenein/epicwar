@@ -629,8 +629,7 @@ class Bot:
         logging.info("Welcome %s!", self.self_info.caption)
 
         # Collect some food.
-        logging.info("Cemetery: %s.", self.self_info.cemetery)
-        logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
+        self.check_cemetery()
 
         # Check help and gifts.
         self.check_alliance_help()
@@ -664,6 +663,15 @@ class Bot:
         """
         self.self_info = self.epic_war.get_self_info()
         self.print_resources()
+
+    def check_cemetery(self):
+        """
+        Checks and collects cemetery.
+        """
+        if self.self_info.cemetery:
+            amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
+            logging.info("Cemetery farmed: %s.", amount)
+            self.audit_log.append("collected {} cemetery".format(amount))
 
     def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]):
         """
