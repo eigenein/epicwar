@@ -176,11 +176,17 @@ class UnitType(LookupEnum):
 
 
 class NoticeType(LookupEnum):
+    """
+    Epic War inbox notice type.
+    """
     alliance_level_daily_gift = "allianceLevelDailyGift"  # ежедневный подарок братства
     fair_tournament_result = "fairTournamentResult"
 
 
 class Error(enum.Enum):
+    """
+    Epic War API error codes.
+    """
     ok = True  # not a real error code
     fail = False  # not a real error code
     building_dependency = "BuildingDependency"  # higher level of another building is required
@@ -606,8 +612,12 @@ class Bot:
     def __init__(self, epic_war: EpicWar, library: Library):
         self.epic_war = epic_war
         self.library = library
+        # Player info.
         self.self_info = None  # type: SelfInfo
+        # Incomplete building count.
         self.incomplete_count = None  # type: int
+        # Actions performed by the bot.
+        self.audit_log = []  # type: List[str]
 
     def step(self):
         """
@@ -636,6 +646,7 @@ class Bot:
         self.check_units(forge_id, building_levels)
 
         logging.info("Summary for %s:", self.self_info.caption)
+        logging.info("Actions: %s.", ", ".join(self.audit_log) if self.audit_log else "nothing")
         self.print_resources()
         logging.info("%s buildings are incomplete.", self.incomplete_count)
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
@@ -666,7 +677,9 @@ class Bot:
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
-                    if not amount:
+                    if amount:
+                        self.audit_log.append("collected {} {}".format(amount, resource_type.name))
+                    else:
                         # Storage is full. Get rid of useless following requests.
                         logging.warning("Stopping collection from %s.", building.type.name)
                         stop_collection_from.add(building.type)
@@ -692,6 +705,7 @@ class Bot:
                     # Update incomplete buildings count.
                     self.incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
                     logging.info("%s buildings are incomplete.", self.incomplete_count)
+                    self.audit_log.append("upgrade {}".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
@@ -700,6 +714,7 @@ class Bot:
                 logging.info("Cleaning territory #%s…", building.id)
                 clean_error = self.epic_war.destruct_building(building.id, False)
                 logging.info("Clean: %s.", clean_error.name)
+                self.audit_log.append("clean territory")
 
     def check_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
         """
@@ -716,6 +731,7 @@ class Bot:
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
             error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
             if error == Error.ok:
+                self.audit_log.append("upgrade {}".format(unit_type.name))
                 # One research per time and we've just started a one.
                 break
             else:
@@ -738,6 +754,8 @@ class Bot:
                 "Farmed alliance help: %s.",
                 datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id))),
             )
+        if building_ids_with_help:
+            self.audit_log.append("farmed alliance help x{}".format(len(building_ids_with_help)))
 
     def check_alliance_daily_gift(self):
         """
@@ -753,6 +771,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
+                self.audit_log.append("collected {} x{}".format(reward_type.name, amount))
 
     def check_gifts(self):
         """
@@ -762,6 +781,8 @@ class Bot:
         logging.info("%s gifts are waiting for you.", len(gifts_user_ids))
         for user_id in gifts_user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
+        if gifts_user_ids:
+            self.audit_log.append("farmed gift x{}".format(len(gifts_user_ids)))
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
