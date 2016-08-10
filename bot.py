@@ -583,6 +583,15 @@ class Bot:
     """
     Epic War bot.
     """
+
+    # Traverse buildings in the following order. Less is earlier, zero by default.
+    BUILDING_SORT_ORDER = {
+        BuildingType.wall: -1,
+        BuildingType.sand_forge: 1,
+        BuildingType.gold_mine: 2,
+        BuildingType.mill: 3,
+    }
+    # Don't collect resource from poorly filled building to make less requests.
     MIN_STORAGE_FILL = 0.5
 
     def __init__(self, epic_war: EpicWar, library: Library):
@@ -608,13 +617,14 @@ class Bot:
         self.check_gifts()
 
         # Check buildings and units.
-        buildings = self.epic_war.get_buildings()
+        buildings = sorted(
+            self.epic_war.get_buildings(),
+            key=lambda building: self.BUILDING_SORT_ORDER.get(building.type, 0),
+        )
         building_levels = self.get_building_levels(buildings)
         self.check_buildings(buildings, building_levels)
-        self.check_units(
-            [building_.id for building_ in buildings if building_.type == BuildingType.forge][0],
-            building_levels,
-        )
+        forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
+        self.check_units(forge_id, building_levels)
 
         logging.info("Summary for %s:", self.self_info.caption)
         self.print_resources()
