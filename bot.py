@@ -644,17 +644,23 @@ class Bot:
         """
         logging.info("Checking %s buildings…", len(buildings))
         self.incomplete_count = self.get_incomplete_count(buildings)
+        stop_collection_from = set()
 
         for building in buildings:
             # Collect resources.
             if (
                 building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry} and
-                building.storage_fill > self.MIN_STORAGE_FILL
+                building.storage_fill > self.MIN_STORAGE_FILL and
+                building.type not in stop_collection_from
             ):
                 logging.debug("Collecting resources from %s…", building)
                 resources = self.epic_war.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
+                    if not amount:
+                        # Storage is full. Get rid of useless following requests.
+                        logging.warning("Stopping collection from %s.", building.type.name)
+                        stop_collection_from.add(building.type)
 
             # Upgrade building.
             if (
@@ -674,7 +680,7 @@ class Bot:
                 if error == Error.ok:
                     # Update resource info.
                     self.update_self_info()
-                    # Update builders count.
+                    # Update incomplete buildings count.
                     self.incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
                     logging.info("%s buildings are incomplete.", self.incomplete_count)
                 else:
