@@ -184,7 +184,7 @@ class Error(enum.Enum):
 Alliance = collections.namedtuple("Alliance", "member_ids")
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
-SelfInfo = collections.namedtuple("SelfInfo", "caption resources research alliance")
+SelfInfo = collections.namedtuple("SelfInfo", "caption resources research alliance cemetery")
 
 
 class EpicWar:
@@ -258,11 +258,9 @@ class EpicWar:
                 if UnitType.has_value(unit["unitId"])
             },
             alliance=Alliance(
-                member_ids=[
-                    member["id"]
-                    for member in result["user"]["alliance"]["members"]
-                ],
+                member_ids=[member["id"] for member in result["user"]["alliance"]["members"]],
             ),
+            cemetery=result["user"]["cemetery"],
         )
 
     def get_gift_receivers(self) -> List[str]:
@@ -602,6 +600,7 @@ class Bot:
         logging.info("Welcome %s!", self.self_info.caption)
 
         # Collect some food.
+        logging.info("Cemetery: %s.", self.self_info.cemetery)
         logging.info("Cemetery farmed: %s.", self.epic_war.farm_cemetery().get(ResourceType.food, 0))
 
         # Check help and gifts.
