@@ -260,7 +260,7 @@ class EpicWar:
             alliance=Alliance(
                 member_ids=[member["id"] for member in result["user"]["alliance"]["members"]],
             ),
-            cemetery=result["user"]["cemetery"],
+            cemetery=result["cemetery"],
         )
 
     def get_gift_receivers(self) -> List[str]:
