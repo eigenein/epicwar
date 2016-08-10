@@ -11,6 +11,7 @@ import datetime
 import enum
 import gzip
 import hashlib
+import itertools
 import json
 import logging
 import os.path
@@ -646,7 +647,12 @@ class Bot:
         self.check_units(forge_id, building_levels)
 
         logging.info("Summary for %s:", self.self_info.caption)
-        logging.info("Actions: %s.", ", ".join(self.audit_log) if self.audit_log else "nothing")
+        actions = ", ".join(
+            # Compress repeated lines.
+            "{} x{}".format(line, sum(1 for _ in grouper))
+            for line, grouper in itertools.groupby(self.audit_log)
+        )
+        logging.info("Actions: %s.", actions or "nothing")
         self.print_resources()
         logging.info("%s buildings are incomplete.", self.incomplete_count)
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
@@ -754,8 +760,7 @@ class Bot:
                 "Farmed alliance help: %s.",
                 datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id))),
             )
-        if building_ids_with_help:
-            self.audit_log.append("farmed alliance help x{}".format(len(building_ids_with_help)))
+            self.audit_log.append("farmed alliance help")
 
     def check_alliance_daily_gift(self):
         """
@@ -771,7 +776,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("collected {} x{}".format(reward_type.name, amount))
+                self.audit_log.append("collected {} {}".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -781,8 +786,7 @@ class Bot:
         logging.info("%s gifts are waiting for you.", len(gifts_user_ids))
         for user_id in gifts_user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
-        if gifts_user_ids:
-            self.audit_log.append("farmed gift x{}".format(len(gifts_user_ids)))
+            self.audit_log.append("farmed gift")
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
