@@ -200,6 +200,7 @@ class Error(enum.Enum):
 Alliance = collections.namedtuple("Alliance", "member_ids")
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
+Cemetery = collections.namedtuple("Cemetery", "x y")
 SelfInfo = collections.namedtuple("SelfInfo", "caption resources research alliance cemetery")
 
 
@@ -276,7 +277,7 @@ class EpicWar:
             alliance=Alliance(
                 member_ids=[member["id"] for member in result["user"]["alliance"]["members"]],
             ),
-            cemetery=result["cemetery"],
+            cemetery=[Cemetery(x=cemetery["x"], y=cemetery["y"]) for cemetery in result["cemetery"]],
         )
 
     def get_gift_receivers(self) -> List[str]:
