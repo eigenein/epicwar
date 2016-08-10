@@ -583,7 +583,6 @@ class Bot:
     """
     Epic War bot.
     """
-    INFINITE_LEVEL = 1000
     MIN_STORAGE_FILL = 0.5
 
     def __init__(self, epic_war: EpicWar, library: Library):
