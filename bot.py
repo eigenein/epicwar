@@ -130,10 +130,11 @@ class SpellType(LookupEnum):
     Spell type.
     """
     lightning = 1  # небесная молния
-    death_breathing = 9  # дыхание смерти
-    fire_split = 12  # огненный раскол
-    magic_trap = 14  # магическая ловушка
-    thunder_dome = 104  # купол грозы
+    fire = 2
+    tornado = 9  # дыхание смерти
+    easter = 12  # огненный раскол
+    patronus = 14  # магическая ловушка
+    silver = 104  # купол грозы
 
 
 class UnitType(LookupEnum):
@@ -154,6 +155,14 @@ class UnitType(LookupEnum):
     afreet = 21  # ифрит
     spider = 22  # арахнит
     elephant = 23  # слон
+    citadel_santa = 47  # проклятый гном
+    citadel_yeti = 48  # хищник
+    citadel_elf = 49  # стрелок мора
+    citadel_orc = 50  # урук
+    league_orc_3 = 110  # защитник-сержант
+    league_elf_3 = 114  # страж-сержант
+    league_troll_2 = 117  # урук-рядовой
+    league_eagle_2 = 121  # охотник-рядовой
 
     @classmethod
     def upgradable(cls) -> Set["UnitType"]:
