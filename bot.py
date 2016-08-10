@@ -608,7 +608,7 @@ class Bot:
         BuildingType.mill: 3,
     }
     # Don't collect resource from poorly filled building to make less requests.
-    MIN_STORAGE_FILL = 0.5
+    MIN_STORAGE_FILL = 0.25
 
     def __init__(self, epic_war: EpicWar, library: Library):
         self.epic_war = epic_war
