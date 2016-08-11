@@ -889,7 +889,7 @@ class Bot:
         if self.incomplete_buildings:
             construction = ", ".join("*{.type.name}*".format(building) for building in self.incomplete_buildings)
         else:
-            construction = "none"
+            construction = "*none*"
         text = (
             "\N{HOUSE BUILDING} *{self_info.caption}*\n"
             "\n"
