@@ -15,6 +15,7 @@ Epic War bot. Features:
 * Activates alliance daily gift.
 * Collects alliance daily gift.
 * Simulates user behavior by making random delays between requests.
+* Sends Telegram notification.
 """
 
 import collections
@@ -26,7 +27,7 @@ import hashlib
 import itertools
 import json
 import logging
-import os.path
+import os
 import random
 import re
 import string
@@ -647,7 +648,8 @@ class Bot:
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4800.0
 
-    def __init__(self, epic_war: EpicWar, library: Library):
+    def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
+        self.context = context
         self.epic_war = epic_war
         self.library = library
         # Player info.
@@ -682,15 +684,8 @@ class Bot:
         forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
         self.check_units(forge_id, building_levels)
 
-        logging.info("Summary for %s:", self.self_info.caption)
-        actions = ", ".join(
-            # Compress repeated lines.
-            "{} x{}".format(line, sum(1 for _ in grouper))
-            for line, grouper in itertools.groupby(self.audit_log)
-        )
-        logging.info("Actions: %s.", actions or "nothing")
-        self.log_resources()
-        logging.info("%s buildings are incomplete.", self.incomplete_count)
+        if self.context.telegram_enabled:
+            self.send_telegram_notification()
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
     def update_self_info(self):
@@ -870,7 +865,9 @@ class Bot:
 
     @staticmethod
     def get_incomplete_count(buildings: Iterable[Building]) -> int:
-        return sum(not building.is_completed for building in buildings)
+        incomplete_count = sum(not building.is_completed for building in buildings)
+        logging.info("%s buildings are incomplete.", incomplete_count)
+        return incomplete_count
 
     def log_resources(self):
         """
@@ -880,6 +877,24 @@ class Bot:
             "{}: {}".format(resource_type.name, self.self_info.resources[resource_type])
             for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand)
         ))
+
+    def send_telegram_notification(self):
+        """
+        Sends summary Telegram notification.
+        """
+        text = (
+            "\x1F3E0 {self_info.caption}\n"
+            "\n"
+            "\x2714 *{requests}* requests."
+        ).format(self_info=self.self_info, requests=self.epic_war.request_id)
+        requests.get(
+            "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
+            params={
+                "chat_id": self.context.telegram_chat_id,
+                "text": text,
+                "parse_mode": "markdown",
+            },
+        )
 
 
 # Utilities.
@@ -924,6 +939,9 @@ class ColorStreamHandler(logging.StreamHandler):
 
 class ContextObject:
     remixsid = None  # type: str
+    telegram_enabled = False  # type: bool
+    telegram_token = None  # type: Optional[str]
+    telegram_chat_id = None  # type: Optional[str]
 
 
 # Script commands.
@@ -939,6 +957,9 @@ def main(obj: ContextObject, verbose: True, remixsid: str, log_file: typing.io.T
     Epic War bot.
     """
     obj.remixsid = remixsid
+    obj.telegram_token = os.environ.get("EPIC_WAR_TELEGRAM_TOKEN")
+    obj.telegram_chat_id = os.environ.get("EPIC_WAR_TELEGRAM_CHAT_ID")
+    obj.telegram_enabled = bool(obj.telegram_token and obj.telegram_chat_id)
 
     handler = (
         ColorStreamHandler(click.get_text_stream("stderr"))
@@ -953,6 +974,9 @@ def main(obj: ContextObject, verbose: True, remixsid: str, log_file: typing.io.T
     logger.setLevel(logging.INFO if not verbose else logging.DEBUG)
     logger.addHandler(handler)
 
+    if not obj.telegram_enabled:
+        logging.warning("Telegram notifications are not configured.")
+
 
 @main.command()
 @click.pass_obj
@@ -965,7 +989,7 @@ def step(obj: ContextObject):
         random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.remixsid, random_generator)) as epic_war:
             epic_war.authenticate()
-            Bot(epic_war, library).step()
+            Bot(obj, epic_war, library).step()
     except Exception as ex:
         if not isinstance(ex, click.ClickException):
             logging.critical("Critical error.", exc_info=ex)
