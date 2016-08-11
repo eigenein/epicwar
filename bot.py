@@ -701,7 +701,7 @@ class Bot:
         if self.self_info.cemetery:
             amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
             logging.info("Cemetery farmed: %s.", amount)
-            self.audit_log.append("Collected \N{MEAT ON BONE} *{}*.".format(amount))
+            self.audit_log.append("Collected \N{MEAT ON BONE} *%s*." % amount)
 
     def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]):
         """
@@ -900,7 +900,7 @@ class Bot:
             gold=self.self_info.resources[ResourceType.gold],
             sand=self.self_info.resources[ResourceType.sand],
             incomplete=self.incomplete_count,
-            audit_log="\n".join(self.audit_log),
+            audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
         )
         requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
