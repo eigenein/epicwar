@@ -654,8 +654,8 @@ class Bot:
         self.library = library
         # Player info.
         self.self_info = None  # type: SelfInfo
-        # Incomplete building count.
-        self.incomplete_count = None  # type: int
+        # Incomplete buildings.
+        self.incomplete_buildings = []  # type: List[Building]
         # Actions performed by the bot.
         self.audit_log = []  # type: List[str]
 
@@ -709,7 +709,7 @@ class Bot:
         Checks all buildings and collects resources, performs upgrades and etc.
         """
         logging.info("Checking %s buildings…", len(buildings))
-        self.incomplete_count = self.get_incomplete_count(buildings)
+        self.incomplete_buildings = self.get_incomplete_buldings(buildings)
         stop_collection_from = set()
 
         for building in buildings:
@@ -739,7 +739,7 @@ class Bot:
             # Upgrade building.
             if (
                 # Builder is available.
-                self.incomplete_count < building_levels[BuildingType.builder_house] and
+                len(self.incomplete_buildings) < building_levels[BuildingType.builder_house] and
                 # Castle is upgraded only manually.
                 building.type != BuildingType.castle and
                 # Building type is not ignored explicitly.
@@ -755,8 +755,7 @@ class Bot:
                     # Update resource info.
                     self.update_self_info()
                     # Update incomplete buildings count.
-                    self.incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
-                    logging.info("%s buildings are incomplete.", self.incomplete_count)
+                    self.incomplete_buildings = self.get_incomplete_buldings(self.epic_war.get_buildings())
                     self.audit_log.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
@@ -865,10 +864,13 @@ class Bot:
         return True
 
     @staticmethod
-    def get_incomplete_count(buildings: Iterable[Building]) -> int:
-        incomplete_count = sum(not building.is_completed for building in buildings)
-        logging.info("%s buildings are incomplete.", incomplete_count)
-        return incomplete_count
+    def get_incomplete_buldings(buildings: Iterable[Building]) -> List[Building]:
+        incomplete_buildings = [building for building in buildings if not building.is_completed]
+        if incomplete_buildings:
+            logging.info("Incomplete: %s.", ", ".join(building.type for building in incomplete_buildings))
+        else:
+            logging.info("All buildings are completed.")
+        return incomplete_buildings
 
     def log_resources(self):
         """
@@ -884,13 +886,17 @@ class Bot:
         Sends summary Telegram notification.
         """
         logging.info("Sending Telegram notification…")
+        if self.incomplete_buildings:
+            construction = ", ".join("*{.type}*".format(building) for building in self.incomplete_buildings)
+        else:
+            construction = "none"
         text = (
             "\N{HOUSE BUILDING} *{self_info.caption}*\n"
             "\n"
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
-            "\N{CONSTRUCTION SIGN} *{incomplete}*\n"
+            "\N{CONSTRUCTION SIGN} *{construction}*\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*\n"
             "\n"
             "{audit_log}"
@@ -900,7 +906,7 @@ class Bot:
             food=self.self_info.resources[ResourceType.food],
             gold=self.self_info.resources[ResourceType.gold],
             sand=self.self_info.resources[ResourceType.sand],
-            incomplete=self.incomplete_count,
+            construction=construction,
             audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
         )
         requests.get(
