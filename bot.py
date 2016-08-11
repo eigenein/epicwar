@@ -770,7 +770,7 @@ class Bot:
                         self.audit_log.append("Collected *{}* {}.".format(amount, resource_type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
-                        logging.warning("Stopping collection from %s.", building.type.name)
+                        logging.info("Stopping collection from %s.", building.type.name)
                         stop_collection_from.add(building.type)
 
             # Upgrade building.
