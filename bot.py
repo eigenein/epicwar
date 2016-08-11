@@ -835,8 +835,8 @@ class Bot:
         """
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
-        building_ids = self.epic_war.get_my_alliance_helpers()
 
+        building_ids = self.epic_war.get_my_alliance_helpers()
         logging.info("%s buildings with alliance help.", len(building_ids))
         for building_id in building_ids:
             help_time = datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id)))
