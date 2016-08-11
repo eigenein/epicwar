@@ -885,14 +885,20 @@ class Bot:
         logging.info("Sending Telegram notification…")
         text = (
             "\N{HOUSE} *{self_info.caption}*\n"
-            "Resources: *{gold}* \N{MONEY BAG} *{food}* \N{HAMBURGER} *{sand}* \N{SPARKLES}\n"
-            "*{requests}* requests."
+            "\n"
+            "*{gold}* \N{MONEY BAG} *{food}* \N{HAMBURGER} *{sand}* \N{SPARKLES}\n"
+            "*{incomplete}* incomplete buildings.\n"
+            "*{requests}* requests.\n"
+            "\n"
+            "{audit_log}"
         ).format(
             self_info=self.self_info,
             requests=self.epic_war.request_id,
             food=self.self_info.resources[ResourceType.food],
             gold=self.self_info.resources[ResourceType.gold],
             sand=self.self_info.resources[ResourceType.sand],
+            incomplete=self.incomplete_count,
+            audit_log=self.audit_log,
         )
         requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
