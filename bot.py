@@ -702,7 +702,7 @@ class Bot:
         if self.self_info.cemetery:
             amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
             logging.info("Cemetery farmed: %s.", amount)
-            self.audit_log.append("Collected \N{{MEAT ON BONE}} *{}*.".format(amount))
+            self.audit_log.append("Collected \N{MEAT ON BONE} *{}*.".format(amount))
 
     def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]):
         """
