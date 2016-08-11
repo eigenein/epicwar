@@ -42,7 +42,6 @@ import requests
 # Enumerations.
 # --------------------------------------------------------------------------------------------------
 
-# FIXME: I'd like to get rid of this class.
 class LookupEnum(enum.Enum):
     """
     Adds fast lookup of values.
@@ -57,14 +56,14 @@ class BuildingType(LookupEnum):
     """
     Building type. Don't forget to check the ignore list while adding any new types.
     """
-    castle = 1  # замок
+    town_hall = 1  # замок
     gold_mine = 2  # шахта
     treasury = 3  # казна
     mill = 4  # мельница
     granary = 5  # амбар
     barracks = 6  # казарма
     headquarters = 7  # штаб
-    builder_house = 8  # дом строителя
+    builder_hut = 8  # дом строителя
     forge = 9  # кузница
     tower = 10  # башня
     wall = 11  # стена
@@ -84,7 +83,7 @@ class BuildingType(LookupEnum):
     @classmethod
     def not_upgradable(cls):
         return {
-            cls.builder_house,
+            cls.builder_hut,
             cls.alchemist_house,
             cls.alliance_house,
             cls.jeweler_house,
@@ -196,6 +195,13 @@ class UnitType(LookupEnum):
         }
 
 
+class ArtifactType(LookupEnum):
+    """
+    Artifact types.
+    """
+    alliance_builder = 757
+
+
 class NoticeType(LookupEnum):
     """
     Epic War inbox notice type.
@@ -220,11 +226,12 @@ class Error(enum.Enum):
 # Named tuples used to store parsed API result.
 # --------------------------------------------------------------------------------------------------
 
-Alliance = collections.namedtuple("Alliance", "member_ids")
+Alliance = collections.namedtuple("Alliance", "members")
+AllianceMember = collections.namedtuple("AllianceMember", "id life_time_score")
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
 Cemetery = collections.namedtuple("Cemetery", "x y")
-SelfInfo = collections.namedtuple("SelfInfo", "caption resources research alliance cemetery")
+SelfInfo = collections.namedtuple("SelfInfo", "user_id caption resources research alliance cemetery")
 
 
 # Epic War API.
@@ -294,6 +301,7 @@ class EpicWar:
         """
         result = self.post("getSelfInfo")
         return SelfInfo(
+            user_id=result["user"]["id"],
             caption=result["user"]["villageCaption"],
             resources=self.parse_resource(result["user"]["resource"]),
             research={
@@ -302,7 +310,10 @@ class EpicWar:
                 if UnitType.has_value(unit["unitId"])
             },
             alliance=Alliance(
-                member_ids=[member["id"] for member in result["user"]["alliance"]["members"]],
+                members=[
+                    AllianceMember(id=member["id"], life_time_score=int(member["randomWarsScore"]["lifeTime"]))
+                    for member in result["user"]["alliance"]["members"]
+                ],
             ),
             cemetery=[Cemetery(x=cemetery["x"], y=cemetery["y"]) for cemetery in result["cemetery"]],
         )
@@ -446,6 +457,16 @@ class EpicWar:
         if "error" in result and result["error"]["name"] == Error.not_enough.value:
             return {}
         raise ValueError(result)
+
+    def get_artifacts(self) -> Set[ArtifactType]:
+        """
+        Gets enabled artifacts.
+        """
+        return {
+            ArtifactType(artifact["typeId"])
+            for artifact in self.post("artefactGetList")["artefact"]
+            if ArtifactType.has_value(artifact["typeId"]) and artifact["enabled"]
+        }
 
     @staticmethod
     def parse_resource(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
@@ -645,11 +666,14 @@ class Bot:
         BuildingType.sand_forge: 1,
         BuildingType.gold_mine: 2,
         BuildingType.mill: 3,
-        BuildingType.castle: 100,
+        BuildingType.town_hall: 100,
     }
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4800.0
     FULL_STORAGE = 0.9
+
+    # Taken from the library artifact #757.
+    ALLIANCE_BUILDER_SCORE = 500
 
     def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
         self.context = context
@@ -657,8 +681,8 @@ class Bot:
         self.library = library
         # Player info.
         self.self_info = None  # type: SelfInfo
-        # Incomplete buildings.
-        self.incomplete_buildings = []  # type: List[Building]
+        self.artifacts = []  # type: Set[ArtifactType]
+        self.alliance_membership = None  # type: AllianceMember
         # Actions performed by the bot.
         self.audit_log = []  # type: List[str]
 
@@ -668,6 +692,7 @@ class Bot:
         """
         self.update_self_info()
         logging.info("Welcome %s!", self.self_info.caption)
+        self.artifacts = self.epic_war.get_artifacts()
 
         # Collect some food.
         self.check_cemetery()
@@ -683,12 +708,12 @@ class Bot:
             key=lambda building: self.BUILDING_SORT_ORDER.get(building.type, 0),
         )
         building_levels = self.get_building_levels(buildings)
-        self.check_buildings(buildings, building_levels)
+        incomplete_buildings = self.check_buildings(buildings, building_levels)
         forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
         self.check_units(forge_id, building_levels)
 
         if self.context.telegram_enabled:
-            self.send_telegram_notification()
+            self.send_telegram_notification(incomplete_buildings)
         logging.info("Calls: %s.", ", ".join(self.epic_war.calls_made))
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
@@ -697,6 +722,8 @@ class Bot:
         Updates and prints self info.
         """
         self.self_info = self.epic_war.get_self_info()
+        self.alliance_membership = next(
+            member for member in self.self_info.alliance.members if member.id == self.self_info.user_id)
         self.log_resources()
 
     def check_cemetery(self):
@@ -708,12 +735,14 @@ class Bot:
             logging.info("Cemetery farmed: %s.", amount)
             self.audit_log.append("Collected \N{MEAT ON BONE} *%s*." % amount)
 
-    def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]):
+    def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]) -> List[Building]:
         """
         Checks all buildings and collects resources, performs upgrades and etc.
         """
-        logging.info("Checking %s buildings…", len(buildings))
-        self.incomplete_buildings = self.get_incomplete_buldings(buildings)
+        incomplete_buildings = self.get_incomplete_buldings(buildings)
+        builder_count = building_levels[BuildingType.builder_hut] + self.get_alliance_builder_count()
+        logging.info("Builder count: %s.", builder_count)
+
         stop_collection_from = set()
 
         for building in buildings:
@@ -743,9 +772,9 @@ class Bot:
             # Upgrade building.
             if (
                 # Builder is available.
-                len(self.incomplete_buildings) < building_levels[BuildingType.builder_house] and
+                len(incomplete_buildings) < builder_count and
                 # Castle is upgraded optionally.
-                (building.type != BuildingType.castle or self.context.with_castle) and
+                (building.type != BuildingType.town_hall or self.context.with_castle) and
                 # Building type is not ignored explicitly.
                 building.type not in BuildingType.not_upgradable() and
                 # Building is not in progress.
@@ -759,7 +788,7 @@ class Bot:
                     # Update resource info.
                     self.update_self_info()
                     # Update incomplete buildings count.
-                    self.incomplete_buildings = self.get_incomplete_buldings(self.epic_war.get_buildings())
+                    incomplete_buildings = self.get_incomplete_buldings(self.epic_war.get_buildings())
                     self.audit_log.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
@@ -770,6 +799,8 @@ class Bot:
                 clean_error = self.epic_war.destruct_building(building.id, False)
                 logging.info("Clean: %s.", clean_error.name)
                 self.audit_log.append("Clean territory.")
+
+        return incomplete_buildings
 
     def check_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
         """
@@ -833,8 +864,21 @@ class Bot:
             self.audit_log.append("Farmed \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
-            self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
+            self.epic_war.send_gift([member.id for member in self.self_info.alliance.members]).name,
         )
+
+    def get_alliance_builder_count(self) -> int:
+        """
+        Gets alliance builder count.
+        """
+        if (
+            ArtifactType.alliance_builder in self.artifacts and
+            self.alliance_membership.life_time_score >= self.ALLIANCE_BUILDER_SCORE
+        ):
+            # Hardcoded hack. It's much simple than re-writing boost and artifact managers.
+            return 1
+        else:
+            return 0
 
     @staticmethod
     def get_building_levels(buildings: List[Building]) -> Dict[BuildingType, int]:
@@ -882,19 +926,19 @@ class Bot:
             for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand)
         ))
 
-    def send_telegram_notification(self):
+    def send_telegram_notification(self, incomplete_buildings: List[Building]):
         """
         Sends summary Telegram notification.
         """
         logging.info("Sending Telegram notification…")
-        if self.incomplete_buildings:
+        if incomplete_buildings:
             # noinspection PyUnresolvedReferences
             construction = "\n".join(
                 "\N{CONSTRUCTION SIGN} *{}* by *{:%b %d %-H:%M}*".format(
                     building.type.name,
                     datetime.datetime.fromtimestamp(building.complete_time),
                 )
-                for building in self.incomplete_buildings
+                for building in incomplete_buildings
             )
         else:
             construction = "\N{CONSTRUCTION SIGN} *none*"
