@@ -802,11 +802,9 @@ class Bot:
 
         logging.info("%s buildings with alliance help.", len(building_ids))
         for building_id in building_ids:
-            logging.info(
-                "Farmed alliance help: %s.",
-                datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id))),
-            )
-            self.audit_log.append("Farmed *alliance help*.")
+            help_time = datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id)))
+            logging.info("Farmed alliance help: %s.", help_time)
+            self.audit_log.append("Farmed \N{two men holding hands} *%s*." % help_time)
 
     def check_alliance_daily_gift(self):
         """
@@ -832,7 +830,7 @@ class Bot:
         logging.info("%s gifts are waiting for you.", len(user_ids))
         for user_id in user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
-            self.audit_log.append("Farmed *gift*.")
+            self.audit_log.append("Farmed \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
