@@ -771,7 +771,7 @@ class Bot:
                 # Builder is available.
                 len(incomplete_buildings) < builder_count and
                 # Castle is upgraded optionally.
-                (building.type != BuildingType.town_hall or self.context.with_castle) and
+                (building.type != BuildingType.town_hall or self.context.with_town_hall) and
                 # Building type is not ignored explicitly.
                 building.type not in BuildingType.not_upgradable() and
                 # Building is not in progress.
@@ -792,10 +792,11 @@ class Bot:
             if building.type == BuildingType.territory and building.is_completed:
                 logging.info("Cleaning territory #%s…", building.id)
                 error = self.epic_war.destruct_building(building.id, False)
-                logging.info("Clean: %s.", error.name)
                 if error == Error.ok:
                     self.update_self_info()
                     self.audit_log.append("Clean territory.")
+                else:
+                    logging.error("Failed to clean territory.")
 
         return incomplete_buildings
 
@@ -947,7 +948,9 @@ class Bot:
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
             "{construction}\n"
-            "\N{clockwise downwards and upwards open circle arrows} *{requests}*\n"
+            "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
+            " \N{warning sign} *{log_counter[WARNING]}*"
+            " \N{cross mark} *{log_counter[ERROR]}*\n"
             "\n"
             "{audit_log}"
         ).format(
@@ -958,6 +961,7 @@ class Bot:
             sand=self.self_info.resources[ResourceType.sand],
             construction=construction,
             audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
+            log_counter=self.context.log_handler.counter,
         )
         requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
@@ -986,7 +990,20 @@ class StudentTRandomGenerator:
                 return x
 
 
-class ColorStreamHandler(logging.StreamHandler):
+class CountingStreamHandler(logging.StreamHandler):
+    """
+    Counts log messages by level.
+    """
+    def __init__(self, stream=None):
+        super().__init__(stream)
+        self.counter = collections.Counter()
+
+    def emit(self, record: logging.LogRecord):
+        self.counter[record.levelname] += 1
+        return super().emit(record)
+
+
+class ColoredCountingStreamHandler(CountingStreamHandler):
     """
     Colored logging stream handler.
     """
@@ -1008,10 +1025,11 @@ class ColorStreamHandler(logging.StreamHandler):
 class ContextObject:
     user_id = None  # type: str
     remixsid = None  # type: str
+    with_town_hall = False  # type: bool
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: Optional[str]
     telegram_chat_id = None  # type: Optional[str]
-    with_castle = False  # type: bool
+    log_handler = None  # type: CountingStreamHandler
 
 
 # Script commands.
@@ -1033,9 +1051,9 @@ def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_fil
     obj.telegram_chat_id = os.environ.get("EPIC_WAR_TELEGRAM_CHAT_ID")
     obj.telegram_enabled = bool(obj.telegram_token and obj.telegram_chat_id)
 
-    handler = (
-        ColorStreamHandler(click.get_text_stream("stderr"))
-        if not log_file else logging.StreamHandler(log_file)
+    obj.log_handler = handler = (
+        ColoredCountingStreamHandler(click.get_text_stream("stderr"))
+        if not log_file else CountingStreamHandler(log_file)
     )
     handler.setFormatter(logging.Formatter(
         fmt="%(asctime)s [%(levelname).1s] %(message)s",
@@ -1051,14 +1069,14 @@ def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_fil
 
 
 @main.command()
-@click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
+@click.option("--with-town-hall", help="Enable town hall upgrades.", is_flag=True)
 @click.pass_obj
-def step(obj: ContextObject, with_castle: bool):
+def step(obj: ContextObject, with_town_hall: bool):
     """
     Perform a step.
     """
     try:
-        obj.with_castle = with_castle
+        obj.with_town_hall = with_town_hall
         library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
         random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.user_id, obj.remixsid, random_generator)) as epic_war:
