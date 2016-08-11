@@ -669,6 +669,8 @@ class Bot:
 
     # Taken from the library artifact #757.
     ALLIANCE_BUILDER_SCORE = 500
+    # Taken from game UI.
+    ALLIANCE_DAILY_GIFT_SCORE = 500
 
     def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
         self.context = context
@@ -685,8 +687,15 @@ class Bot:
         """
         Makes one step.
         """
+        # Get player info.
         self.update_self_info()
         logging.info("Welcome %s!", self.self_info.caption)
+        self.alliance_membership = next(
+            member
+            for member in self.self_info.alliance.members
+            if member.id == self.self_info.user_id
+        )
+        logging.info("Life time score: %s.", self.alliance_membership.life_time_score)
         self.artifacts = self.epic_war.get_artifacts()
 
         # Collect some food.
@@ -717,8 +726,6 @@ class Bot:
         Updates and prints self info.
         """
         self.self_info = self.epic_war.get_self_info()
-        self.alliance_membership = next(
-            member for member in self.self_info.alliance.members if member.id == self.self_info.user_id)
         self.log_resources()
 
     def check_cemetery(self):
@@ -842,6 +849,10 @@ class Bot:
         """
         logging.info("Activating alliance daily gift…")
         self.epic_war.click_alliance_daily_gift()
+
+        if self.alliance_membership.life_time_score < self.ALLIANCE_DAILY_GIFT_SCORE:
+            logging.info("Not enough score to collect alliance daily gift.")
+            return
 
         logging.info("Collecting alliance daily gift…")
         notices = self.epic_war.get_notices()
