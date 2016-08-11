@@ -2,7 +2,19 @@
 # coding: utf-8
 
 """
-Epic War bot.
+Epic War bot. Features:
+
+* Upgrades buildings.
+* Upgrades units.
+* Collects resources from production buildings.
+* Sends mana to alliance members.
+* Collects mana.
+* Sends help to alliance members.
+* Asks alliance members for help.
+* Collects help from alliance members.
+* Activates alliance daily gift.
+* Collects alliance daily gift.
+* Simulates user behavior by making random delays between requests.
 """
 
 import collections
@@ -27,6 +39,10 @@ import click
 import requests
 
 
+# Enumerations.
+# --------------------------------------------------------------------------------------------------
+
+# FIXME: I'd like to get rid of this class.
 class LookupEnum(enum.Enum):
     """
     Adds fast lookup of values.
@@ -201,12 +217,18 @@ class Error(enum.Enum):
     not_enough = r"error\NotEnough"  # not enough… score?
 
 
+# Named tuples used to store parsed API result.
+# --------------------------------------------------------------------------------------------------
+
 Alliance = collections.namedtuple("Alliance", "member_ids")
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
 Cemetery = collections.namedtuple("Cemetery", "x y")
 SelfInfo = collections.namedtuple("SelfInfo", "caption resources research alliance cemetery")
 
+
+# Epic War API.
+# --------------------------------------------------------------------------------------------------
 
 class EpicWar:
     """
@@ -525,9 +547,12 @@ class EpicWar:
         self.session.close()
 
 
+# Epic War entities library.
+# --------------------------------------------------------------------------------------------------
+
 class Library:
     """
-    In-game library.
+    Game entities library. Used to track upgrade requirements and building production.
     """
     @staticmethod
     def load(path: str) -> "Library":
@@ -603,6 +628,9 @@ class Library:
                     continue
                 self.requirements[(type_, unit_level["level"])][resource_type] = resource["amount"]
 
+
+# Bot implementation.
+# --------------------------------------------------------------------------------------------------
 
 class Bot:
     """
@@ -854,6 +882,9 @@ class Bot:
         ))
 
 
+# Utilities.
+# --------------------------------------------------------------------------------------------------
+
 class StudentTRandomGenerator:
     """
     Random number generator based on Student's t-distribution.
@@ -894,6 +925,9 @@ class ColorStreamHandler(logging.StreamHandler):
 class ContextObject:
     remixsid = None  # type: str
 
+
+# Script commands.
+# --------------------------------------------------------------------------------------------------
 
 @click.group()
 @click.option("-v", "--verbose", help="Log debug info.", is_flag=True)
@@ -955,6 +989,9 @@ def call(obj: ContextObject, name: str, args: str):
         else:
             print(json.dumps(epic_war.post(name, **kwargs), indent=2))
 
+
+# Entry point.
+# --------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     main(obj=ContextObject())
