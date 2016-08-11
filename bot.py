@@ -298,7 +298,7 @@ class EpicWar:
         return SelfInfo(
             user_id=result["user"]["id"],
             caption=result["user"]["villageCaption"],
-            resources=self.parse_resource(result["user"]["resource"]),
+            resources=self.parse_resources(result["user"]["resource"]),
             research={
                 UnitType(unit["unitId"]): unit["level"]
                 for unit in result["user"]["research"]
@@ -464,7 +464,7 @@ class EpicWar:
         }
 
     @staticmethod
-    def parse_resource(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
+    def parse_resources(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
         Helper method to parse a resource collection method result.
         """
@@ -478,7 +478,7 @@ class EpicWar:
         """
         Helper method to parse a reward.
         """
-        return self.parse_resource(reward["resource"]) if reward else {}
+        return self.parse_resources(reward["resource"]) if reward else {}
 
     @staticmethod
     def parse_error(result: Union[bool, dict]) -> Error:
@@ -727,6 +727,7 @@ class Bot:
         """
         if self.self_info.cemetery:
             amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
+            self.update_self_info()
             logging.info("Cemetery farmed: %s.", amount)
             self.audit_log.append("Collected \N{MEAT ON BONE} *%s*." % amount)
 
@@ -758,6 +759,7 @@ class Bot:
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
+                        self.update_self_info()
                         self.audit_log.append("Collected *{}* {}.".format(amount, resource_type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
@@ -780,9 +782,7 @@ class Bot:
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
                 error = self.epic_war.upgrade_building(building.id)
                 if error == Error.ok:
-                    # Update resource info.
                     self.update_self_info()
-                    # Update incomplete buildings count.
                     incomplete_buildings = self.get_incomplete_buldings(self.epic_war.get_buildings())
                     self.audit_log.append("Upgrade *{}*.".format(building.type.name))
                 else:
@@ -791,9 +791,11 @@ class Bot:
             # Clean territory.
             if building.type == BuildingType.territory and building.is_completed:
                 logging.info("Cleaning territory #%s…", building.id)
-                clean_error = self.epic_war.destruct_building(building.id, False)
-                logging.info("Clean: %s.", clean_error.name)
-                self.audit_log.append("Clean territory.")
+                error = self.epic_war.destruct_building(building.id, False)
+                logging.info("Clean: %s.", error.name)
+                if error == Error.ok:
+                    self.update_self_info()
+                    self.audit_log.append("Clean territory.")
 
         return incomplete_buildings
 
@@ -812,6 +814,7 @@ class Bot:
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
             error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
             if error == Error.ok:
+                self.update_self_info()
                 self.audit_log.append("Upgrade *{}*.".format(unit_type.name))
                 # One research per time and we've just started a one.
                 break
