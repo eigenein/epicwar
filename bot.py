@@ -24,7 +24,6 @@ import datetime
 import enum
 import gzip
 import hashlib
-import itertools
 import json
 import logging
 import os
@@ -889,6 +888,7 @@ class Bot:
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
+            "\n"
             "*{incomplete}* incomplete buildings.\n"
             "*{requests}* requests.\n"
             "\n"
