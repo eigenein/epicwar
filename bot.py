@@ -645,6 +645,7 @@ class Bot:
         BuildingType.sand_forge: 1,
         BuildingType.gold_mine: 2,
         BuildingType.mill: 3,
+        BuildingType.castle: 100,
     }
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4800.0
@@ -743,8 +744,8 @@ class Bot:
             if (
                 # Builder is available.
                 len(self.incomplete_buildings) < building_levels[BuildingType.builder_house] and
-                # Castle is upgraded only manually.
-                building.type != BuildingType.castle and
+                # Castle is upgraded optionally.
+                (building.type != BuildingType.castle or self.context.with_castle) and
                 # Building type is not ignored explicitly.
                 building.type not in BuildingType.not_upgradable() and
                 # Building is not in progress.
@@ -960,6 +961,7 @@ class ContextObject:
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: Optional[str]
     telegram_chat_id = None  # type: Optional[str]
+    with_castle = False  # type: bool
 
 
 # Script commands.
@@ -997,12 +999,14 @@ def main(obj: ContextObject, verbose: True, remixsid: str, log_file: typing.io.T
 
 
 @main.command()
+@click.option("--with-castle", help="Enable castle upgrade.", is_flag=True)
 @click.pass_obj
-def step(obj: ContextObject):
+def step(obj: ContextObject, with_castle: bool):
     """
     Perform a step.
     """
     try:
+        obj.with_castle = with_castle
         library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
         random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.remixsid, random_generator)) as epic_war:
