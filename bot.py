@@ -617,7 +617,7 @@ class Bot:
         BuildingType.mill: 3,
     }
     # Don't collect resource too often. Specifies waiting time in seconds.
-    PRODUCTION_TIME = 3600.0
+    PRODUCTION_TIME = 4800.0
 
     def __init__(self, epic_war: EpicWar, library: Library):
         self.epic_war = epic_war
