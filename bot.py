@@ -888,9 +888,8 @@ class Bot:
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
-            "\n"
-            "*{incomplete}* incomplete buildings.\n"
-            "*{requests}* requests.\n"
+            "\N{CONSTRUCTION SIGN} *{incomplete}*\n"
+            "\N{clockwise downwards and upwards open circle arrows} *{requests}*\n"
             "\n"
             "{audit_log}"
         ).format(
