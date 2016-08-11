@@ -888,19 +888,23 @@ class Bot:
         """
         logging.info("Sending Telegram notification…")
         if self.incomplete_buildings:
-            construction = ", ".join(
-                "*{}* by *{:%b %d %-H:%M}*".format(building.type.name, datetime.datetime.fromtimestamp(building.complete_time))
+            # noinspection PyUnresolvedReferences
+            construction = "\n".join(
+                "\N{CONSTRUCTION SIGN} *{}* by *{:%b %d %-H:%M}*".format(
+                    building.type.name,
+                    datetime.datetime.fromtimestamp(building.complete_time),
+                )
                 for building in self.incomplete_buildings
             )
         else:
-            construction = "*none*"
+            construction = "\N{CONSTRUCTION SIGN} *none*"
         text = (
             "\N{HOUSE BUILDING} *{self_info.caption}*\n"
             "\n"
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
-            "\N{CONSTRUCTION SIGN} {construction}\n"
+            "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*\n"
             "\n"
             "{audit_log}"
