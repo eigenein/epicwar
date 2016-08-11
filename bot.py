@@ -689,7 +689,7 @@ class Bot:
             for line, grouper in itertools.groupby(self.audit_log)
         )
         logging.info("Actions: %s.", actions or "nothing")
-        self.print_resources()
+        self.log_resources()
         logging.info("%s buildings are incomplete.", self.incomplete_count)
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
@@ -698,7 +698,7 @@ class Bot:
         Updates and prints self info.
         """
         self.self_info = self.epic_war.get_self_info()
-        self.print_resources()
+        self.log_resources()
 
     def check_cemetery(self):
         """
@@ -872,7 +872,7 @@ class Bot:
     def get_incomplete_count(buildings: Iterable[Building]) -> int:
         return sum(not building.is_completed for building in buildings)
 
-    def print_resources(self):
+    def log_resources(self):
         """
         Prints last known resource amounts.
         """
