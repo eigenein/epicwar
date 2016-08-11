@@ -76,6 +76,10 @@ class BuildingType(LookupEnum):
             cls.territory,
         }
 
+    @classmethod
+    def production(cls):
+        return {cls.gold_mine, cls.mill, cls.sand_quarry}
+
 
 class ResourceType(LookupEnum):
     gold = 1  # золото
@@ -532,6 +536,7 @@ class Library:
 
     def __init__(self, library: Dict):
         self.requirements = collections.defaultdict(dict)
+        self.full_time = {}
         # Process buildings.
         for building_level in library["buildingLevel"]:
             if building_level["cost"].get("starmoney", 0) != 0:
@@ -542,14 +547,17 @@ class Library:
             except ValueError:
                 type_ = None
             level = building_level["level"]
-            # Process cost.
             if type_:
+                # Process build or upgrade cost.
                 for resource in building_level["cost"].get("resource", []):
                     try:
                         resource_type = ResourceType(resource["id"])
                     except ValueError:
                         continue
-                    self.requirements[(type_, level)][resource_type] = resource["amount"]
+                    self.requirements[type_, level][resource_type] = resource["amount"]
+                # Process resource production.
+                if type_ in BuildingType.production():
+                    self.full_time[type_, level] = building_level["production"]["resource"]["fullTime"]
             if "unlock" not in building_level:
                 continue
             # Process dependent buildings.
@@ -561,11 +569,11 @@ class Library:
                 assert type_
                 for unlocked_level in range(1, unlock["maxLevel"] + 1):
                     try:
-                        existing_level = self.requirements[(unlocked_type, unlocked_level)][type_]
+                        existing_level = self.requirements[unlocked_type, unlocked_level][type_]
                     except KeyError:
-                        self.requirements[(unlocked_type, unlocked_level)][type_] = level
+                        self.requirements[unlocked_type, unlocked_level][type_] = level
                     else:
-                        self.requirements[(unlocked_type, unlocked_level)][type_] = min(level, existing_level)
+                        self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
             # Process dependent units.
             for unlock in building_level["unlock"].get("unit", []):
                 try:
@@ -575,12 +583,12 @@ class Library:
                 assert type_
                 for unlocked_level in range(1, unlock["maxLevel"] + 1):
                     try:
-                        existing_level = self.requirements[(unlocked_type, unlocked_level)][type_]
+                        existing_level = self.requirements[unlocked_type, unlocked_level][type_]
                     except KeyError:
-                        self.requirements[(unlocked_type, unlocked_level)][type_] = level
+                        self.requirements[unlocked_type, unlocked_level][type_] = level
                     else:
-                        self.requirements[(unlocked_type, unlocked_level)][type_] = min(level, existing_level)
-        # Process units.
+                        self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
+        # Process unit research cost.
         for unit_level in library["unitLevel"]:
             try:
                 type_ = UnitType(unit_level["unitId"])
@@ -608,8 +616,8 @@ class Bot:
         BuildingType.gold_mine: 2,
         BuildingType.mill: 3,
     }
-    # Don't collect resource from poorly filled building to make less requests.
-    MIN_STORAGE_FILL = 0.25
+    # Don't collect resource too often. Specifies waiting time in seconds.
+    PRODUCTION_TIME = 3600.0
 
     def __init__(self, epic_war: EpicWar, library: Library):
         self.epic_war = epic_war
@@ -684,9 +692,12 @@ class Bot:
         for building in buildings:
             # Collect resources.
             if (
-                building.type in {BuildingType.gold_mine, BuildingType.mill, BuildingType.sand_quarry} and
-                building.storage_fill > self.MIN_STORAGE_FILL and
-                building.type not in stop_collection_from
+                # Production building.
+                building.type in BuildingType.production() and
+                # Makes sense to collect from it.
+                building.type not in stop_collection_from and
+                # It has not been clicked recently.
+                building.storage_fill * self.library.full_time[building.type, building.level] > self.PRODUCTION_TIME
             ):
                 logging.debug("Collecting resources from %s…", building)
                 resources = self.epic_war.collect_resource(building.id)
