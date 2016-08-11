@@ -900,7 +900,12 @@ class Bot:
             levels[building.type] = max(levels[building.type], building.level)
         return levels
 
-    def can_upgrade(self, entity_type: Union[BuildingType, UnitType], level: int, building_levels: Dict[BuildingType, int]) -> bool:
+    def can_upgrade(
+        self,
+        entity_type: Union[BuildingType, UnitType],
+        level: int,
+        building_levels: Dict[BuildingType, int],
+    ) -> bool:
         """
         Determines if all requirements are met to upgrade a building or a unit.
         """
