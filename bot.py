@@ -646,6 +646,7 @@ class Bot:
     }
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4800.0
+    FULL_STORAGE = 0.9
 
     def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
         self.context = context
@@ -717,9 +718,12 @@ class Bot:
                 # Production building.
                 building.type in BuildingType.production() and
                 # Makes sense to collect from it.
-                building.type not in stop_collection_from and
-                # It has not been clicked recently.
-                building.storage_fill * self.library.full_time[building.type, building.level] > self.PRODUCTION_TIME
+                building.type not in stop_collection_from and (
+                    # It's quite full.
+                    building.storage_fill > self.FULL_STORAGE or
+                    # It has not been clicked recently.
+                    building.storage_fill * self.library.full_time[building.type, building.level] > self.PRODUCTION_TIME
+                )
             ):
                 logging.debug("Collecting resources from %s…", building)
                 resources = self.epic_war.collect_resource(building.id)
