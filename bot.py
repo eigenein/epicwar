@@ -889,7 +889,7 @@ class Bot:
         logging.info("Sending Telegram notification…")
         if self.incomplete_buildings:
             construction = ", ".join(
-                "*{}* by *{}*".format(building.type.name, datetime.datetime.fromtimestamp(building.complete_time))
+                "*{}* by *{:%b %d %-H:%M}*".format(building.type.name, datetime.datetime.fromtimestamp(building.complete_time))
                 for building in self.incomplete_buildings
             )
         else:
