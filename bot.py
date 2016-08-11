@@ -867,7 +867,7 @@ class Bot:
     def get_incomplete_buldings(buildings: Iterable[Building]) -> List[Building]:
         incomplete_buildings = [building for building in buildings if not building.is_completed]
         if incomplete_buildings:
-            logging.info("Incomplete: %s.", ", ".join(building.type for building in incomplete_buildings))
+            logging.info("Incomplete: %s.", ", ".join(building.type.name for building in incomplete_buildings))
         else:
             logging.info("All buildings are completed.")
         return incomplete_buildings
