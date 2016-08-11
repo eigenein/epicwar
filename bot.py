@@ -795,9 +795,6 @@ class Bot:
         """
         Asks, sends and farms alliance help.
         """
-        logging.info("Asking alliance for help…")
-        self.epic_war.ask_alliance_help()
-
         logging.info("Sending help to your alliance…")
         self.epic_war.send_alliance_help()
         building_ids = self.epic_war.get_my_alliance_helpers()
