@@ -702,7 +702,7 @@ class Bot:
         if self.self_info.cemetery:
             amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
             logging.info("Cemetery farmed: %s.", amount)
-            self.audit_log.append("collected {} cemetery".format(amount))
+            self.audit_log.append("Collected \N{{MEAT ON BONE}} *{}*.".format(amount))
 
     def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]):
         """
@@ -727,7 +727,7 @@ class Bot:
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
-                        self.audit_log.append("collected {} {}".format(amount, resource_type.name))
+                        self.audit_log.append("Collected *{}* {}.".format(amount, resource_type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
                         logging.warning("Stopping collection from %s.", building.type.name)
@@ -754,7 +754,7 @@ class Bot:
                     # Update incomplete buildings count.
                     self.incomplete_count = self.get_incomplete_count(self.epic_war.get_buildings())
                     logging.info("%s buildings are incomplete.", self.incomplete_count)
-                    self.audit_log.append("upgrade {}".format(building.type.name))
+                    self.audit_log.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
@@ -763,7 +763,7 @@ class Bot:
                 logging.info("Cleaning territory #%s…", building.id)
                 clean_error = self.epic_war.destruct_building(building.id, False)
                 logging.info("Clean: %s.", clean_error.name)
-                self.audit_log.append("clean territory")
+                self.audit_log.append("Clean territory.")
 
     def check_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
         """
@@ -780,7 +780,7 @@ class Bot:
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
             error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
             if error == Error.ok:
-                self.audit_log.append("upgrade {}".format(unit_type.name))
+                self.audit_log.append("Upgrade *{}*.".format(unit_type.name))
                 # One research per time and we've just started a one.
                 break
             else:
@@ -803,7 +803,7 @@ class Bot:
                 "Farmed alliance help: %s.",
                 datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id))),
             )
-            self.audit_log.append("farmed alliance help")
+            self.audit_log.append("Farmed *alliance help*.")
 
     def check_alliance_daily_gift(self):
         """
@@ -819,7 +819,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("collected {} {}".format(amount, reward_type.name))
+                self.audit_log.append("Collected *{}* {}.".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -829,7 +829,7 @@ class Bot:
         logging.info("%s gifts are waiting for you.", len(user_ids))
         for user_id in user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
-            self.audit_log.append("farmed gift")
+            self.audit_log.append("Farmed *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift(self.self_info.alliance.member_ids).name,
@@ -884,9 +884,11 @@ class Bot:
         """
         logging.info("Sending Telegram notification…")
         text = (
-            "\N{HOUSE} *{self_info.caption}*\n"
+            "\N{HOUSE BUILDING} *{self_info.caption}*\n"
             "\n"
-            "*{gold}* \N{MONEY BAG} *{food}* \N{HAMBURGER} *{sand}* \N{SPARKLES}\n"
+            "\N{MONEY BAG} *{gold}*\n"
+            "\N{HAMBURGER} *{food}*\n"
+            "\N{SPARKLES} *{sand}*\n"
             "*{incomplete}* incomplete buildings.\n"
             "*{requests}* requests.\n"
             "\n"
@@ -898,7 +900,7 @@ class Bot:
             gold=self.self_info.resources[ResourceType.gold],
             sand=self.self_info.resources[ResourceType.sand],
             incomplete=self.incomplete_count,
-            audit_log=self.audit_log,
+            audit_log="\n".join(self.audit_log),
         )
         requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
