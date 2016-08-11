@@ -887,7 +887,7 @@ class Bot:
         """
         logging.info("Sending Telegram notification…")
         if self.incomplete_buildings:
-            construction = ", ".join("*{.type}*".format(building) for building in self.incomplete_buildings)
+            construction = ", ".join("*{.type.name}*".format(building) for building in self.incomplete_buildings)
         else:
             construction = "none"
         text = (
@@ -896,7 +896,7 @@ class Bot:
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
-            "\N{CONSTRUCTION SIGN} *{construction}*\n"
+            "\N{CONSTRUCTION SIGN} {construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*\n"
             "\n"
             "{audit_log}"
