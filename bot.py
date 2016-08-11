@@ -884,9 +884,9 @@ class Bot:
         """
         logging.info("Sending Telegram notification…")
         text = (
-            "\u1F3E0 *{self_info.caption}*\n"
-            "Resources: *{gold}* \u1F4B0 *{food}* \u1F354 *{sand}* \u2728\n"
-            "\u2714 *{requests}* requests."
+            "\N{HOUSE} *{self_info.caption}*\n"
+            "Resources: *{gold}* \N{MONEY BAG} *{food}* \N{HAMBURGER} *{sand}* \N{SPARKLES}\n"
+            "*{requests}* requests."
         ).format(
             self_info=self.self_info,
             requests=self.epic_war.request_id,
