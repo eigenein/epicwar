@@ -999,7 +999,7 @@ def main(obj: ContextObject, verbose: True, remixsid: str, log_file: typing.io.T
 
 
 @main.command()
-@click.option("--with-castle", help="Enable castle upgrade.", is_flag=True)
+@click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
 @click.pass_obj
 def step(obj: ContextObject, with_castle: bool):
     """
