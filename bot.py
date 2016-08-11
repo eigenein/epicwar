@@ -243,15 +243,16 @@ class EpicWar:
     """
     HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:47.0) Gecko/20100101 Firefox/47.0"}
 
-    def __init__(self, remixsid: str, random_generator=None):
+    def __init__(self, user_id: str, remixsid: str, random_generator=None):
+        self.user_id = user_id
         self.random_generator = random_generator
-        self.cookies = {"remixsid": remixsid}
-        # Authentication parameters.
-        self.user_id = None
+
         self.auth_token = None
-        # Session state.
+        self.cookies = {"remixsid": remixsid}
+
         self.session = requests.Session()
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
+
         self.request_id = 0
         self.calls_made = []
 
@@ -263,12 +264,6 @@ class EpicWar:
 
         Then, Epic War generates its own authentication token.
         """
-        logging.info("Loading VK.com to obtain the user ID…")
-        profile_page = self.session.get("https://vk.com", cookies=self.cookies, timeout=15, headers=self.HEADERS).text
-        match = re.search(r"id:\s?(\d+)", profile_page)
-        if not match:
-            raise ValueError("user ID not found")
-        self.user_id = match.group(1)
         logging.info("User ID: %s.", self.user_id)
 
         logging.info("Loading game page on VK.com…")
@@ -1008,6 +1003,7 @@ class ColorStreamHandler(logging.StreamHandler):
 
 
 class ContextObject:
+    user_id = None  # type: str
     remixsid = None  # type: str
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: Optional[str]
@@ -1020,13 +1016,15 @@ class ContextObject:
 
 @click.group()
 @click.option("-v", "--verbose", help="Log debug info.", is_flag=True)
+@click.option("-i", "--user-id", help="VK.com user ID.", required=True)
 @click.option("-c", "--remixsid", help="VK.com remixsid cookie.", required=True)
 @click.option("-l", "--log-file", help="Log file.", type=click.File("at", encoding="utf-8"))
 @click.pass_obj
-def main(obj: ContextObject, verbose: True, remixsid: str, log_file: typing.io.TextIO):
+def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_file: typing.io.TextIO):
     """
     Epic War bot.
     """
+    obj.user_id = user_id
     obj.remixsid = remixsid
     obj.telegram_token = os.environ.get("EPIC_WAR_TELEGRAM_TOKEN")
     obj.telegram_chat_id = os.environ.get("EPIC_WAR_TELEGRAM_CHAT_ID")
@@ -1060,7 +1058,7 @@ def step(obj: ContextObject, with_castle: bool):
         obj.with_castle = with_castle
         library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
         random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
-        with contextlib.closing(EpicWar(obj.remixsid, random_generator)) as epic_war:
+        with contextlib.closing(EpicWar(obj.user_id, obj.remixsid, random_generator)) as epic_war:
             epic_war.authenticate()
             Bot(obj, epic_war, library).step()
     except Exception as ex:
@@ -1077,7 +1075,7 @@ def call(obj: ContextObject, name: str, args: str):
     """
     Make API call.
     """
-    with contextlib.closing(EpicWar(obj.remixsid)) as epic_war:
+    with contextlib.closing(EpicWar(obj.user_id, obj.remixsid)) as epic_war:
         epic_war.authenticate()
         try:
             kwargs = json.loads(args) if args else {}
