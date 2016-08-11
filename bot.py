@@ -246,6 +246,7 @@ class EpicWar:
         self.session = requests.Session()
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
         self.request_id = 0
+        self.calls_made = []
 
     def authenticate(self):
         """
@@ -484,6 +485,7 @@ class EpicWar:
         if not self.auth_token:
             raise ValueError("not authenticated")
         self.request_id += 1
+        self.calls_made.append(name)
         logging.debug("#%s %s(%s)", self.request_id, name, args)
         data = json.dumps({"session": None, "calls": [{"ident": "group_0_body", "name": name, "args": args}]})
         headers = {
@@ -686,6 +688,7 @@ class Bot:
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
+        logging.info("Calls: %s.", ", ".join(self.epic_war.calls_made))
         logging.info("Made %s requests. Bye!", self.epic_war.request_id)
 
     def update_self_info(self):
