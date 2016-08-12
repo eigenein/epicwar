@@ -709,7 +709,7 @@ class Bot:
         # Check buildings and units.
         buildings = sorted(
             self.epic_war.get_buildings(),
-            key=lambda building: self.BUILDING_SORT_ORDER.get(building.type, 0),
+            key=(lambda building: (self.BUILDING_SORT_ORDER.get(building.type, 0), building.level)),
         )
         building_levels = self.get_building_levels(buildings)
         incomplete_buildings = self.check_buildings(buildings, building_levels)
