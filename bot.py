@@ -965,9 +965,9 @@ class Bot:
             "\N{SPARKLES} *{sand}*\n"
             "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
+            " \N{clock face one oclock} *{execution_time}*s\n"
             " \N{warning sign} *{log_counter[WARNING]}*"
             " \N{cross mark} *{log_counter[ERROR]}*"
-            " \N{clock face one oclock} *{execution_time}*s\n"
             "\n"
             "{audit_log}"
         ).format(
