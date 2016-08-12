@@ -981,10 +981,12 @@ class Bot:
             log_counter=self.context.log_handler.counter,
             execution_time=int(time.time() - self.context.start_time),
         )
-        requests.get(
+        result = requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
             params={"chat_id": self.context.telegram_chat_id, "text": text, "parse_mode": "markdown"},
-        )
+        ).json()
+        if not result["ok"]:
+            logging.error("Telegram API error: \"%s\".", result["description"])
 
 
 # Utilities.
