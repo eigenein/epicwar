@@ -657,11 +657,13 @@ class Bot:
 
     # Traverse buildings in the following order. Less is earlier, zero by default.
     BUILDING_SORT_ORDER = {
-        BuildingType.wall: -1,
-        BuildingType.sand_forge: 1,
-        BuildingType.gold_mine: 2,
-        BuildingType.mill: 3,
-        BuildingType.town_hall: 100,
+        BuildingType.wall: -100,
+        BuildingType.forge: -99,
+        BuildingType.headquarters: -98,
+        BuildingType.sand_forge: +97,
+        BuildingType.gold_mine: +98,
+        BuildingType.mill: +99,
+        BuildingType.town_hall: +100,
     }
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4800.0
