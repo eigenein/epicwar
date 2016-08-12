@@ -741,7 +741,7 @@ class Bot:
         stop_collection_from = set()
 
         for building in buildings:
-            logging.info("Check: %s.", building)
+            logging.debug("Check: %s.", building)
             # Collect resources.
             if (
                 # Production building.
