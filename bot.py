@@ -84,7 +84,6 @@ class BuildingType(LookupEnum):
     def not_upgradable(cls):
         return {
             cls.builder_hut,
-            cls.alchemist_house,
             cls.alliance_house,
             cls.jeweler_house,
             cls.tavern,
