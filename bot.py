@@ -660,6 +660,7 @@ class Bot:
         BuildingType.wall: -100,
         BuildingType.forge: -99,
         BuildingType.headquarters: -98,
+        BuildingType.storm_spire: +10,
         BuildingType.sand_forge: +97,
         BuildingType.gold_mine: +98,
         BuildingType.mill: +99,
