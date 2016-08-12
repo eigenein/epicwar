@@ -900,7 +900,7 @@ class Bot:
         """
         return (
             # Upgrade pricey buildings first to spend as much sand as we can until it's stolen.
-            -self.library.requirements.get((building.type, building.level + 1)).get(ResourceType.sand, 0),
+            -self.library.requirements.get((building.type, building.level + 1), {}).get(ResourceType.sand, 0),
             # Otherwise, upgrade fast buildings first to upgrade as much buildings as we can.
             self.library.construction_time.get((building.type, building.level + 1), 0),
             # Otherwise, just start with low levels.
