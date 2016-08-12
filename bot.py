@@ -33,7 +33,7 @@ import string
 import time
 import typing
 
-from typing import Dict, Iterable, List, Optional, Set, Union
+from typing import Dict, Iterable, List, Optional, Set, Tuple, Union
 
 import click
 import requests
@@ -579,7 +579,8 @@ class Library:
 
     def __init__(self, library: Dict):
         self.requirements = collections.defaultdict(dict)
-        self.full_time = {}
+        self.full_time = {}  # type: Dict[Tuple[BuildingType, int], int]
+        self.construction_time = {}  # type: Dict[Tuple[BuildingType, int], int]
         # Process buildings.
         for building_level in library["buildingLevel"]:
             if building_level["cost"].get("starmoney", 0) != 0:
@@ -591,6 +592,8 @@ class Library:
                 type_ = None
             level = building_level["level"]
             if type_:
+                # Remember construction time.
+                self.construction_time[type_, level] = building_level["constructionTime"]
                 # Process build or upgrade cost.
                 for resource in building_level["cost"].get("resource", []):
                     try:
@@ -655,17 +658,6 @@ class Bot:
     Epic War bot.
     """
 
-    # Traverse buildings in the following order. Less is earlier, zero by default.
-    BUILDING_SORT_ORDER = {
-        BuildingType.wall: -100,
-        BuildingType.forge: -99,
-        BuildingType.headquarters: -98,
-        BuildingType.storm_spire: +10,
-        BuildingType.sand_forge: +97,
-        BuildingType.gold_mine: +98,
-        BuildingType.mill: +99,
-        BuildingType.town_hall: +100,
-    }
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4800.0
     FULL_STORAGE = 0.9
@@ -710,10 +702,7 @@ class Bot:
         self.check_gifts()
 
         # Check buildings and units.
-        buildings = sorted(
-            self.epic_war.get_buildings(),
-            key=(lambda building: (self.BUILDING_SORT_ORDER.get(building.type, 0), building.level)),
-        )
+        buildings = sorted(self.epic_war.get_buildings(), key=self.get_building_sorting_key)
         building_levels = self.get_building_levels(buildings)
         incomplete_buildings = self.check_buildings(buildings, building_levels)
         forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
@@ -752,6 +741,7 @@ class Bot:
         stop_collection_from = set()
 
         for building in buildings:
+            logging.info("Check: %s.", building)
             # Collect resources.
             if (
                 # Production building.
@@ -902,6 +892,20 @@ class Bot:
         for building in buildings:
             levels[building.type] = max(levels[building.type], building.level)
         return levels
+
+    def get_building_sorting_key(self, building: Building) -> Tuple:
+        """
+        Gets the sorting key for the building.
+        It's used to define the building traverse order when upgrading.
+        """
+        return (
+            # Upgrade pricey buildings first to spend as much sand as we can until it's stolen.
+            -self.library.requirements.get((building.type, building.level + 1)).get(ResourceType.sand, 0),
+            # Otherwise, upgrade fast buildings first to upgrade as much buildings as we can.
+            self.library.construction_time.get((building.type, building.level + 1), 0),
+            # Otherwise, just start with low levels.
+            building.level,
+        )
 
     def can_upgrade(
         self,
