@@ -56,27 +56,53 @@ class BuildingType(LookupEnum):
     """
     Building type. Don't forget to check the ignore list while adding any new types.
     """
-    town_hall = 1  # замок
-    gold_mine = 2  # шахта
+    castle = 1  # замок
+    mine = 2  # шахта
     treasury = 3  # казна
     mill = 4  # мельница
-    granary = 5  # амбар
+    barn = 5  # амбар
     barracks = 6  # казарма
-    headquarters = 7  # штаб
+    staff = 7  # штаб
     builder_hut = 8  # дом строителя
     forge = 9  # кузница
-    tower = 10  # башня
+    ballista = 10  # башня
     wall = 11  # стена
     archer_tower = 12  # башня лучников
-    gun = 13  # пушка
-    storm_spire = 14  # штормовой шпиль
-    ziggurat = 15  # зиккурат
-    alliance_house = 17  # дом братства
+    cannon = 13  # пушка
+    thunder_tower = 14  # штормовой шпиль
+    ice_tower = 15  # зиккурат
+    fire_tower = 16  # башня огня
+    clan_house = 17  # дом братства
+    dark_tower = 18
     tavern = 19  # таверна
-    alchemist_house = 20  # дом алхимика
-    sand_quarry = 31  # песчаный карьер
+    alchemist = 20  # дом алхимика
+    sand_mine = 31  # песчаный карьер
+    sand_warehouse = 32
+    sand_barracks = 33
+    sand_tower = 34
+    crystal_tower = 35
     sand_forge = 36
-    territory = 69  # территория для очистки
+    extended_area_1 = 65  # территория для очистки
+    extended_area_2 = 66  # территория для очистки
+    extended_area_3 = 67  # территория для очистки
+    extended_area_4 = 68  # территория для очистки
+    extended_area_5 = 69  # территория для очистки
+    extended_area_6 = 70  # территория для очистки
+    extended_area_7 = 71  # территория для очистки
+    extended_area_8 = 72  # территория для очистки
+    extended_area_9 = 73  # территория для очистки
+    extended_area_10 = 74  # территория для очистки
+    extended_area_11 = 75  # территория для очистки
+    extended_area_12 = 76  # территория для очистки
+    extended_area_13 = 77  # территория для очистки
+    extended_area_14 = 78  # территория для очистки
+    extended_area_15 = 79  # территория для очистки
+    extended_area_16 = 80  # территория для очистки
+    extended_area_17 = 81  # территория для очистки
+    extended_area_18 = 82  # территория для очистки
+    extended_area_19 = 83  # территория для очистки
+    extended_area_20 = 84  # территория для очистки
+    extended_area_xx = 85  # территория для очистки
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
 
@@ -84,7 +110,7 @@ class BuildingType(LookupEnum):
     def not_upgradable(cls):
         return {
             cls.builder_hut,
-            cls.alliance_house,
+            cls.clan_house,
             cls.jeweler_house,
             cls.tavern,
             cls.territory,
@@ -92,7 +118,33 @@ class BuildingType(LookupEnum):
 
     @classmethod
     def production(cls):
-        return {cls.gold_mine, cls.mill, cls.sand_quarry}
+        return {cls.mine, cls.mill, cls.sand_mine}
+
+    @classmethod
+    def extended_areas(cls):
+        return {
+            cls.extended_area_1,
+            cls.extended_area_2,
+            cls.extended_area_3,
+            cls.extended_area_4,
+            cls.extended_area_5,
+            cls.extended_area_6,
+            cls.extended_area_7,
+            cls.extended_area_8,
+            cls.extended_area_9,
+            cls.extended_area_10,
+            cls.extended_area_11,
+            cls.extended_area_12,
+            cls.extended_area_13,
+            cls.extended_area_14,
+            cls.extended_area_15,
+            cls.extended_area_16,
+            cls.extended_area_17,
+            cls.extended_area_18,
+            cls.extended_area_19,
+            cls.extended_area_20,
+            cls.extended_area_xx,
+        }
 
 
 class ResourceType(LookupEnum):
@@ -770,7 +822,7 @@ class Bot:
                 # Builder is available.
                 len(incomplete_buildings) < builder_count and
                 # Castle is upgraded optionally.
-                (building.type != BuildingType.town_hall or self.context.with_town_hall) and
+                (building.type != BuildingType.castle or self.context.with_castle) and
                 # Building type is not ignored explicitly.
                 building.type not in BuildingType.not_upgradable() and
                 # Building is not in progress.
@@ -788,14 +840,14 @@ class Bot:
                     logging.error("Failed to upgrade: %s.", error.name)
 
             # Clean territory.
-            if building.type == BuildingType.territory and building.is_completed:
-                logging.info("Cleaning territory #%s…", building.id)
+            if building.type in BuildingType.extended_areas() and building.is_completed:
+                logging.info("Cleaning %s #%s…", building.type.name, building.id)
                 error = self.epic_war.destruct_building(building.id, False)
                 if error == Error.ok:
                     self.update_self_info()
-                    self.audit_log.append("Clean territory.")
+                    self.audit_log.append("Clean *{}*.".format(building.type.name))
                 else:
-                    logging.error("Failed to clean territory.")
+                    logging.error("Failed to clean extended area.")
 
         return incomplete_buildings
 
@@ -1051,7 +1103,7 @@ class ColoredCountingStreamHandler(CountingStreamHandler):
 class ContextObject:
     user_id = None  # type: str
     remixsid = None  # type: str
-    with_town_hall = False  # type: bool
+    with_castle = False  # type: bool
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: Optional[str]
     telegram_chat_id = None  # type: Optional[str]
@@ -1097,14 +1149,14 @@ def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_fil
 
 
 @main.command()
-@click.option("--with-town-hall", help="Enable town hall upgrades.", is_flag=True)
+@click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
 @click.pass_obj
-def step(obj: ContextObject, with_town_hall: bool):
+def step(obj: ContextObject, with_castle: bool):
     """
     Perform a step.
     """
     try:
-        obj.with_town_hall = with_town_hall
+        obj.with_castle = with_castle
         library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
         random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.user_id, obj.remixsid, random_generator)) as epic_war:
