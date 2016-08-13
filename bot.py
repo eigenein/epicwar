@@ -430,7 +430,7 @@ class EpicWar:
 
     def destruct_building(self, building_id: int, instant: bool):
         """
-        Destructs building. Used to clean territories.
+        Destructs building. Used to clean extended areas.
         """
         return self.parse_error(self.post("destructBuilding", buildingId=building_id, instant=instant))
 
@@ -840,7 +840,7 @@ class Bot:
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
-            # Clean territory.
+            # Clean extended area.
             if (
                 building.type in BuildingType.extended_areas() and
                 self.can_upgrade(building.type, building.level, building_levels) and
