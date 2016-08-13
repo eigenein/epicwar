@@ -734,7 +734,7 @@ class Library:
 # Each entry maps fair ID into a list of serialized commands.
 # --------------------------------------------------------------------------------------------------
 
-BASTIONS = {
+BASTION_COMMANDS = {
     # 100%
     "62": [
         "1^0`-1`12!1^27`0`spawn`43`50`3`~1~1^27`1`spawn`43`350`3`~1~1^27`2`spawn`43`400`3`~1~1^27`3`spawn`43`450`3`~1~1^20`4`spawn`38`3250`3`~1~1^20`5`spawn`38`3400`3`~1~1^20`6`spawn`38`3500`3`~1~1^20`7`spawn`38`3700`3`~1~1^20`8`spawn`38`3850`3`~1~1^27`9`spawn`43`4550`3`~1~1^27`10`spawn`43`4750`3`~1~1^27`11`spawn`43`4800`3`~1~~0~",
@@ -764,6 +764,9 @@ class Bot:
     ALLIANCE_BUILDER_SCORE = 500
     # Taken from game UI.
     ALLIANCE_DAILY_GIFT_SCORE = 500
+
+    # Resign from battle.
+    FINISH_BATTLE = "1^1`-1`1!1^0`0`finishBattle`0`50`0`~1~~0~"
 
     def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
         self.context = context
@@ -805,6 +808,10 @@ class Bot:
         incomplete_buildings = self.check_buildings(buildings, building_levels)
         forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
         self.check_units(forge_id, building_levels)
+
+        # Battles.
+        if self.context.with_bastion:
+            self.check_bastion()
 
         if self.context.telegram_enabled:
             self.send_telegram_notification(incomplete_buildings)
@@ -959,6 +966,39 @@ class Bot:
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift([member.id for member in self.self_info.alliance.members]).name,
         )
+
+    def check_bastion(self):
+        """
+        Plays a bastion battle.
+        """
+        logging.info("Starting bastion…")
+        error, bastion = self.epic_war.start_bastion()
+        if error == Error.not_enough_time:
+            logging.info("Bastion is not available.")
+            return
+        if error != Error.ok:
+            logging.error("Failed to start bastion: %s.", error.name)
+            return
+
+        logging.info("Battle ID: %s. Fair ID: %s.", bastion.battle_id, bastion.fair_id)
+        if bastion.fair_id not in BASTION_COMMANDS:
+            logging.warning("Unknown fair ID: %s", bastion.fair_id)
+            self.audit_log.append("\N{warning sign} Resigned from bastion *%s*." % bastion.fair_id)
+            battle_result = self.epic_war.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
+            logging.info("Battle result: %s.", battle_result)
+            return
+
+        commands_list = BASTION_COMMANDS[bastion.fair_id]
+        for i, commands in enumerate(commands_list):
+            logging.info("Sending commands…")
+            if i != len(commands_list) - 1:
+                error = self.epic_war.add_battle_commands(bastion.battle_id, commands)
+                logging.info("Result: %s.", error.name)
+                self.audit_log.append("Sent battle commands.")
+            else:
+                battle_result = self.epic_war.finish_battle(bastion.battle_id, commands)
+                logging.info("Battle result: %s.", battle_result)
+                self.audit_log.append("Finished bastion.")
 
     def get_alliance_builder_count(self) -> int:
         """
