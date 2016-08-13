@@ -98,11 +98,6 @@ class BuildingType(LookupEnum):
     extended_area_14 = 78  # территория для очистки
     extended_area_15 = 79  # территория для очистки
     extended_area_16 = 80  # территория для очистки
-    extended_area_17 = 81  # территория для очистки
-    extended_area_18 = 82  # территория для очистки
-    extended_area_19 = 83  # территория для очистки
-    extended_area_20 = 84  # территория для очистки
-    extended_area_xx = 85  # территория для очистки
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
 
