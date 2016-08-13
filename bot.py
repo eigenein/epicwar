@@ -1022,9 +1022,9 @@ class Bot:
         ).format(
             self_info=self.self_info,
             requests=self.epic_war.request_id,
-            food=self.self_info.resources[ResourceType.food],
-            gold=self.self_info.resources[ResourceType.gold],
-            sand=self.self_info.resources[ResourceType.sand],
+            food=self.format_amount(self.self_info.resources[ResourceType.food]),
+            gold=self.format_amount(self.self_info.resources[ResourceType.gold]),
+            sand=self.format_amount(self.self_info.resources[ResourceType.sand]),
             construction=construction,
             audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
             log_counter=self.context.log_handler.counter,
@@ -1036,6 +1036,13 @@ class Bot:
         ).json()
         if not result["ok"]:
             logging.error("Telegram API error: \"%s\".", result["description"])
+
+    @staticmethod
+    def format_amount(amount: int) -> str:
+        """
+        Formats amount with thousands separators.
+        """
+        return "{:,}".format(amount).replace(",", " ")
 
 
 # Utilities.
