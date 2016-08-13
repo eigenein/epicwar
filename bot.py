@@ -133,11 +133,6 @@ class BuildingType(LookupEnum):
             cls.extended_area_14,
             cls.extended_area_15,
             cls.extended_area_16,
-            cls.extended_area_17,
-            cls.extended_area_18,
-            cls.extended_area_19,
-            cls.extended_area_20,
-            cls.extended_area_xx,
         }
 
 
