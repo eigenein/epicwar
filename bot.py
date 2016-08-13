@@ -113,7 +113,6 @@ class BuildingType(LookupEnum):
             cls.clan_house,
             cls.jeweler_house,
             cls.tavern,
-            cls.territory,
         }
 
     @classmethod
@@ -825,6 +824,8 @@ class Bot:
                 (building.type != BuildingType.castle or self.context.with_castle) and
                 # Building type is not ignored explicitly.
                 building.type not in BuildingType.not_upgradable() and
+                # Building is not an extended area.
+                building.type not in BuildingType.extended_areas() and
                 # Building is not in progress.
                 building.is_completed and
                 # Requirements are met.
@@ -840,7 +841,11 @@ class Bot:
                     logging.error("Failed to upgrade: %s.", error.name)
 
             # Clean territory.
-            if building.type in BuildingType.extended_areas() and building.is_completed:
+            if (
+                building.type in BuildingType.extended_areas() and
+                self.can_upgrade(building.type, building.level, building_levels) and
+                building.is_completed
+            ):
                 logging.info("Cleaning %s #%s…", building.type.name, building.id)
                 error = self.epic_war.destruct_building(building.id, False)
                 if error == Error.ok:
