@@ -271,6 +271,7 @@ class Error(enum.Enum):
     not_available = r"error\NotAvailable"  # all builders are busy or invalid unit level
     vip_required = r"error\VipRequired"  # VIP status is required
     not_enough = r"error\NotEnough"  # not enough… score?
+    not_enough_time = r"error\NotEnoughTime"
 
 
 # Named tuples used to store parsed API result.
@@ -278,6 +279,7 @@ class Error(enum.Enum):
 
 Alliance = collections.namedtuple("Alliance", "members")
 AllianceMember = collections.namedtuple("AllianceMember", "id life_time_score")
+Bastion = collections.namedtuple("Bastion", "fair_id battle_id config")
 Building = collections.namedtuple(
     "Building", "id type level is_completed complete_time hitpoints storage_fill")
 Cemetery = collections.namedtuple("Cemetery", "x y")
@@ -513,6 +515,32 @@ class EpicWar:
             if ArtifactType.has_value(artifact["typeId"]) and artifact["enabled"]
         }
 
+    def start_bastion(
+        self,
+        version="964ac9315db8d10f385387c03ca157404ef998a7",
+        for_starmoney=False,
+    ) -> Tuple[Error, Optional[Bastion]]:
+        """
+        Starts bastion battle.
+        Version is taken from scripts/epicwar/haxe/battle/Battle.as.
+        """
+        result = self.post("battle_startBastion", version=version, forStarmoney=for_starmoney)
+        if "error" in result:
+            return Error(result["error"]["name"]), None
+        return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
+
+    def add_battle_commands(self, battle_id: str, commands: str) -> Error:
+        """
+        Adds serialized commands to the battle.
+        """
+        return self.parse_error(self.post("battle_addCommands", battleId=battle_id, commands=commands))
+
+    def finish_battle(self, battle_id: str, commands: str) -> str:
+        """
+        Finishes battle and returns serialized battle result.
+        """
+        return self.post("battle_finish", battleId=battle_id, commands=commands)["battleResult"]
+
     @staticmethod
     def parse_resources(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
@@ -535,6 +563,8 @@ class EpicWar:
         """
         Helper method to parse an error.
         """
+        if "success" in result:
+            return Error(bool(result["success"]))
         if "result" in result:
             if result["result"]:
                 return Error(bool(result["result"]))
@@ -698,6 +728,24 @@ class Library:
                 except ValueError:
                     continue
                 self.requirements[(type_, unit_level["level"])][resource_type] = resource["amount"]
+
+
+# Bastion commands.
+# Each entry maps fair ID into a list of serialized commands.
+# --------------------------------------------------------------------------------------------------
+
+BASTIONS = {
+    # 100%
+    "62": [
+        "1^0`-1`12!1^27`0`spawn`43`50`3`~1~1^27`1`spawn`43`350`3`~1~1^27`2`spawn`43`400`3`~1~1^27`3`spawn`43`450`3`~1~1^20`4`spawn`38`3250`3`~1~1^20`5`spawn`38`3400`3`~1~1^20`6`spawn`38`3500`3`~1~1^20`7`spawn`38`3700`3`~1~1^20`8`spawn`38`3850`3`~1~1^27`9`spawn`43`4550`3`~1~1^27`10`spawn`43`4750`3`~1~1^27`11`spawn`43`4800`3`~1~~0~",
+        "1^0`-1`5!1^45`12`spawn`10`12100`3`~1~1^45`13`spawn`10`12300`3`~1~1^45`14`spawn`10`12450`3`~1~1^46`15`spawn`11`14900`7`~1~1^2`16`spawn`29`18650`7`~1~~0~",
+        "1^0`-1`6!1^2`17`spawn`20`19400`7`~1~1^20`18`spawn`50`22100`7`~1~1^20`19`spawn`50`22250`7`~1~1^20`20`spawn`50`22400`7`~1~1^31`21`spawn`19`28100`7`~1~1^31`22`spawn`19`28250`7`~1~~0~",
+        "1^0`-1`9!1^33`23`spawn`37`29350`7`~1~1^33`24`spawn`37`29700`7`~1~1^31`25`spawn`19`34400`4`~1~1^31`26`spawn`19`34600`4`~1~1^31`27`spawn`19`34800`4`~1~1^33`28`spawn`34`36600`4`~1~1^33`29`spawn`34`36750`4`~1~1^33`30`spawn`34`36900`4`~1~1^33`31`spawn`34`37050`4`~1~~0~",
+        "1^0`-1`6!1^31`32`spawn`19`47400`6`~1~1^31`33`spawn`19`47600`6`~1~1^31`34`spawn`19`47750`6`~1~1^31`35`spawn`19`47900`6`~1~1^32`36`spawn`36`49200`6`~1~1^32`37`spawn`36`49200`6`~1~~0~",
+        "1^0`-1`10!1^32`38`spawn`36`49400`6`~1~1^32`39`spawn`36`49500`6`~1~1^4`40`spawn`25`54500`4`~1~1^4`41`spawn`25`54650`4`~1~1^4`42`spawn`25`54800`4`~1~1^4`43`spawn`25`54950`4`~1~1^4`44`spawn`25`55100`4`~1~1^4`45`spawn`25`55200`4`~1~1^4`46`spawn`25`55400`4`~1~1^4`47`spawn`25`55550`4`~1~~0~",
+        "1^48`47`48!1^27`0`spawn`43`50`3`~1~1^27`1`spawn`43`350`3`~1~1^27`2`spawn`43`400`3`~1~1^27`3`spawn`43`450`3`~1~1^20`4`spawn`38`3250`3`~1~1^20`5`spawn`38`3400`3`~1~1^20`6`spawn`38`3500`3`~1~1^20`7`spawn`38`3700`3`~1~1^20`8`spawn`38`3850`3`~1~1^27`9`spawn`43`4550`3`~1~1^27`10`spawn`43`4750`3`~1~1^27`11`spawn`43`4800`3`~1~1^45`12`spawn`10`12100`3`~1~1^45`13`spawn`10`12300`3`~1~1^45`14`spawn`10`12450`3`~1~1^46`15`spawn`11`14900`7`~1~1^2`16`spawn`29`18650`7`~1~1^2`17`spawn`20`19400`7`~1~1^20`18`spawn`50`22100`7`~1~1^20`19`spawn`50`22250`7`~1~1^20`20`spawn`50`22400`7`~1~1^31`21`spawn`19`28100`7`~1~1^31`22`spawn`19`28250`7`~1~1^33`23`spawn`37`29350`7`~1~1^33`24`spawn`37`29700`7`~1~1^31`25`spawn`19`34400`4`~1~1^31`26`spawn`19`34600`4`~1~1^31`27`spawn`19`34800`4`~1~1^33`28`spawn`34`36600`4`~1~1^33`29`spawn`34`36750`4`~1~1^33`30`spawn`34`36900`4`~1~1^33`31`spawn`34`37050`4`~1~1^31`32`spawn`19`47400`6`~1~1^31`33`spawn`19`47600`6`~1~1^31`34`spawn`19`47750`6`~1~1^31`35`spawn`19`47900`6`~1~1^32`36`spawn`36`49200`6`~1~1^32`37`spawn`36`49200`6`~1~1^32`38`spawn`36`49400`6`~1~1^32`39`spawn`36`49500`6`~1~1^4`40`spawn`25`54500`4`~1~1^4`41`spawn`25`54650`4`~1~1^4`42`spawn`25`54800`4`~1~1^4`43`spawn`25`54950`4`~1~1^4`44`spawn`25`55100`4`~1~1^4`45`spawn`25`55200`4`~1~1^4`46`spawn`25`55400`4`~1~1^4`47`spawn`25`55550`4`~1~~0~",
+    ],
+}
 
 
 # Bot implementation.
@@ -987,7 +1035,7 @@ class Bot:
         """
         logging.info("Resources: %s.", ", ".join(
             "{}: {}".format(resource_type.name, self.self_info.resources[resource_type])
-            for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand)
+            for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand, ResourceType.runes)
         ))
 
     def send_telegram_notification(self, incomplete_buildings: List[Building]):
@@ -1012,6 +1060,7 @@ class Bot:
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
+            "\N{squared cjk unified ideograph-7a7a} *{runes}*\n"
             "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
             " \N{clock face one oclock} *{execution_time}*s"
@@ -1025,6 +1074,7 @@ class Bot:
             food=self.format_amount(self.self_info.resources[ResourceType.food]),
             gold=self.format_amount(self.self_info.resources[ResourceType.gold]),
             sand=self.format_amount(self.self_info.resources[ResourceType.sand]),
+            runes=self.format_amount(self.self_info.resources[ResourceType.runes]),
             construction=construction,
             audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
             log_counter=self.context.log_handler.counter,
@@ -1102,6 +1152,7 @@ class ContextObject:
     user_id = None  # type: str
     remixsid = None  # type: str
     with_castle = False  # type: bool
+    with_bastion = False  # type: bool
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: Optional[str]
     telegram_chat_id = None  # type: Optional[str]
@@ -1148,13 +1199,16 @@ def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_fil
 
 @main.command()
 @click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
+@click.option("--with-bastion", help="Enable bastion battles.", is_flag=True)
 @click.pass_obj
-def step(obj: ContextObject, with_castle: bool):
+def step(obj: ContextObject, with_castle: bool, with_bastion: bool):
     """
     Perform a step.
     """
+    obj.with_castle = with_castle
+    obj.with_bastion = with_bastion
+
     try:
-        obj.with_castle = with_castle
         library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
         random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.user_id, obj.remixsid, random_generator)) as epic_war:
