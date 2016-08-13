@@ -1061,7 +1061,7 @@ class StudentTRandomGenerator:
 
     def __call__(self):
         while True:
-            x = abs(self.scale * (self.loc + 0.5 * random.gauss(0.0, 1.0) / random.gammavariate(0.5 * self.nu, 2.0)))
+            x = self.scale * (self.loc + 0.5 * random.gauss(0.0, 1.0) / random.gammavariate(0.5 * self.nu, 2.0))
             if self.minimum < x < self.maximum:
                 return x
 
@@ -1156,7 +1156,7 @@ def step(obj: ContextObject, with_castle: bool):
     try:
         obj.with_castle = with_castle
         library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
-        random_generator = StudentTRandomGenerator(0.94, 0.0, 0.04, 0.01, 2.0)
+        random_generator = StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.user_id, obj.remixsid, random_generator)) as epic_war:
             epic_war.authenticate()
             Bot(obj, epic_war, library).step()
