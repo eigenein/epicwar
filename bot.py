@@ -98,6 +98,11 @@ class BuildingType(LookupEnum):
     extended_area_14 = 78  # территория для очистки
     extended_area_15 = 79  # территория для очистки
     extended_area_16 = 80  # территория для очистки
+    extended_area_17 = 81  # территория для очистки
+    extended_area_18 = 82  # территория для очистки
+    extended_area_19 = 83  # территория для очистки
+    extended_area_20 = 84  # территория для очистки
+    extended_area_xx = 85  # территория для очистки
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
 
@@ -829,20 +834,6 @@ class Bot:
                     self.audit_log.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
-
-            # Clean extended area.
-            if (
-                building.type in BuildingType.extended_areas() and
-                self.can_upgrade(building.type, building.level, building_levels) and
-                building.is_completed
-            ):
-                logging.info("Cleaning %s #%s…", building.type.name, building.id)
-                error = self.epic_war.destruct_building(building.id, False)
-                if error == Error.ok:
-                    self.update_self_info()
-                    self.audit_log.append("Clean *{}*.".format(building.type.name))
-                else:
-                    logging.error("Failed to clean extended area.")
 
         return incomplete_buildings
 
