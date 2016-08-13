@@ -1021,10 +1021,11 @@ class Bot:
         for i, commands in enumerate(commands_list):
             logging.info("Sending commands…")
             if i != len(commands_list) - 1:
-                error = self.epic_war.add_battle_commands(bastion.battle_id, commands)
-                logging.info("Result: %s.", error.name)
-                self.audit_log.append("Sent battle commands.")
+                # Send commands.
+                if self.epic_war.add_battle_commands(bastion.battle_id, commands) != Error.ok:
+                    logging.info("Result: %s.", error.name)
             else:
+                # Last line – finish battle.
                 battle_result = self.epic_war.finish_battle(bastion.battle_id, commands)
                 logging.info("Battle result: %s.", battle_result)
                 self.audit_log.append("Finished bastion.")
