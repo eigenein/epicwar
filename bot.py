@@ -1017,6 +1017,7 @@ class Bot:
             logging.info("Battle result: %s.", battle_result)
             return
 
+        old_runes_count = self.self_info.resources[ResourceType.runes]
         commands_list = BASTION_COMMANDS[bastion.fair_id]
         for i, commands in enumerate(commands_list):
             logging.info("Sending commands…")
@@ -1028,9 +1029,10 @@ class Bot:
                 # Last line – finish battle.
                 battle_result = self.epic_war.finish_battle(bastion.battle_id, commands)
                 logging.info("Battle result: %s.", battle_result)
-                self.audit_log.append("Finished bastion *{}*.".format(bastion.fair_id))
 
         self.update_self_info()
+        self.audit_log.append("Farmed *{} runes* in bastion *{}*.".format(
+            self.self_info.resources[ResourceType.runes] - old_runes_count, bastion.fair_id))
 
     def get_alliance_builder_count(self) -> int:
         """
