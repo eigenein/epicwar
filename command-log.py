@@ -7,7 +7,6 @@ Reverse-engineered from CommandLog.as.
 """
 
 import json
-import string
 import typing
 
 import click
