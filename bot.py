@@ -734,7 +734,7 @@ class Library:
 # Each entry maps fair ID into a list of serialized commands.
 # --------------------------------------------------------------------------------------------------
 
-BASTION_BATTLES = {
+BASTION_COMMANDS = {
     # 74 runes.
     # "1^0`-1`5!1^35`0`spawn`49`50`3`~1~1^35`1`spawn`49`350`3`~1~1^35`2`spawn`49`350`3`~1~1^35`3`spawn`49`900`3`~1~1^35`4`spawn`49`1100`3`~1~~0~",
     # "1^0`-1`1!1^22`5`spawn`45`4250`3`~1~~0~",
@@ -1046,7 +1046,7 @@ class Bot:
             return
 
         logging.info("Battle ID: %s. Fair ID: %s.", bastion.battle_id, bastion.fair_id)
-        if bastion.fair_id not in BASTION_BATTLES:
+        if bastion.fair_id not in BASTION_COMMANDS:
             logging.warning("Unknown fair ID: %s.", bastion.fair_id)
             self.audit_log.append("\N{warning sign} Resigned from bastion *%s*." % bastion.fair_id)
             battle_result = self.epic_war.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
@@ -1057,7 +1057,7 @@ class Bot:
         logging.info("Sleeping…")
         time.sleep(self.BASTION_DURATION)
         logging.info("Sending commands…")
-        battle_result = self.epic_war.finish_battle(bastion.battle_id, BASTION_BATTLES[bastion.fair_id])
+        battle_result = self.epic_war.finish_battle(bastion.battle_id, BASTION_COMMANDS[bastion.fair_id])
         logging.info("Battle result: %s.", battle_result)
 
         self.update_self_info()
