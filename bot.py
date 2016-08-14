@@ -829,6 +829,8 @@ class Bot:
     # Taken from game UI.
     ALLIANCE_DAILY_GIFT_SCORE = 500
 
+    # Bastion battle lasts for 2 minutes.
+    BASTION_DURATION = 120.0
     # Resign from battle.
     FINISH_BATTLE = "1^1`-1`1!1^0`0`finishBattle`0`50`0`~1~~0~"
 
@@ -1054,7 +1056,7 @@ class Bot:
 
         old_runes_count = self.self_info.resources[ResourceType.runes]
         logging.info("Sleeping…")
-        time.sleep(120.0)  # bastion battles last 2 minutes
+        time.sleep(self.BASTION_DURATION)
         logging.info("Sending commands…")
         battle_result = self.epic_war.finish_battle(bastion.battle_id, BASTION_BATTLES[bastion.fair_id])
         logging.info("Battle result: %s.", battle_result)
