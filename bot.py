@@ -1037,13 +1037,12 @@ class Bot:
         old_runes_count = self.self_info.resources[ResourceType.runes]
         commands_list = BASTION_COMMANDS[bastion.fair_id]
         for i, commands in enumerate(commands_list):
-            logging.info("Sending commands…")
             if i != len(commands_list) - 1:
-                # Send commands.
+                logging.info("Sending commands…")
                 if self.epic_war.add_battle_commands(bastion.battle_id, commands) != Error.ok:
                     logging.error("Result: %s.", error.name)
             else:
-                # Last line – finish battle.
+                logging.info("Finishing battle…")
                 battle_result = self.epic_war.finish_battle(bastion.battle_id, commands)
                 logging.info("Battle result: %s.", battle_result)
 
