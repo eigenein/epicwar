@@ -1048,7 +1048,7 @@ class Bot:
 
         logging.info("Battle ID: %s. Fair ID: %s.", bastion.battle_id, bastion.fair_id)
         if bastion.fair_id not in BASTION_BATTLES:
-            logging.warning("Unknown fair ID: %s", bastion.fair_id)
+            logging.warning("Unknown fair ID: %s.", bastion.fair_id)
             self.audit_log.append("\N{warning sign} Resigned from bastion *%s*." % bastion.fair_id)
             battle_result = self.epic_war.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
