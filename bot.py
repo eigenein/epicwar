@@ -1010,8 +1010,9 @@ class Bot:
         logging.info("Battle result: %s.", battle_result)
 
         self.update_self_info()
-        self.audit_log.append("Farmed *{} runes* in bastion *{}*.".format(
-            self.self_info.resources[ResourceType.runes] - old_runes_count, bastion.fair_id))
+        runes_farmed = self.self_info.resources[ResourceType.runes] - old_runes_count
+        logging.info("Farmed %s runes.", runes_farmed)
+        self.audit_log.append("Farmed *{} runes* in bastion *{}*.".format(runes_farmed, bastion.fair_id))
 
     def get_alliance_builder_count(self) -> int:
         """
