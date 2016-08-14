@@ -1028,7 +1028,9 @@ class Bot:
                 # Last line – finish battle.
                 battle_result = self.epic_war.finish_battle(bastion.battle_id, commands)
                 logging.info("Battle result: %s.", battle_result)
-                self.audit_log.append("Finished bastion.")
+                self.audit_log.append("Finished bastion *{}*.".format(bastion.fair_id))
+
+        self.update_self_info()
 
     def get_alliance_builder_count(self) -> int:
         """
