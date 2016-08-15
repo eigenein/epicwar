@@ -1113,7 +1113,6 @@ class Bot:
             construction = "\N{CONSTRUCTION SIGN} *none*"
         text = (
             "\N{HOUSE BUILDING} *{self_info.caption}*\n"
-            "\n"
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
