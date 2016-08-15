@@ -779,8 +779,11 @@ class Bot:
     """
 
     # Don't collect resource too often. Specifies waiting time in seconds.
-    PRODUCTION_TIME = 4800.0
+    PRODUCTION_TIME = 4 * 60 * 60
+    # Low-level storages are filled fast.
     FULL_STORAGE = 0.9
+    # Collect sand as often as possible.
+    COLLECT_IMMEDIATELY_FROM = {BuildingType.sand_mine}
 
     # Taken from the library artifact #757.
     ALLIANCE_BUILDER_SCORE = 500
@@ -877,6 +880,8 @@ class Bot:
                 building.type in BuildingType.production() and
                 # Makes sense to collect from it.
                 building.type not in stop_collection_from and (
+                    # Resource should be collected as often as possible.
+                    building.type in self.COLLECT_IMMEDIATELY_FROM or
                     # It's quite full.
                     building.storage_fill > self.FULL_STORAGE or
                     # It has not been clicked recently.
