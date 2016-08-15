@@ -585,7 +585,7 @@ class EpicWar:
         logging.debug("#%s %s(%s)", self.request_id, name, args)
         data = json.dumps({"session": None, "calls": [{"ident": "group_0_body", "name": name, "args": args}]})
         headers = {
-            "Referer": "https://epicwar.cdnvideo.ru/vk/v0290/assets/EpicGame.swf",
+            "Referer": "https://epicwar.cdnvideo.ru/vk/v0297/assets/EpicGame.swf",
             "Content-type": "application/json; charset=UTF-8",
             "X-Auth-Token": self.auth_token,
             "X-Auth-Network-Ident": "vkontakte",
