@@ -72,14 +72,14 @@ def read_header(tokens) -> dict:
     """
     Reads header from the command log.
     """
-    assert next(tokens) == "1"
-    assert next(tokens) == "^"
+    expect_token(tokens, "1")
+    expect_token(tokens, "^")
     command_id_counter = int(next(tokens))
-    assert next(tokens) == "`"
+    expect_token(tokens, "`")
     last_extracted_id = int(next(tokens))
-    assert next(tokens) == "`"
+    expect_token(tokens, "`")
     length = int(next(tokens))
-    assert next(tokens) == "!"
+    expect_token(tokens, "!")
     return {
         "command_id_counter": command_id_counter,
         "last_extracted_id": last_extracted_id,
@@ -99,28 +99,36 @@ def iter_commands(tokens):
             continue
         if token == "~":
             # Commands end.
-            assert next(tokens) == "0"
-            assert next(tokens) == "~"
+            expect_token(tokens, "0")
+            expect_token(tokens, "~")
             break
         # Read command.
         assert token == "1"
-        assert next(tokens) == "^"
+        expect_token(tokens, "^")
         col = int(next(tokens))
-        assert next(tokens) == "`"
+        expect_token(tokens, "`")
         id_ = int(next(tokens))
-        assert next(tokens) == "`"
+        expect_token(tokens, "`")
         kind = next(tokens)
-        assert next(tokens) == "`"
+        expect_token(tokens, "`")
         row = int(next(tokens))
-        assert next(tokens) == "`"
+        expect_token(tokens, "`")
         time = int(next(tokens))
-        assert next(tokens) == "`"
+        expect_token(tokens, "`")
         type_id = int(next(tokens))
-        assert next(tokens) == "`"
-        assert next(tokens) == "~"
-        assert next(tokens) == "1"
-        assert next(tokens) == "~"
+        expect_token(tokens, "`")
+        expect_token(tokens, "~")
+        expect_token(tokens, "1")
+        expect_token(tokens, "~")
         yield {"col": col, "id": id_, "kind": kind, "row": row, "time": time, "type_id": type_id}
+
+
+def expect_token(tokens, token: str):
+    """
+    Gets the next token and compares it against the provided one.
+    """
+    if next(tokens) != token:
+        raise ValueError("expected: %s" % token)
 
 
 if __name__ == "__main__":
