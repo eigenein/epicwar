@@ -15,6 +15,7 @@ Epic War bot. Features:
 * Activates alliance daily gift.
 * Collects alliance daily gift.
 * Simulates user behavior by making random delays between requests.
+* Participates in well-known bastion battles.
 * Sends Telegram notification.
 """
 
