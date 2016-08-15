@@ -1137,7 +1137,7 @@ class Bot:
             audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
             log_counter=self.context.log_handler.counter,
             execution_time=int(time.time() - self.context.start_time),
-        )
+        ).replace("_", "-")
         result = requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
             params={"chat_id": self.context.telegram_chat_id, "text": text, "parse_mode": "markdown"},
