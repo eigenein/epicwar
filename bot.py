@@ -732,7 +732,7 @@ class Library:
 
 
 # Bastion commands.
-# Each entry maps fair ID into a list of serialized commands.
+# Each entry maps fair ID into expected runes count and the string of serialized commands.
 # --------------------------------------------------------------------------------------------------
 
 BASTION_COMMANDS = {
