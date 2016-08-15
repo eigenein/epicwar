@@ -1144,6 +1144,7 @@ class Bot:
         ).json()
         if not result["ok"]:
             logging.error("Telegram API error: \"%s\".", result["description"])
+            logging.error("Text: \"%s\".", text)
 
     @staticmethod
     def format_amount(amount: int) -> str:
