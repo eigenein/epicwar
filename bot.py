@@ -400,13 +400,13 @@ class EpicWar:
         """
         Collects resource from the building.
         """
-        return self.parse_reward(self.post("collectResource", buildingId=building_id)["reward"])
+        return self.parse_resource_reward(self.post("collectResource", buildingId=building_id)["reward"])
 
     def farm_cemetery(self) -> Dict[ResourceType, int]:
         """
         Collects died enemy army.
         """
-        return self.parse_reward(self.post("cemeteryFarm")["reward"])
+        return self.parse_resource_reward(self.post("cemeteryFarm")["reward"])
 
     def get_buildings(self) -> List[Building]:
         """
@@ -495,17 +495,7 @@ class EpicWar:
         """
         Collects notice reward.
         """
-        result = self.post("noticeFarmReward", id=notice_id)
-        if "result" in result:
-            return {
-                reward_type(obj["id"]): obj["amount"]
-                for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
-                for obj in result["result"][key]
-                if reward_type.has_value(obj["id"])
-            }
-        if "error" in result and result["error"]["name"] == Error.not_enough.value:
-            return {}
-        raise ValueError(result)
+        return self.parse_reward(self.post("noticeFarmReward", id=notice_id))
 
     def get_artifacts(self) -> Set[ArtifactType]:
         """
@@ -543,6 +533,12 @@ class EpicWar:
         """
         return self.post("battle_finish", battleId=battle_id, commands=commands)["battleResult"]
 
+    def open_fair_citadel_gate(self):
+        """
+        Collects bastion gift.
+        """
+        return self.parse_reward(self.post("fairCitadelOpenGate"))
+
     @staticmethod
     def parse_resources(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
@@ -554,9 +550,25 @@ class EpicWar:
             if ResourceType.has_value(resource["id"])
         }
 
-    def parse_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
+    @staticmethod
+    def parse_reward(result: dict) -> Dict[ResourceType, int]:
         """
-        Helper method to parse a reward.
+        Helper method to parse alliance or bastion reward.
+        """
+        if "result" in result:
+            return {
+                reward_type(obj["id"]): obj["amount"]
+                for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
+                for obj in result["result"].get(key, [])
+                if reward_type.has_value(obj["id"])
+            }
+        if "error" in result and result["error"]["name"] == Error.not_enough.value:
+            return {}
+        raise ValueError(result)
+
+    def parse_resource_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
+        """
+        Helper method to parse resource collection result.
         """
         return self.parse_resources(reward["resource"]) if reward else {}
 
@@ -751,6 +763,7 @@ BASTION_COMMANDS = {
     "61": BastionReplay(69, "1^47`45`47!1^39`0`spawn`30`13850`4`~1~1^40`1`spawn`28`14300`4`~1~1^39`2`spawn`26`14900`4`~1~1^37`3`spawn`24`15550`4`~1~1^40`4`spawn`28`17100`4`~1~1^39`5`spawn`26`17900`4`~1~1^46`6`spawn`44`28650`6`~1~1^39`7`spawn`27`31200`4`~1~1^39`8`spawn`27`31350`4`~1~1^39`9`spawn`27`31500`4`~1~1^39`10`spawn`27`31600`4`~1~1^39`11`spawn`27`31700`4`~1~1^39`12`spawn`27`31850`4`~1~1^39`13`spawn`27`31950`4`~1~1^39`14`spawn`27`32100`4`~1~1^39`15`spawn`27`32200`4`~1~1^39`16`spawn`27`32300`4`~1~1^39`17`spawn`27`32450`4`~1~1^39`18`spawn`27`32600`4`~1~1^39`19`spawn`27`32750`4`~1~1^39`20`spawn`27`32900`4`~1~1^39`21`spawn`27`36700`1`~1~1^39`22`spawn`27`36800`1`~1~1^39`23`spawn`27`37000`1`~1~1^39`24`spawn`27`37250`1`~1~1^39`25`spawn`27`37400`1`~1~1^39`26`spawn`27`37450`1`~1~1^39`27`spawn`27`37550`1`~1~1^39`28`spawn`27`37850`1`~1~1^39`29`spawn`27`37950`1`~1~1^39`30`spawn`27`38100`1`~1~1^39`31`spawn`27`38250`1`~1~1^39`32`spawn`27`38400`1`~1~1^39`33`spawn`27`38600`1`~1~1^39`34`spawn`27`38650`1`~1~1^39`35`spawn`27`38800`1`~1~1^39`36`spawn`27`38900`1`~1~1^39`37`spawn`27`39000`1`~1~1^39`38`spawn`27`39200`1`~1~1^39`39`spawn`27`39300`1`~1~1^39`40`spawn`27`39450`1`~1~1^46`41`spawn`44`45500`6`~1~1^46`42`spawn`44`45600`6`~1~1^46`43`spawn`44`45750`6`~1~1^46`44`spawn`44`45850`6`~1~1^46`45`spawn`44`46000`6`~1~1^0`46`finishBattle`0`137550`0`~1~~0~"),
     "62": BastionReplay(90, "1^48`47`48!1^27`0`spawn`43`50`3`~1~1^27`1`spawn`43`350`3`~1~1^27`2`spawn`43`400`3`~1~1^27`3`spawn`43`450`3`~1~1^20`4`spawn`38`3250`3`~1~1^20`5`spawn`38`3400`3`~1~1^20`6`spawn`38`3500`3`~1~1^20`7`spawn`38`3700`3`~1~1^20`8`spawn`38`3850`3`~1~1^27`9`spawn`43`4550`3`~1~1^27`10`spawn`43`4750`3`~1~1^27`11`spawn`43`4800`3`~1~1^45`12`spawn`10`12100`3`~1~1^45`13`spawn`10`12300`3`~1~1^45`14`spawn`10`12450`3`~1~1^46`15`spawn`11`14900`7`~1~1^2`16`spawn`29`18650`7`~1~1^2`17`spawn`20`19400`7`~1~1^20`18`spawn`50`22100`7`~1~1^20`19`spawn`50`22250`7`~1~1^20`20`spawn`50`22400`7`~1~1^31`21`spawn`19`28100`7`~1~1^31`22`spawn`19`28250`7`~1~1^33`23`spawn`37`29350`7`~1~1^33`24`spawn`37`29700`7`~1~1^31`25`spawn`19`34400`4`~1~1^31`26`spawn`19`34600`4`~1~1^31`27`spawn`19`34800`4`~1~1^33`28`spawn`34`36600`4`~1~1^33`29`spawn`34`36750`4`~1~1^33`30`spawn`34`36900`4`~1~1^33`31`spawn`34`37050`4`~1~1^31`32`spawn`19`47400`6`~1~1^31`33`spawn`19`47600`6`~1~1^31`34`spawn`19`47750`6`~1~1^31`35`spawn`19`47900`6`~1~1^32`36`spawn`36`49200`6`~1~1^32`37`spawn`36`49200`6`~1~1^32`38`spawn`36`49400`6`~1~1^32`39`spawn`36`49500`6`~1~1^4`40`spawn`25`54500`4`~1~1^4`41`spawn`25`54650`4`~1~1^4`42`spawn`25`54800`4`~1~1^4`43`spawn`25`54950`4`~1~1^4`44`spawn`25`55100`4`~1~1^4`45`spawn`25`55200`4`~1~1^4`46`spawn`25`55400`4`~1~1^4`47`spawn`25`55550`4`~1~~0~"),
     "63": BastionReplay(90, "1^48`47`48!1^27`0`spawn`43`50`3`~1~1^27`1`spawn`43`350`3`~1~1^27`2`spawn`43`350`3`~1~1^20`3`spawn`38`3400`3`~1~1^20`4`spawn`38`3600`3`~1~1^20`5`spawn`38`3700`3`~1~1^27`6`spawn`43`4950`3`~1~1^27`7`spawn`43`5100`3`~1~1^27`8`spawn`43`5400`3`~1~1^27`9`spawn`43`6300`3`~1~1^27`10`spawn`43`6500`3`~1~1^1`11`spawn`29`12650`7`~1~1^2`12`spawn`21`13550`7`~1~1^46`13`spawn`9`18000`3`~1~1^46`14`spawn`9`18100`3`~1~1^46`15`spawn`9`18250`3`~1~1^46`16`spawn`9`18400`3`~1~1^45`17`spawn`10`20750`7`~1~1^20`18`spawn`50`28600`4`~1~1^20`19`spawn`50`28750`4`~1~1^20`20`spawn`50`28900`4`~1~1^20`21`spawn`50`29100`4`~1~1^20`22`spawn`50`29200`4`~1~1^20`23`spawn`50`29350`4`~1~1^20`24`spawn`50`29450`4`~1~1^20`25`spawn`50`29650`4`~1~1^20`26`spawn`50`29800`4`~1~1^20`27`spawn`50`29950`4`~1~1^22`28`spawn`50`32100`7`~1~1^32`29`spawn`49`33150`7`~1~1^31`30`spawn`19`49100`7`~1~1^31`31`spawn`19`49300`7`~1~1^31`32`spawn`19`49450`7`~1~1^32`33`spawn`35`51800`7`~1~1^32`34`spawn`35`52000`7`~1~1^26`35`spawn`18`59800`6`~1~1^26`36`spawn`18`60000`6`~1~1^26`37`spawn`18`60300`6`~1~1^26`38`spawn`18`60900`6`~1~1^29`39`spawn`35`63000`6`~1~1^29`40`spawn`35`63150`6`~1~1^29`41`spawn`35`63750`6`~1~1^29`42`spawn`35`64000`6`~1~1^45`43`spawn`18`70800`4`~1~1^45`44`spawn`18`70950`4`~1~1^45`45`spawn`18`71100`4`~1~1^45`46`spawn`18`71250`4`~1~1^45`47`spawn`18`71350`4`~1~~0~"),
+    "64": BastionReplay(90, "1^22`21`22!1^37`0`spawn`10`50`7`~1~1^27`1`spawn`10`2300`7`~1~1^31`2`spawn`43`5700`7`~1~1^31`3`spawn`43`5900`7`~1~1^31`4`spawn`43`6100`7`~1~1^37`5`spawn`42`9850`7`~1~1^37`6`spawn`42`10000`7`~1~1^37`7`spawn`42`10550`7`~1~1^51`8`spawn`34`19400`7`~1~1^48`9`spawn`36`20000`7`~1~1^51`10`spawn`35`24200`7`~1~1^19`11`spawn`36`28200`7`~1~1^15`12`spawn`32`29050`7`~1~1^18`13`spawn`36`31050`7`~1~1^27`14`spawn`36`37300`6`~1~1^27`15`spawn`36`37700`6`~1~1^27`16`spawn`36`37850`6`~1~1^39`17`spawn`36`44850`6`~1~1^39`18`spawn`36`45100`6`~1~1^39`19`spawn`36`45300`6`~1~1^39`20`spawn`36`45400`6`~1~1^48`21`spawn`42`91700`7`~1~~0~"),
     "91": BastionReplay(88, "1^91`90`91!1^5`0`spawn`25`50`7`~1~1^5`1`spawn`25`100`7`~1~1^5`2`spawn`25`300`7`~1~1^26`3`spawn`13`5050`7`~1~1^31`4`spawn`14`7150`7`~1~1^45`5`spawn`7`16650`7`~1~1^45`6`spawn`7`16800`7`~1~1^48`7`spawn`7`17400`7`~1~1^48`8`spawn`7`17550`7`~1~1^27`9`spawn`40`22550`7`~1~1^30`10`spawn`40`23250`7`~1~1^30`11`spawn`40`23850`7`~1~1^30`12`spawn`40`24000`7`~1~1^30`13`spawn`40`24100`7`~1~1^26`14`spawn`38`25400`7`~1~1^26`15`spawn`38`25500`7`~1~1^26`16`spawn`38`25650`7`~1~1^26`17`spawn`39`28350`7`~1~1^26`18`spawn`39`28750`7`~1~1^13`19`spawn`52`32600`7`~1~1^13`20`spawn`51`34700`4`~1~1^13`21`spawn`51`34850`4`~1~1^13`22`spawn`51`35000`4`~1~1^13`23`spawn`51`35150`4`~1~1^13`24`spawn`51`35250`4`~1~1^13`25`spawn`51`35500`4`~1~1^13`26`spawn`51`36000`4`~1~1^13`27`spawn`51`36150`4`~1~1^13`28`spawn`51`36350`4`~1~1^13`29`spawn`51`37200`4`~1~1^8`30`spawn`34`40650`9`~1~1^47`31`spawn`47`47050`9`~1~1^51`32`spawn`47`47700`9`~1~1^55`33`spawn`29`53900`9`~1~1^47`34`spawn`29`56650`9`~1~1^22`35`spawn`43`64150`9`~1~1^54`36`spawn`46`69900`6`~1~1^54`37`spawn`46`70050`6`~1~1^54`38`spawn`46`70200`6`~1~1^54`39`spawn`46`70350`6`~1~1^54`40`spawn`46`70650`6`~1~1^7`41`spawn`21`73800`6`~1~1^7`42`spawn`21`74050`6`~1~1^7`43`spawn`21`74250`6`~1~1^7`44`spawn`21`74400`6`~1~1^7`45`spawn`21`75050`6`~1~1^11`46`spawn`44`76600`6`~1~1^38`47`spawn`24`78750`6`~1~1^38`48`spawn`24`78900`6`~1~1^38`49`spawn`24`79150`6`~1~1^38`50`spawn`24`79250`6`~1~1^38`51`spawn`24`79500`6`~1~1^38`52`spawn`24`79650`6`~1~1^38`53`spawn`24`79850`6`~1~1^18`54`spawn`22`81100`6`~1~1^18`55`spawn`22`81300`6`~1~1^18`56`spawn`22`81450`6`~1~1^18`57`spawn`22`81650`6`~1~1^18`58`spawn`22`81800`6`~1~1^18`59`spawn`22`82000`6`~1~1^18`60`spawn`22`82150`6`~1~1^20`61`spawn`19`87600`4`~1~1^20`62`spawn`19`87700`4`~1~1^20`63`spawn`19`87900`4`~1~1^20`64`spawn`19`88050`4`~1~1^20`65`spawn`19`88200`4`~1~1^20`66`spawn`19`88300`4`~1~1^20`67`spawn`19`88500`4`~1~1^20`68`spawn`19`88650`4`~1~1^20`69`spawn`19`88800`4`~1~1^20`70`spawn`19`89000`4`~1~1^39`71`spawn`35`90750`4`~1~1^39`72`spawn`35`90900`4`~1~1^39`73`spawn`35`91050`4`~1~1^39`74`spawn`35`91200`4`~1~1^39`75`spawn`35`91350`4`~1~1^39`76`spawn`35`91450`4`~1~1^39`77`spawn`35`91600`4`~1~1^39`78`spawn`35`91750`4`~1~1^39`79`spawn`35`92000`4`~1~1^39`80`spawn`35`92100`4`~1~1^39`81`spawn`35`92300`4`~1~1^39`82`spawn`35`92450`4`~1~1^39`83`spawn`35`92650`4`~1~1^39`84`spawn`35`92750`4`~1~1^39`85`spawn`35`92950`4`~1~1^39`86`spawn`35`93100`4`~1~1^39`87`spawn`35`93300`4`~1~1^39`88`spawn`35`93450`4`~1~1^39`89`spawn`35`93600`4`~1~1^39`90`spawn`35`93700`4`~1~~0~"),
     "104": BastionReplay(31, "1^59`57`59!1^45`0`spawn`2`50`5`~1~1^45`1`spawn`2`300`5`~1~1^45`2`spawn`2`450`5`~1~1^45`3`spawn`2`600`5`~1~1^47`4`spawn`20`2200`5`~1~1^47`5`spawn`20`2400`5`~1~1^47`6`spawn`20`2600`5`~1~1^47`7`spawn`20`2750`5`~1~1^47`8`spawn`21`4700`4`~1~1^47`9`spawn`21`4900`4`~1~1^47`10`spawn`21`5000`4`~1~1^47`11`spawn`21`5200`4`~1~1^47`12`spawn`21`5300`4`~1~1^45`13`spawn`1`6450`4`~1~1^45`14`spawn`1`6600`4`~1~1^45`15`spawn`1`6750`4`~1~1^45`16`spawn`1`6950`4`~1~1^45`17`spawn`1`7100`4`~1~1^47`18`spawn`21`12200`4`~1~1^47`19`spawn`21`12300`4`~1~1^46`20`spawn`1`13300`4`~1~1^46`21`spawn`1`13450`4`~1~1^30`22`spawn`10`27950`6`~1~1^30`23`spawn`10`28100`6`~1~1^30`24`spawn`10`28250`6`~1~1^30`25`spawn`10`28400`6`~1~1^30`26`spawn`10`28500`6`~1~1^32`27`spawn`2`31000`4`~1~1^32`28`spawn`2`31150`4`~1~1^32`29`spawn`2`31300`4`~1~1^32`30`spawn`2`31400`4`~1~1^32`31`spawn`2`31550`4`~1~1^32`32`spawn`2`31700`4`~1~1^32`33`spawn`2`31800`4`~1~1^30`34`spawn`16`32700`4`~1~1^30`35`spawn`16`32800`4`~1~1^30`36`spawn`16`32950`4`~1~1^30`37`spawn`16`33100`4`~1~1^43`38`spawn`40`42550`3`~1~1^43`39`spawn`40`42600`3`~1~1^43`40`spawn`40`42750`3`~1~1^43`41`spawn`40`42900`3`~1~1^43`42`spawn`40`43000`3`~1~1^43`43`spawn`40`43200`3`~1~1^43`44`spawn`40`43300`3`~1~1^43`45`spawn`40`43500`3`~1~1^43`46`spawn`40`43650`3`~1~1^43`47`spawn`40`43750`3`~1~1^43`48`spawn`40`43900`3`~1~1^43`49`spawn`40`44050`3`~1~1^43`50`spawn`40`44150`3`~1~1^43`51`spawn`40`44300`3`~1~1^43`52`spawn`40`44450`3`~1~1^43`53`spawn`40`44550`3`~1~1^43`54`spawn`40`44700`3`~1~1^43`55`spawn`40`44850`3`~1~1^43`56`spawn`40`45000`3`~1~1^43`57`spawn`40`45200`3`~1~1^0`58`finishBattle`0`88700`0`~1~~0~"),
     "105": BastionReplay(35, "1^59`57`59!1^27`0`spawn`24`50`3`~1~1^47`1`spawn`20`6350`5`~1~1^47`2`spawn`20`6600`5`~1~1^47`3`spawn`20`6750`5`~1~1^47`4`spawn`20`6950`5`~1~1^46`5`spawn`1`7950`5`~1~1^46`6`spawn`1`8200`5`~1~1^46`7`spawn`1`8400`5`~1~1^46`8`spawn`1`8650`5`~1~1^47`9`spawn`21`10750`4`~1~1^47`10`spawn`21`11000`4`~1~1^47`11`spawn`21`11150`4`~1~1^47`12`spawn`21`11400`4`~1~1^47`13`spawn`21`11850`4`~1~1^46`14`spawn`1`13050`4`~1~1^46`15`spawn`1`13200`4`~1~1^46`16`spawn`1`13350`4`~1~1^46`17`spawn`1`13600`4`~1~1^46`18`spawn`1`13750`4`~1~1^30`19`spawn`12`26800`6`~1~1^30`20`spawn`12`26950`6`~1~1^30`21`spawn`12`27200`6`~1~1^30`22`spawn`7`28400`6`~1~1^30`23`spawn`7`28550`6`~1~1^30`24`spawn`16`31000`4`~1~1^30`25`spawn`16`31100`4`~1~1^30`26`spawn`16`31300`4`~1~1^30`27`spawn`16`31400`4`~1~1^30`28`spawn`16`31500`4`~1~1^30`29`spawn`16`31700`4`~1~1^30`30`spawn`16`31800`4`~1~1^30`31`spawn`16`32000`4`~1~1^30`32`spawn`16`32100`4`~1~1^30`33`spawn`16`32300`4`~1~1^30`34`spawn`16`32400`4`~1~1^32`35`spawn`2`33850`4`~1~1^32`36`spawn`2`34050`4`~1~1^32`37`spawn`2`34250`4`~1~1^32`38`spawn`2`34450`4`~1~1^30`39`spawn`8`41200`3`~1~1^30`40`spawn`8`41350`3`~1~1^30`41`spawn`8`41500`3`~1~1^30`42`spawn`8`41600`3`~1~1^30`43`spawn`8`41750`3`~1~1^30`44`spawn`8`41900`3`~1~1^30`45`spawn`8`42000`3`~1~1^30`46`spawn`8`42150`3`~1~1^30`47`spawn`8`42300`3`~1~1^30`48`spawn`8`42450`3`~1~1^30`49`spawn`8`42550`3`~1~1^30`50`spawn`8`42750`3`~1~1^30`51`spawn`8`42900`3`~1~1^30`52`spawn`8`43050`3`~1~1^30`53`spawn`8`43200`3`~1~1^30`54`spawn`8`43400`3`~1~1^30`55`spawn`8`43550`3`~1~1^30`56`spawn`8`43700`3`~1~1^30`57`spawn`8`43850`3`~1~1^0`58`finishBattle`0`115900`0`~1~~0~"),
@@ -785,6 +798,8 @@ class Bot:
     BASTION_DURATION = 180.0
     # Resign from battle.
     FINISH_BATTLE = "1^1`-1`1!1^0`0`finishBattle`0`50`0`~1~~0~"
+    # Runes to open the gate.
+    BASTION_GIFT_RUNES = 100
 
     def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
         self.context = context
@@ -885,7 +900,7 @@ class Bot:
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
                         self.update_self_info()
-                        self.audit_log.append("Collect *{}* {}.".format(amount, resource_type.name))
+                        self.audit_log.append("Collect *{}* {} from {}.".format(amount, resource_type.name, building.type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -971,7 +986,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{}* {}.".format(amount, reward_type.name))
+                self.audit_log.append("Collect *{}* {} from alliance.".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -989,8 +1004,15 @@ class Bot:
 
     def check_bastion(self):
         """
-        Plays a bastion battle.
+        Plays a bastion battle and/or collects a gift.
         """
+        if self.self_info.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
+            logging.info("Collecting bastion gift…")
+            for reward_type, amount in self.epic_war.open_fair_citadel_gate().items():
+                logging.info("Collected %s %s.", amount, reward_type.name)
+                self.audit_log.append("Collect *{}* {} from bastion.".format(amount, reward_type.name))
+            self.update_self_info()
+
         logging.info("Starting bastion…")
         error, bastion = self.epic_war.start_bastion()
         if error == Error.not_enough_time:
