@@ -1013,7 +1013,7 @@ class Bot:
             for reward_type, amount in self.epic_war.open_fair_citadel_gate().items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
                 self.audit_log.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
-            self.update_self_info()
+            self.self_info.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
 
         logging.info("Starting bastion…")
         error, bastion = self.epic_war.start_bastion()
