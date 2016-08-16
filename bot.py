@@ -851,7 +851,7 @@ class Bot:
             amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
             self.update_self_info()
             logging.info("Cemetery farmed: %s.", amount)
-            self.audit_log.append("Collected \N{MEAT ON BONE} *%s*." % amount)
+            self.audit_log.append("Farm \N{MEAT ON BONE} *%s*." % amount)
 
     def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]) -> List[Building]:
         """
@@ -885,7 +885,7 @@ class Bot:
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
                         self.update_self_info()
-                        self.audit_log.append("Collected *{}* {}.".format(amount, resource_type.name))
+                        self.audit_log.append("Collect *{}* {}.".format(amount, resource_type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -951,7 +951,7 @@ class Bot:
         for building_id in building_ids:
             help_time = datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id)))
             logging.info("Farmed alliance help: %s.", help_time)
-            self.audit_log.append("Farmed \N{two men holding hands} *%s*." % help_time)
+            self.audit_log.append("Farm \N{two men holding hands} *%s*." % help_time)
 
     def check_alliance_daily_gift(self):
         """
@@ -971,7 +971,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collected *{}* {}.".format(amount, reward_type.name))
+                self.audit_log.append("Collect *{}* {}.".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -981,7 +981,7 @@ class Bot:
         logging.info("%s gifts are waiting for you.", len(user_ids))
         for user_id in user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
-            self.audit_log.append("Farmed \N{candy} *gift*.")
+            self.audit_log.append("Farm \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift([member.id for member in self.self_info.alliance.members]).name,
@@ -1020,7 +1020,7 @@ class Bot:
         self.update_self_info()
         runes_farmed = self.self_info.resources[ResourceType.runes] - old_runes_count
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)
-        self.audit_log.append("Farmed *{} of {} runes* in bastion *{}*.".format(
+        self.audit_log.append("Farm *{} of {} runes* in bastion *{}*.".format(
             runes_farmed, replay.runes, bastion.fair_id))
 
     def get_alliance_builder_count(self) -> int:
