@@ -495,7 +495,12 @@ class EpicWar:
         """
         Collects notice reward.
         """
-        return self.parse_reward(self.post("noticeFarmReward", id=notice_id))
+        result = self.post("noticeFarmReward", id=notice_id)
+        if "result" in result:
+            return self.parse_reward(result["result"])
+        if "error" in result and result["error"]["name"] == Error.not_enough.value:
+            return {}
+        raise ValueError(result)
 
     def get_artifacts(self) -> Set[ArtifactType]:
         """
@@ -551,20 +556,16 @@ class EpicWar:
         }
 
     @staticmethod
-    def parse_reward(result: dict) -> Dict[ResourceType, int]:
+    def parse_reward(reward: dict) -> Dict[ResourceType, int]:
         """
         Helper method to parse alliance or bastion reward.
         """
-        if "result" in result:
-            return {
-                reward_type(obj["id"]): obj["amount"]
-                for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
-                for obj in result["result"].get(key, [])
-                if reward_type.has_value(obj["id"])
-            }
-        if "error" in result and result["error"]["name"] == Error.not_enough.value:
-            return {}
-        raise ValueError(result)
+        return {
+            reward_type(obj["id"]): obj["amount"]
+            for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
+            for obj in reward.get(key, ())
+            if reward_type.has_value(obj["id"])
+        }
 
     def parse_resource_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
         """
@@ -900,7 +901,7 @@ class Bot:
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
                         self.update_self_info()
-                        self.audit_log.append("Collect *{}* {} from {}.".format(amount, resource_type.name, building.type.name))
+                        self.audit_log.append("Collect *{}* {} from *{}*.".format(amount, resource_type.name, building.type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -986,7 +987,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{}* {} from alliance.".format(amount, reward_type.name))
+                self.audit_log.append("Collect *{}* {} from *alliance*.".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -1010,7 +1011,7 @@ class Bot:
             logging.info("Collecting bastion gift…")
             for reward_type, amount in self.epic_war.open_fair_citadel_gate().items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{}* {} from bastion.".format(amount, reward_type.name))
+                self.audit_log.append("Collect *{}* {} from *bastion*.".format(amount, reward_type.name))
             self.update_self_info()
 
         logging.info("Starting bastion…")
