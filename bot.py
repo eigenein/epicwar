@@ -902,7 +902,7 @@ class Bot:
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
                         self.update_self_info()
-                        self.audit_log.append("Collect *{}* {} from *{}*.".format(amount, resource_type.name, building.type.name))
+                        self.audit_log.append("Collect *{} {}* from *{}*.".format(amount, resource_type.name, building.type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -988,7 +988,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{}* {} from *alliance*.".format(amount, reward_type.name))
+                self.audit_log.append("Collect *{} {}* from *alliance*.".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -1012,7 +1012,7 @@ class Bot:
             logging.info("Collecting bastion gift…")
             for reward_type, amount in self.epic_war.open_fair_citadel_gate().items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{}* {} from *bastion*.".format(amount, reward_type.name))
+                self.audit_log.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
             self.update_self_info()
 
         logging.info("Starting bastion…")
