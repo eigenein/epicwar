@@ -148,7 +148,12 @@ class BuildingType(LookupEnum):
         }
 
 
-class ResourceType(LookupEnum):
+class RewardType(LookupEnum):
+    # Base class for all reward enums.
+    pass
+
+
+class ResourceType(RewardType):
     gold = 1  # золото
     food = 2  # еда
     mana = 3  # мана
@@ -197,7 +202,7 @@ class ResourceType(LookupEnum):
     alliance_runes = 161  # руна знаний (клановый ресурс)
 
 
-class SpellType(LookupEnum):
+class SpellType(RewardType):
     """
     Spell type.
     """
@@ -209,7 +214,7 @@ class SpellType(LookupEnum):
     silver = 104  # купол грозы
 
 
-class UnitType(LookupEnum):
+class UnitType(RewardType):
     """
     Unit type.
     """
@@ -223,14 +228,23 @@ class UnitType(LookupEnum):
     ghost = 8  # призрак
     ent = 9  # энт
     dragon = 10  # дракон
+    palladin = 11  # пламя возмездия (герой)
+    dwarf = 12  # гномский пушкарь (герой)
+    halloween = 13  # ветрокрылая (герой)
+    white_mage = 14  # повелитель холода (герой)
+    skeleton = 16  # король проклятых (герой)
     scorpion = 20  # скорпион
     afreet = 21  # ифрит
     spider = 22  # арахнит
     elephant = 23  # слон
+    frozen_ent = 28  # ледяной страж (герой)
     citadel_santa = 47  # проклятый гном
     citadel_yeti = 48  # хищник
     citadel_elf = 49  # стрелок мора
     citadel_orc = 50  # урук
+    angel_knight = 103  # небожитель (герой)
+    succubus = 108  # огненная бестия (герой)
+    ice_golem = 158  # (герой)
     league_orc_3 = 110  # защитник-сержант
     league_elf_3 = 114  # страж-сержант
     league_troll_2 = 117  # урук-рядовой
@@ -492,7 +506,7 @@ class EpicWar:
             if NoticeType.has_value(notice["type"])
         }
 
-    def notice_farm_reward(self, notice_id: str) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+    def notice_farm_reward(self, notice_id: str) -> Dict[RewardType, int]:
         """
         Collects notice reward.
         """
@@ -545,7 +559,7 @@ class EpicWar:
         """
         return self.parse_reward(self.post("fairCitadelOpenGate"))
 
-    def spin_event_roulette(self, count=1, is_payed=False) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+    def spin_event_roulette(self, count=1, is_payed=False) -> Dict[RewardType, int]:
         """
         Spin roulette!
         """
@@ -568,7 +582,7 @@ class EpicWar:
         }
 
     @staticmethod
-    def parse_reward(reward: dict) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+    def parse_reward(reward: dict) -> Dict[RewardType, int]:
         """
         Helper method to parse alliance or bastion reward.
         """
