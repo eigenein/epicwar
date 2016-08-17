@@ -244,11 +244,11 @@ class UnitType(RewardType):
     citadel_orc = 50  # урук
     angel_knight = 103  # небожитель (герой)
     succubus = 108  # огненная бестия (герой)
-    ice_golem = 158  # (герой)
     league_orc_3 = 110  # защитник-сержант
     league_elf_3 = 114  # страж-сержант
     league_troll_2 = 117  # урук-рядовой
     league_eagle_2 = 121  # охотник-рядовой
+    ice_golem = 158  # (герой)
 
     @classmethod
     def upgradable(cls) -> Set["UnitType"]:
