@@ -544,7 +544,7 @@ class EpicWar:
         """
         return self.parse_reward(self.post("fairCitadelOpenGate"))
 
-    def spin_event_roulette(self, count=1, is_payed=True) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+    def spin_event_roulette(self, count=1, is_payed=False) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
         """
         Spin roulette!
         """
