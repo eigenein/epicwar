@@ -550,7 +550,7 @@ class EpicWar:
         """
         result = self.post("event_roulette_spin", count=count, isPayed=is_payed)
         if "result" in result:
-            return self.parse_reward(result["result"])
+            return self.parse_reward(result["result"]["reward"])
         if "error" in result and result["error"]["name"] == Error.not_available.value:
             return {}
         raise ValueError(result)
