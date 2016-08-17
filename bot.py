@@ -544,6 +544,17 @@ class EpicWar:
         """
         return self.parse_reward(self.post("fairCitadelOpenGate"))
 
+    def spin_event_roulette(self, count=1, is_payed=True) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
+        """
+        Spin roulette!
+        """
+        result = self.post("event_roulette_spin", count=count, isPayed=is_payed)
+        if "result" in result:
+            return self.parse_reward(result["result"])
+        if "error" in result and result["error"]["name"] == Error.not_available.value:
+            return {}
+        raise ValueError(result)
+
     @staticmethod
     def parse_resources(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
         """
@@ -556,7 +567,7 @@ class EpicWar:
         }
 
     @staticmethod
-    def parse_reward(reward: dict) -> Dict[ResourceType, int]:
+    def parse_reward(reward: dict) -> Dict[Union[ResourceType, UnitType, SpellType], int]:
         """
         Helper method to parse alliance or bastion reward.
         """
@@ -837,6 +848,7 @@ class Bot:
         self.check_alliance_help()
         self.check_alliance_daily_gift()
         self.check_gifts()
+        self.check_roulette()
 
         # Check buildings and units.
         buildings = sorted(self.epic_war.get_buildings(), key=self.get_building_sorting_key)
@@ -1004,6 +1016,15 @@ class Bot:
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift([member.id for member in self.self_info.alliance.members]).name,
         )
+
+    def check_roulette(self):
+        """
+        Spins event roulette.
+        """
+        logging.info("Spinning roulette…")
+        for reward_type, amount in self.epic_war.spin_event_roulette().items():
+            logging.info("Collected %s %s.", amount, reward_type.name)
+            self.audit_log.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
 
     def check_bastion(self):
         """
