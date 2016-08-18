@@ -1180,7 +1180,7 @@ class Bot:
                 for building in incomplete_buildings
             )
         else:
-            construction = "\N{CONSTRUCTION SIGN} *none*"
+            construction = "\N{CONSTRUCTION SIGN} \N{warning sign} *none*"
         text = (
             "\N{HOUSE BUILDING} *{self_info.caption}*\n"
             "\N{MONEY BAG} *{gold}*\n"
