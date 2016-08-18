@@ -1306,7 +1306,7 @@ def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_fil
     obj.telegram_token = os.environ.get("EPIC_WAR_TELEGRAM_TOKEN")
     obj.telegram_chat_id = os.environ.get("EPIC_WAR_TELEGRAM_CHAT_ID")
     obj.telegram_enabled = bool(obj.telegram_token and obj.telegram_chat_id)
-    obj.start_time = datetime.datetime.now()
+    obj.start_time = time.time()
 
     obj.log_handler = handler = (
         ColoredCountingStreamHandler(click.get_text_stream("stderr"))
