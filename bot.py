@@ -1189,7 +1189,7 @@ class Bot:
             "\N{squared cjk unified ideograph-7a7a} *{runes}*\n"
             "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
-            " \N{clock face one oclock} *{execution_time}*s"
+            " \N{clock face one oclock} *{execution_time[0]}m{execution_time[1]:02}s*"
             " \N{warning sign} *{log_counter[WARNING]}*"
             " \N{cross mark} *{log_counter[ERROR]}*\n"
             "\n"
@@ -1204,7 +1204,7 @@ class Bot:
             construction=construction,
             audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
             log_counter=self.context.log_handler.counter,
-            execution_time=int(time.time() - self.context.start_time),
+            execution_time=divmod(int(time.time() - self.context.start_time), 60),
         ).replace("_", "-")
         result = requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
@@ -1306,7 +1306,7 @@ def main(obj: ContextObject, verbose: True, user_id: str, remixsid: str, log_fil
     obj.telegram_token = os.environ.get("EPIC_WAR_TELEGRAM_TOKEN")
     obj.telegram_chat_id = os.environ.get("EPIC_WAR_TELEGRAM_CHAT_ID")
     obj.telegram_enabled = bool(obj.telegram_token and obj.telegram_chat_id)
-    obj.start_time = time.time()
+    obj.start_time = datetime.datetime.now()
 
     obj.log_handler = handler = (
         ColoredCountingStreamHandler(click.get_text_stream("stderr"))
