@@ -5,6 +5,7 @@
 ## Features
 
 * Upgrades buildings.
+* Cleans up extended areas.
 * Upgrades units.
 * Collects resources from production buildings.
 * Sends mana to alliance members.
