@@ -20,14 +20,14 @@
 * Spins event roulette.
 * Sends Telegram notification.
 
-## Files
+## Scripts
 
 |File||
 |---|---|
 |`bot.py`|Runs the bot once|
-|`command-log.py`|Used to investigate a battle command log|
 |`epicwar.ipynb`|Used to investigate game requests|
-|`generate-library.py`|Used to generate static library content|
+|`tools/command-log.py`|Used to investigate a battle command log|
+|`tools/generate-library.py`|Used to generate static library content|
 
 ## Configuring
 
