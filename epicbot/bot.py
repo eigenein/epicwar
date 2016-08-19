@@ -188,6 +188,7 @@ class Bot:
                 error = self.api.destruct_building(building.id, False)
                 if error == Error.ok:
                     self.update_self_info()
+                    self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
                     self.notifications.append("Destroy *{}*.".format(building.type.name))
                     # Only one area can be simultaneously destroyed.
                     return
