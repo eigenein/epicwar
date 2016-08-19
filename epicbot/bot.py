@@ -282,12 +282,12 @@ class Bot:
         """
         Plays a bastion battle and/or collects a gift.
         """
-        if self.self_info.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
+        if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
             logging.info("Collecting bastion gift…")
             for reward_type, amount in self.api.open_fair_citadel_gate().items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
                 self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
-            self.self_info.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
+            self.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
 
         logging.info("Starting bastion…")
         error, bastion = self.api.start_bastion()
@@ -343,7 +343,7 @@ class Bot:
         # Dictionaries to match resources against.
         current_values = {
             BuildingType: self.buildings.max_level,
-            ResourceType: self.self_info.resources,
+            ResourceType: self.resources,
         }
         for type_, argument in self.library.requirements[entity_type, level].items():
             if current_values[type(type_)].get(type_, 0) < argument:
@@ -392,10 +392,10 @@ class Bot:
         ).format(
             self_info=self.self_info,
             requests=self.api.request_id,
-            food=self.format_amount(self.self_info.resources[ResourceType.food]),
-            gold=self.format_amount(self.self_info.resources[ResourceType.gold]),
-            sand=self.format_amount(self.self_info.resources[ResourceType.sand]),
-            runes=self.format_amount(self.self_info.resources[ResourceType.runes]),
+            food=self.format_amount(self.resources[ResourceType.food]),
+            gold=self.format_amount(self.resources[ResourceType.gold]),
+            sand=self.format_amount(self.resources[ResourceType.sand]),
+            runes=self.format_amount(self.resources[ResourceType.runes]),
             construction=construction,
             notifications="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.notifications),
             log_counter=self.context.log_handler.counter,
