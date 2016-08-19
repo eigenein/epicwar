@@ -844,7 +844,7 @@ class Bot:
         self.artifacts = []  # type: Set[ArtifactType]
         self.alliance_membership = None  # type: AllianceMember
         # Actions performed by the bot.
-        self.audit_log = []  # type: List[str]
+        self.notifications = []  # type: List[str]
 
     def step(self):
         """
@@ -872,10 +872,11 @@ class Bot:
 
         # Check buildings and units.
         buildings = sorted(self.epic_war.get_buildings(), key=self.get_building_sorting_key)
+        self.collect_resources(buildings)
         building_levels = self.get_building_levels(buildings)
-        incomplete_buildings = self.check_buildings(buildings, building_levels)
+        incomplete_buildings = self.upgrade_buildings(buildings, building_levels)
         forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
-        self.check_units(forge_id, building_levels)
+        self.upgrade_units(forge_id, building_levels)
 
         # Battles.
         if self.context.with_bastion:
@@ -901,21 +902,14 @@ class Bot:
             amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
             self.update_self_info()
             logging.info("Cemetery farmed: %s.", amount)
-            self.audit_log.append("Farm \N{MEAT ON BONE} *%s*." % amount)
+            self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
 
-    def check_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]) -> List[Building]:
+    def collect_resources(self, buildings: List[Building]):
         """
-        Checks all buildings and collects resources, performs upgrades and etc.
+        Collects resources from buildings.
         """
-        incomplete_buildings = self.get_incomplete_buldings(buildings)
-        builder_count = building_levels[BuildingType.builder_hut] + self.get_alliance_builder_count()
-        logging.info("Builder count: %s.", builder_count)
-
         stop_collection_from = set()
-
         for building in buildings:
-            logging.debug("Check: %s.", building)
-            # Collect resources.
             if (
                 # Production building.
                 building.type in BuildingType.production() and
@@ -934,14 +928,24 @@ class Bot:
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
-                        self.update_self_info()
-                        self.audit_log.append("Collect *{} {}* from *{}*.".format(amount, resource_type.name, building.type.name))
+                        self.notifications.append("Collect *{} {}* from *{}*.".format(amount, resource_type.name, building.type.name))
                     else:
                         # Storage is full. Get rid of useless following requests.
                         logging.info("Stopping collection from %s.", building.type.name)
                         stop_collection_from.add(building.type)
+        # Finally, update resource info.
+        self.update_self_info()
 
-            # Upgrade building.
+    def upgrade_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]) -> List[Building]:
+        """
+        Upgrades buildings.
+        """
+        incomplete_buildings = self.get_incomplete_buldings(buildings)
+        builder_count = building_levels[BuildingType.builder_hut] + self.get_alliance_builder_count()
+        logging.info("Builder count: %s.", builder_count)
+
+        for building in buildings:
+            logging.debug("Upgrade: %s.", building)
             if (
                 # Builder is available.
                 len(incomplete_buildings) < builder_count and
@@ -961,13 +965,13 @@ class Bot:
                 if error == Error.ok:
                     self.update_self_info()
                     incomplete_buildings = self.get_incomplete_buldings(self.epic_war.get_buildings())
-                    self.audit_log.append("Upgrade *{}*.".format(building.type.name))
+                    self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
         return incomplete_buildings
 
-    def check_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
+    def upgrade_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
         """
         Checks unit types and tries to upgrade them.
         """
@@ -983,7 +987,7 @@ class Bot:
             error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
             if error == Error.ok:
                 self.update_self_info()
-                self.audit_log.append("Upgrade *{}*.".format(unit_type.name))
+                self.notifications.append("Upgrade *{}*.".format(unit_type.name))
                 # One research per time and we've just started a one.
                 break
             else:
@@ -1001,7 +1005,7 @@ class Bot:
         for building_id in building_ids:
             help_time = datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id)))
             logging.info("Farmed alliance help: %s.", help_time)
-            self.audit_log.append("Farm \N{two men holding hands} *%s*." % help_time)
+            self.notifications.append("Farm \N{two men holding hands} *%s*." % help_time)
 
     def check_alliance_daily_gift(self):
         """
@@ -1021,7 +1025,7 @@ class Bot:
                 continue
             for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{} {}* from *alliance*.".format(amount, reward_type.name))
+                self.notifications.append("Collect *{} {}* from *alliance*.".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -1031,7 +1035,7 @@ class Bot:
         logging.info("%s gifts are waiting for you.", len(user_ids))
         for user_id in user_ids:
             logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
-            self.audit_log.append("Farm \N{candy} *gift*.")
+            self.notifications.append("Farm \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.epic_war.send_gift([member.id for member in self.self_info.alliance.members]).name,
@@ -1044,7 +1048,7 @@ class Bot:
         logging.info("Spinning roulette…")
         for reward_type, amount in self.epic_war.spin_event_roulette().items():
             logging.info("Collected %s %s.", amount, reward_type.name)
-            self.audit_log.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
+            self.notifications.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
 
     def check_bastion(self):
         """
@@ -1054,7 +1058,7 @@ class Bot:
             logging.info("Collecting bastion gift…")
             for reward_type, amount in self.epic_war.open_fair_citadel_gate().items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.audit_log.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
+                self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
             self.self_info.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
 
         logging.info("Starting bastion…")
@@ -1070,7 +1074,7 @@ class Bot:
         replay = BASTION_COMMANDS.get(bastion.fair_id)
         if not replay or replay.runes < self.context.min_bastion_runes:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
-            self.audit_log.append("\N{warning sign} Skip bastion *%s*: %s." % (
+            self.notifications.append("\N{warning sign} Skip bastion *%s*: %s." % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
             battle_result = self.epic_war.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
@@ -1086,7 +1090,7 @@ class Bot:
         self.update_self_info()
         runes_farmed = self.self_info.resources[ResourceType.runes] - old_runes_count
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)
-        self.audit_log.append("Farm *{} of {} runes* in bastion *{}*.".format(
+        self.notifications.append("Farm *{} of {} runes* in bastion *{}*.".format(
             runes_farmed, replay.runes, bastion.fair_id))
 
     def get_alliance_builder_count(self) -> int:
@@ -1195,7 +1199,7 @@ class Bot:
             " \N{warning sign} *{log_counter[WARNING]}*"
             " \N{cross mark} *{log_counter[ERROR]}*\n"
             "\n"
-            "{audit_log}"
+            "{notifications}"
         ).format(
             self_info=self.self_info,
             requests=self.epic_war.request_id,
@@ -1204,7 +1208,7 @@ class Bot:
             sand=self.format_amount(self.self_info.resources[ResourceType.sand]),
             runes=self.format_amount(self.self_info.resources[ResourceType.runes]),
             construction=construction,
-            audit_log="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.audit_log),
+            notifications="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.notifications),
             log_counter=self.context.log_handler.counter,
             execution_time=divmod(int(time.time() - self.context.start_time), 60),
         ).replace("_", "-")
