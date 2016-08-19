@@ -2,6 +2,23 @@
 
 [![Build Status](https://travis-ci.org/eigenein/epicwar.svg?branch=master)](https://travis-ci.org/eigenein/epicwar)
 
+## Features
+
+* Upgrades buildings.
+* Upgrades units.
+* Collects resources from production buildings.
+* Sends mana to alliance members.
+* Collects mana.
+* Sends help to alliance members.
+* Asks alliance members for help.
+* Collects help from alliance members.
+* Activates alliance daily gift.
+* Collects alliance daily gift.
+* Simulates user behavior by making random delays between requests.
+* Participates in well-known bastion battles.
+* Spins event roulette.
+* Sends Telegram notification.
+
 ## Files
 
 |File||
