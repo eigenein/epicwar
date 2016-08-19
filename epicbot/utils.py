@@ -4,8 +4,22 @@
 import collections
 import logging
 import random
+import typing
 
 import click
+
+
+class Context:
+    user_id = None  # type: str
+    remixsid = None  # type: str
+    with_castle = False  # type: bool
+    with_bastion = False  # type: bool
+    min_bastion_runes = 0  # type: int
+    telegram_enabled = False  # type: bool
+    telegram_token = None  # type: typing.Optional[str]
+    telegram_chat_id = None  # type: typing.Optional[str]
+    start_time = None  # type: float
+    log_handler = None  # type: "CountingStreamHandler"
 
 
 class StudentTRandomGenerator:
