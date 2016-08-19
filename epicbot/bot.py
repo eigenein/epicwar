@@ -43,7 +43,7 @@ class Bot:
     BASTION_GIFT_RUNES = 100
 
     def __init__(self, context: epicbot.utils.Context, api: Api, library: epicbot.library.Library):
-        self.context = context  # FIXME: don't pass ContextObject into Bot.
+        self.context = context
         self.epic_war = api
         self.library = library
         # Player info.

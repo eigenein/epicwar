@@ -6,6 +6,7 @@ Game enumerations.
 """
 
 import enum
+import typing
 
 
 class LookupEnum(enum.Enum):
@@ -215,7 +216,7 @@ class UnitType(RewardType):
     ice_golem = 158  # (герой)
 
     @classmethod
-    def upgradable(cls) -> Set["UnitType"]:
+    def upgradable(cls) -> typing.Set["UnitType"]:
         """
         Gets upgradable unit types.
         """

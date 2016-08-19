@@ -19,7 +19,7 @@ class Context:
     telegram_token = None  # type: typing.Optional[str]
     telegram_chat_id = None  # type: typing.Optional[str]
     start_time = None  # type: float
-    log_handler = None  # type: "CountingStreamHandler"
+    log_handler = None  # type: CountingStreamHandler
 
 
 class StudentTRandomGenerator:
