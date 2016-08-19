@@ -139,8 +139,8 @@ class Api:
         """
         Collects resource from the building.
         """
-        result, _ = self.post("collectResource", buildingId=building_id)
-        return self.parse_resource_reward(result["reward"])
+        result, state = self.post("collectResource", call_state=True, buildingId=building_id)
+        return self.parse_resource_reward(result["reward"]), self.parse_resource_reward(state)
 
     def farm_cemetery(self) -> Dict[ResourceType, int]:
         """

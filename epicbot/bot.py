@@ -5,6 +5,7 @@ import datetime
 import logging
 import time
 
+from collections import Counter
 from typing import List, Set, Union
 
 import requests
@@ -46,6 +47,7 @@ class Bot:
         self.library = library
         # Player info.
         self.self_info = None  # type: SelfInfo
+        self.resources = Counter()
         self.artifacts = []  # type: Set[ArtifactType]
         self.alliance_membership = None  # type: AllianceMember
         self.buildings = None  # type: epicbot.managers.Buildings
@@ -59,13 +61,18 @@ class Bot:
         # Get player info.
         self.update_self_info()
         logging.info("Welcome %s!", self.self_info.caption)
+
+        self.resources = self.self_info.resources
+        self.log_resources()
+
+        self.artifacts = self.api.get_artifacts()
+
         self.alliance_membership = next(
             member
             for member in self.self_info.alliance.members
             if member.id == self.self_info.user_id
         )
         logging.info("Life time score: %s.", self.alliance_membership.life_time_score)
-        self.artifacts = self.api.get_artifacts()
 
         # Collect some food.
         self.check_cemetery()
@@ -89,14 +96,16 @@ class Bot:
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
+        self.log_resources()
         logging.info("Made %s requests. Bye!", self.api.request_id)
 
     def update_self_info(self):
         """
         Updates and prints self info.
         """
+        # TODO: Deprecated. Should be removed.
         self.self_info = self.api.get_self_info()
-        self.log_resources()
+        self.resources = self.self_info.resources
 
     def check_cemetery(self):
         """
@@ -128,17 +137,15 @@ class Bot:
                 )
             ):
                 logging.debug("Collecting resources from %s…", building)
-                resources = self.api.collect_resource(building.id)
-                for resource_type, amount in resources.items():
+                reward, self.resources = self.api.collect_resource(building.id)
+                for resource_type, amount in reward.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
                         self.notifications.append("Collect *{} {}* from *{}*.".format(amount, resource_type.name, building.type.name))
                     else:
-                        # Storage is full. Get rid of useless following requests.
+                        # Storage is full. Get rid of the following useless requests.
                         logging.info("Stopping collection from %s.", building.type.name)
                         stop_collection_from.add(building.type)
-        # Finally, update resource info.
-        self.update_self_info()
 
     def upgrade_buildings(self):
         """
@@ -350,7 +357,7 @@ class Bot:
         Prints last known resource amounts.
         """
         logging.info("Resources: %s.", ", ".join(
-            "{}: {}".format(resource_type.name, self.self_info.resources[resource_type])
+            "{}: {}".format(resource_type.name, self.resources[resource_type])
             for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand, ResourceType.runes)
         ))
 
