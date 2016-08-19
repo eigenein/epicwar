@@ -8,7 +8,6 @@ Epic War bot.
 import collections
 import contextlib
 import datetime
-import gzip
 import hashlib
 import json
 import logging
@@ -25,6 +24,7 @@ import click
 import requests
 
 import epicbot.bastion
+import epicbot.library
 import epicbot.utils
 
 from epicbot.enums import ArtifactType, BuildingType, Error, NoticeType, ResourceType, RewardType, SpellType, UnitType
@@ -425,91 +425,6 @@ class EpicWar:
         self.session.close()
 
 
-# Epic War entities library.
-# --------------------------------------------------------------------------------------------------
-
-class Library:
-    """
-    Game entities library. Used to track upgrade requirements and building production.
-    """
-    @staticmethod
-    def load(path: str) -> "Library":
-        logging.info("Loading library…")
-        return Library(json.load(gzip.open(path, "rt", encoding="utf-8")))
-
-    def __init__(self, library: Dict):
-        self.requirements = collections.defaultdict(dict)
-        self.full_time = {}  # type: Dict[Tuple[BuildingType, int], int]
-        self.construction_time = {}  # type: Dict[Tuple[BuildingType, int], int]
-        # Process buildings.
-        for building_level in library["buildingLevel"]:
-            if building_level["cost"].get("starmoney", 0) != 0:
-                # Skip buildings that require star money.
-                continue
-            try:
-                type_ = BuildingType(building_level["buildingId"])
-            except ValueError:
-                type_ = None
-            level = building_level["level"]
-            if type_:
-                # Remember construction time.
-                self.construction_time[type_, level] = building_level["constructionTime"]
-                # Process build or upgrade cost.
-                for resource in building_level["cost"].get("resource", []):
-                    try:
-                        resource_type = ResourceType(resource["id"])
-                    except ValueError:
-                        continue
-                    self.requirements[type_, level][resource_type] = resource["amount"]
-                # Process resource production.
-                if type_ in BuildingType.production():
-                    self.full_time[type_, level] = building_level["production"]["resource"]["fullTime"]
-            if "unlock" not in building_level:
-                continue
-            # Process dependent buildings.
-            for unlock in building_level["unlock"].get("building", []):
-                try:
-                    unlocked_type = BuildingType(unlock["typeId"])
-                except ValueError:
-                    continue
-                assert type_
-                for unlocked_level in range(1, unlock["maxLevel"] + 1):
-                    try:
-                        existing_level = self.requirements[unlocked_type, unlocked_level][type_]
-                    except KeyError:
-                        self.requirements[unlocked_type, unlocked_level][type_] = level
-                    else:
-                        self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
-            # Process dependent units.
-            for unlock in building_level["unlock"].get("unit", []):
-                try:
-                    unlocked_type = UnitType(unlock["unitId"])
-                except ValueError:
-                    continue
-                assert type_
-                for unlocked_level in range(1, unlock["maxLevel"] + 1):
-                    try:
-                        existing_level = self.requirements[unlocked_type, unlocked_level][type_]
-                    except KeyError:
-                        self.requirements[unlocked_type, unlocked_level][type_] = level
-                    else:
-                        self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
-        # Process unit research cost.
-        for unit_level in library["unitLevel"]:
-            try:
-                type_ = UnitType(unit_level["unitId"])
-            except ValueError:
-                continue
-            if "researchCost" not in unit_level:
-                continue
-            for resource in unit_level["researchCost"]["resource"]:
-                try:
-                    resource_type = ResourceType(resource["id"])
-                except ValueError:
-                    continue
-                self.requirements[(type_, unit_level["level"])][resource_type] = resource["amount"]
-
-
 # Bot implementation.
 # --------------------------------------------------------------------------------------------------
 
@@ -537,7 +452,7 @@ class Bot:
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
 
-    def __init__(self, context: "ContextObject", epic_war: EpicWar, library: Library):
+    def __init__(self, context: "ContextObject", epic_war: EpicWar, library: epicbot.library.Library):
         self.context = context  # FIXME: don't pass ContextObject into Bot.
         self.epic_war = epic_war
         self.library = library
@@ -999,7 +914,7 @@ def step(obj: ContextObject, with_castle: bool, with_bastion: bool, min_bastion_
     obj.min_bastion_runes = min_bastion_runes
 
     try:
-        library = Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
+        library = epicbot.library.Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
         random_generator = epicbot.utils.StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(EpicWar(obj.user_id, obj.remixsid, random_generator)) as epic_war:
             epic_war.authenticate()
