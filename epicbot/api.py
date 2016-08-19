@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """
-Epic War HTTP API client.
+Epic War HTTP API client. Reverse-engineered with ♥️.
 """
 
 import hashlib
