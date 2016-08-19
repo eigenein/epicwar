@@ -169,7 +169,7 @@ class Bot:
                 error = self.api.upgrade_building(building.id)
                 if error == Error.ok:
                     self.update_self_info()
-                    self.buildings = epicbot.managers.Buildings(self.api.get_buildings())
+                    self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
