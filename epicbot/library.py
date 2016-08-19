@@ -19,7 +19,8 @@ class Library:
         self.requirements = defaultdict(dict)
         self.full_time = {}  # type: Dict[Tuple[BuildingType, int], int]
         self.construction_time = {}  # type: Dict[Tuple[BuildingType, int], int]
-        # Process buildings.
+        self.destroy_levels = {}  # type: Dict[BuildingType, int]
+        # Process building levels.
         for building_level in content["buildingLevel"]:
             if building_level["cost"].get("starmoney", 0) != 0:
                 # Skip buildings that require star money.
@@ -72,6 +73,15 @@ class Library:
                         self.requirements[unlocked_type, unlocked_level][type_] = level
                     else:
                         self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
+        # Process buildings.
+        for building in content["building"]:
+            try:
+                type_ = BuildingType(building["id"])
+            except ValueError:
+                continue
+            # Remember castle level to destroy this extended area.
+            if type_ in BuildingType.extended_areas():
+                self.destroy_levels[type_] = building["destroyConditions"]["building"][0]["level"]
         # Process unit research cost.
         for unit_level in content["unitLevel"]:
             try:

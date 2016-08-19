@@ -18,6 +18,7 @@ class Buildings:
     def __init__(self, buildings: Iterable[Building], library: Library):
         self.buildings = sorted(buildings, key=self.sorting_key(library))
         # Special buildings.
+        self.castle = next(building for building in self.buildings if building.type == BuildingType.castle)
         self.forge = next(building for building in self.buildings if building.type == BuildingType.forge)
         # Build caches.
         self.max_level = dict(sorted(
@@ -25,6 +26,10 @@ class Buildings:
             key=itemgetter(1),
         ))
         self.incomplete = [building for building in buildings if not building.is_completed]
+        self.is_destroy_in_progress = any(
+            building.type in BuildingType.extended_areas()
+            for building in self.incomplete
+        )
         logging.info(
             "Incomplete buildings: %s.",
             ", ".join(building.type.name for building in self.incomplete) if self.incomplete else "none",

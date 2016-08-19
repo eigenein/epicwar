@@ -80,6 +80,8 @@ class Bot:
         self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
         self.collect_resources()
         self.upgrade_buildings()
+        if not self.buildings.is_destroy_in_progress:
+            self.destroy_extended_areas()
         self.upgrade_units()
 
         # Battles.
@@ -148,7 +150,7 @@ class Bot:
         logging.info("Builder count: %s.", builder_count)
 
         for building in self.buildings:
-            logging.debug("Upgrade: %s.", building)
+            logging.debug("Check: %s.", building)
             if (
                 # Builder is available.
                 len(self.buildings.incomplete) < builder_count and
@@ -171,6 +173,26 @@ class Bot:
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
+
+    def destroy_extended_areas(self):
+        logging.info("Trying to destroy extended areas…")
+        for building in self.buildings:
+            logging.debug("Check: %s.", building)
+            if (
+                building.type in BuildingType.extended_areas() and
+                building.is_completed and
+                self.buildings.castle.level >= self.library.destroy_levels[building.type] and
+                self.can_upgrade(building.type, building.level)
+            ):
+                logging.info("Cleaning %s #%s…", building.type.name, building.id)
+                error = self.api.destruct_building(building.id, False)
+                if error == Error.ok:
+                    self.update_self_info()
+                    self.notifications.append("Destroy *{}*.".format(building.type.name))
+                    # Only one area can be simultaneously destroyed.
+                    return
+                else:
+                    logging.error("Failed to clean extended area.")
 
     def upgrade_units(self):
         """
