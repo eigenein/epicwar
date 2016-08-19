@@ -37,8 +37,6 @@ class Bot:
 
     # Bastion battle lasts for 3 minutes.
     BASTION_DURATION = 180.0
-    # Resign from battle.
-    FINISH_BATTLE = "1^1`-1`1!1^0`0`finishBattle`0`50`0`~1~~0~"
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
 
@@ -276,7 +274,7 @@ class Bot:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
             self.notifications.append("\N{warning sign} Skip bastion *%s*: %s." % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
-            battle_result = self.api.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
+            battle_result = self.api.finish_battle(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
             return
 

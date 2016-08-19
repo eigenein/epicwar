@@ -10,6 +10,9 @@ import collections
 
 BastionReplay = collections.namedtuple("BastionReplay", "runes commands")
 
+# Resign from battle.
+FINISH_BATTLE = "1^1`-1`1!1^0`0`finishBattle`0`50`0`~1~~0~"
+
 # Each entry maps the fair ID into runes amount and serialized commands.
 REPLAYS = {
     "12": BastionReplay(74, "1^32`30`32!1^35`0`spawn`49`50`3`~1~1^35`1`spawn`49`350`3`~1~1^35`2`spawn`49`350`3`~1~1^35`3`spawn`49`900`3`~1~1^35`4`spawn`49`1100`3`~1~1^22`5`spawn`45`4250`3`~1~1^42`6`spawn`28`14250`4`~1~1^42`7`spawn`28`14500`4`~1~1^42`8`spawn`28`14650`4`~1~1^44`9`spawn`28`17050`4`~1~1^44`10`spawn`28`17200`4`~1~1^44`11`spawn`28`18050`4`~1~1^44`12`spawn`28`18150`4`~1~1^44`13`spawn`28`18400`4`~1~1^28`14`spawn`22`24800`4`~1~1^28`15`spawn`22`25050`4`~1~1^28`16`spawn`22`25100`4`~1~1^28`17`spawn`22`25200`4`~1~1^28`18`spawn`22`25400`4`~1~1^28`19`spawn`22`25650`4`~1~1^28`20`spawn`22`25650`4`~1~1^28`21`spawn`22`25800`4`~1~1^28`22`spawn`22`25950`4`~1~1^28`23`spawn`22`26050`4`~1~1^8`24`spawn`20`29600`6`~1~1^8`25`spawn`20`29800`6`~1~1^8`26`spawn`20`30000`6`~1~1^8`27`spawn`20`30000`6`~1~1^8`28`spawn`20`30350`6`~1~1^8`29`spawn`20`30450`6`~1~1^8`30`spawn`20`30450`6`~1~1^0`31`finishBattle`0`112500`0`~1~~0~"),
