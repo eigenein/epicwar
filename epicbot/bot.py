@@ -304,19 +304,18 @@ class Bot:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
             self.notifications.append("\N{warning sign} Skip bastion *%s*: %s." % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
-            battle_result = self.api.finish_battle(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
+            battle_result, _ = self.api.finish_battle(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
             return
 
-        old_runes_count = self.self_info.resources[ResourceType.runes]
+        old_runes_count = self.resources[ResourceType.runes]
         logging.info("Sleeping…")
         time.sleep(self.BASTION_DURATION)
         logging.info("Sending commands…")
-        battle_result = self.api.finish_battle(bastion.battle_id, replay.commands)
+        battle_result, self.resources = self.api.finish_battle(bastion.battle_id, replay.commands)
         logging.info("Battle result: %s.", battle_result)
 
-        self.update_self_info()
-        runes_farmed = self.self_info.resources[ResourceType.runes] - old_runes_count
+        runes_farmed = self.resources[ResourceType.runes] - old_runes_count
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)
         self.notifications.append("Farm *{} of {} runes* in bastion *{}*.".format(
             runes_farmed, replay.runes, bastion.fair_id))

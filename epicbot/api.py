@@ -279,8 +279,8 @@ class Api:
         """
         Finishes battle and returns serialized battle result.
         """
-        result, _ = self.post("battle_finish", battleId=battle_id, commands=commands)
-        return result["battleResult"]
+        result, state = self.post("battle_finish", call_state=True, battleId=battle_id, commands=commands)
+        return result["battleResult"], self.parse_resource_reward(state)
 
     def open_fair_citadel_gate(self):
         """
@@ -327,7 +327,7 @@ class Api:
         """
         Helper method to parse resource collection result.
         """
-        return self.parse_resources(reward["resource"]) if reward else {}
+        return self.parse_resources(reward["resource"])
 
     @staticmethod
     def parse_error(result: Union[bool, dict]) -> Error:
