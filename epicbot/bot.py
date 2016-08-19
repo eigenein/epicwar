@@ -44,7 +44,7 @@ class Bot:
 
     def __init__(self, context: epicbot.utils.Context, api: Api, library: epicbot.library.Library):
         self.context = context
-        self.epic_war = api
+        self.api = api
         self.library = library
         # Player info.
         self.self_info = None  # type: SelfInfo
@@ -66,7 +66,7 @@ class Bot:
             if member.id == self.self_info.user_id
         )
         logging.info("Life time score: %s.", self.alliance_membership.life_time_score)
-        self.artifacts = self.epic_war.get_artifacts()
+        self.artifacts = self.api.get_artifacts()
 
         # Collect some food.
         self.check_cemetery()
@@ -78,7 +78,7 @@ class Bot:
         self.check_roulette()
 
         # Check buildings and units.
-        buildings = sorted(self.epic_war.get_buildings(), key=self.get_building_sorting_key)
+        buildings = sorted(self.api.get_buildings(), key=self.get_building_sorting_key)
         self.collect_resources(buildings)
         building_levels = self.get_building_levels(buildings)
         incomplete_buildings = self.upgrade_buildings(buildings, building_levels)
@@ -91,14 +91,14 @@ class Bot:
 
         if self.context.telegram_enabled:
             self.send_telegram_notification(incomplete_buildings)
-        logging.info("Calls: %s.", ", ".join(self.epic_war.calls_made))
-        logging.info("Made %s requests. Bye!", self.epic_war.request_id)
+        logging.info("Calls: %s.", ", ".join(self.api.calls_made))
+        logging.info("Made %s requests. Bye!", self.api.request_id)
 
     def update_self_info(self):
         """
         Updates and prints self info.
         """
-        self.self_info = self.epic_war.get_self_info()
+        self.self_info = self.api.get_self_info()
         self.log_resources()
 
     def check_cemetery(self):
@@ -106,7 +106,7 @@ class Bot:
         Checks and collects cemetery.
         """
         if self.self_info.cemetery:
-            amount = self.epic_war.farm_cemetery().get(ResourceType.food, 0)
+            amount = self.api.farm_cemetery().get(ResourceType.food, 0)
             self.update_self_info()
             logging.info("Cemetery farmed: %s.", amount)
             self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
@@ -131,7 +131,7 @@ class Bot:
                 )
             ):
                 logging.debug("Collecting resources from %s…", building)
-                resources = self.epic_war.collect_resource(building.id)
+                resources = self.api.collect_resource(building.id)
                 for resource_type, amount in resources.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
@@ -168,10 +168,10 @@ class Bot:
                 self.can_upgrade(building.type, building.level + 1, building_levels)
             ):
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
-                error = self.epic_war.upgrade_building(building.id)
+                error = self.api.upgrade_building(building.id)
                 if error == Error.ok:
                     self.update_self_info()
-                    incomplete_buildings = self.get_incomplete_buldings(self.epic_war.get_buildings())
+                    incomplete_buildings = self.get_incomplete_buldings(self.api.get_buildings())
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
@@ -191,7 +191,7 @@ class Bot:
             ):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
-            error = self.epic_war.start_research(unit_type.value, level + 1, forge_id)
+            error = self.api.start_research(unit_type.value, level + 1, forge_id)
             if error == Error.ok:
                 self.update_self_info()
                 self.notifications.append("Upgrade *{}*.".format(unit_type.name))
@@ -205,12 +205,12 @@ class Bot:
         Asks, sends and farms alliance help.
         """
         logging.info("Sending help to your alliance…")
-        self.epic_war.send_alliance_help()
+        self.api.send_alliance_help()
 
-        building_ids = self.epic_war.get_my_alliance_helpers()
+        building_ids = self.api.get_my_alliance_helpers()
         logging.info("%s buildings with alliance help.", len(building_ids))
         for building_id in building_ids:
-            help_time = datetime.timedelta(seconds=sum(self.epic_war.farm_alliance_help(building_id)))
+            help_time = datetime.timedelta(seconds=sum(self.api.farm_alliance_help(building_id)))
             logging.info("Farmed alliance help: %s.", help_time)
             self.notifications.append("Farm \N{two men holding hands} *%s*." % help_time)
 
@@ -219,18 +219,18 @@ class Bot:
         Activates and collects alliance daily gift.
         """
         logging.info("Activating alliance daily gift…")
-        self.epic_war.click_alliance_daily_gift()
+        self.api.click_alliance_daily_gift()
 
         if self.alliance_membership.life_time_score < self.ALLIANCE_DAILY_GIFT_SCORE:
             logging.info("Not enough score to collect alliance daily gift.")
             return
 
         logging.info("Collecting alliance daily gift…")
-        notices = self.epic_war.get_notices()
+        notices = self.api.get_notices()
         for notice_id, notice_type in notices.items():
             if notice_type != NoticeType.alliance_level_daily_gift:
                 continue
-            for reward_type, amount in self.epic_war.notice_farm_reward(notice_id).items():
+            for reward_type, amount in self.api.notice_farm_reward(notice_id).items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
                 self.notifications.append("Collect *{} {}* from *alliance*.".format(amount, reward_type.name))
 
@@ -238,14 +238,14 @@ class Bot:
         """
         Collects and sends free mana.
         """
-        user_ids = self.epic_war.get_gift_available()
+        user_ids = self.api.get_gift_available()
         logging.info("%s gifts are waiting for you.", len(user_ids))
         for user_id in user_ids:
-            logging.info("Farmed gift from user #%s: %s.", user_id, self.epic_war.farm_gift(user_id).name)
+            logging.info("Farmed gift from user #%s: %s.", user_id, self.api.farm_gift(user_id).name)
             self.notifications.append("Farm \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
-            self.epic_war.send_gift([member.id for member in self.self_info.alliance.members]).name,
+            self.api.send_gift([member.id for member in self.self_info.alliance.members]).name,
         )
 
     def check_roulette(self):
@@ -253,7 +253,7 @@ class Bot:
         Spins event roulette.
         """
         logging.info("Spinning roulette…")
-        for reward_type, amount in self.epic_war.spin_event_roulette().items():
+        for reward_type, amount in self.api.spin_event_roulette().items():
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
 
@@ -263,13 +263,13 @@ class Bot:
         """
         if self.self_info.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
             logging.info("Collecting bastion gift…")
-            for reward_type, amount in self.epic_war.open_fair_citadel_gate().items():
+            for reward_type, amount in self.api.open_fair_citadel_gate().items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
                 self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
             self.self_info.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
 
         logging.info("Starting bastion…")
-        error, bastion = self.epic_war.start_bastion()
+        error, bastion = self.api.start_bastion()
         if error == Error.not_enough_time:
             logging.info("Bastion is not available.")
             return
@@ -283,7 +283,7 @@ class Bot:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
             self.notifications.append("\N{warning sign} Skip bastion *%s*: %s." % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
-            battle_result = self.epic_war.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
+            battle_result = self.api.finish_battle(bastion.battle_id, self.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
             return
 
@@ -291,7 +291,7 @@ class Bot:
         logging.info("Sleeping…")
         time.sleep(self.BASTION_DURATION)
         logging.info("Sending commands…")
-        battle_result = self.epic_war.finish_battle(bastion.battle_id, replay.commands)
+        battle_result = self.api.finish_battle(bastion.battle_id, replay.commands)
         logging.info("Battle result: %s.", battle_result)
 
         self.update_self_info()
@@ -409,7 +409,7 @@ class Bot:
             "{notifications}"
         ).format(
             self_info=self.self_info,
-            requests=self.epic_war.request_id,
+            requests=self.api.request_id,
             food=self.format_amount(self.self_info.resources[ResourceType.food]),
             gold=self.format_amount(self.self_info.resources[ResourceType.gold]),
             sand=self.format_amount(self.self_info.resources[ResourceType.sand]),
