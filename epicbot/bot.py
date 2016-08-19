@@ -5,16 +5,16 @@ import datetime
 import logging
 import time
 
-from collections import defaultdict
-from typing import Dict, Iterable, List, Set, Tuple, Union
+from typing import List, Set, Union
 
 import requests
 
 import epicbot.bastion
 import epicbot.library
+import epicbot.managers
 import epicbot.utils
 
-from epicbot.api import AllianceMember, Api, Building, SelfInfo
+from epicbot.api import AllianceMember, Api, SelfInfo
 from epicbot.enums import ArtifactType, BuildingType, Error, NoticeType, ResourceType, UnitType
 
 
@@ -50,7 +50,8 @@ class Bot:
         self.self_info = None  # type: SelfInfo
         self.artifacts = []  # type: Set[ArtifactType]
         self.alliance_membership = None  # type: AllianceMember
-        # Actions performed by the bot.
+        self.buildings = None  # type: epicbot.managers.Buildings
+        # Telegram notifications. Contains performed actions.
         self.notifications = []  # type: List[str]
 
     def step(self):
@@ -78,19 +79,17 @@ class Bot:
         self.check_roulette()
 
         # Check buildings and units.
-        buildings = sorted(self.api.get_buildings(), key=self.get_building_sorting_key)
-        self.collect_resources(buildings)
-        building_levels = self.get_building_levels(buildings)
-        incomplete_buildings = self.upgrade_buildings(buildings, building_levels)
-        forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
-        self.upgrade_units(forge_id, building_levels)
+        self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
+        self.collect_resources()
+        self.upgrade_buildings()
+        self.upgrade_units()
 
         # Battles.
         if self.context.with_bastion:
             self.check_bastion()
 
         if self.context.telegram_enabled:
-            self.send_telegram_notification(incomplete_buildings)
+            self.send_telegram_notification()
         logging.info("Calls: %s.", ", ".join(self.api.calls_made))
         logging.info("Made %s requests. Bye!", self.api.request_id)
 
@@ -111,12 +110,12 @@ class Bot:
             logging.info("Cemetery farmed: %s.", amount)
             self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
 
-    def collect_resources(self, buildings: List[Building]):
+    def collect_resources(self):
         """
         Collects resources from buildings.
         """
         stop_collection_from = set()
-        for building in buildings:
+        for building in self.buildings:
             if (
                 # Production building.
                 building.type in BuildingType.production() and
@@ -143,19 +142,18 @@ class Bot:
         # Finally, update resource info.
         self.update_self_info()
 
-    def upgrade_buildings(self, buildings: List[Building], building_levels: Dict[BuildingType, int]) -> List[Building]:
+    def upgrade_buildings(self):
         """
         Upgrades buildings.
         """
-        incomplete_buildings = self.get_incomplete_buldings(buildings)
-        builder_count = building_levels[BuildingType.builder_hut] + self.get_alliance_builder_count()
+        builder_count = self.buildings.max_level[BuildingType.builder_hut] + self.get_alliance_builder_count()
         logging.info("Builder count: %s.", builder_count)
 
-        for building in buildings:
+        for building in self.buildings:
             logging.debug("Upgrade: %s.", building)
             if (
                 # Builder is available.
-                len(incomplete_buildings) < builder_count and
+                len(self.buildings.incomplete) < builder_count and
                 # Castle is upgraded optionally.
                 (building.type != BuildingType.castle or self.context.with_castle) and
                 # Building type is not ignored explicitly.
@@ -165,33 +163,28 @@ class Bot:
                 # Building is not in progress.
                 building.is_completed and
                 # Requirements are met.
-                self.can_upgrade(building.type, building.level + 1, building_levels)
+                self.can_upgrade(building.type, building.level + 1)
             ):
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
                 error = self.api.upgrade_building(building.id)
                 if error == Error.ok:
                     self.update_self_info()
-                    incomplete_buildings = self.get_incomplete_buldings(self.api.get_buildings())
+                    self.buildings = epicbot.managers.Buildings(self.api.get_buildings())
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
-        return incomplete_buildings
-
-    def upgrade_units(self, forge_id: int, building_levels: Dict[BuildingType, int]):
+    def upgrade_units(self):
         """
         Checks unit types and tries to upgrade them.
         """
         logging.info("Trying to upgrade units…")
 
         for unit_type, level in self.self_info.research.items():
-            if (
-                unit_type not in UnitType.upgradable() or
-                not self.can_upgrade(unit_type, level + 1, building_levels)
-            ):
+            if unit_type not in UnitType.upgradable() or not self.can_upgrade(unit_type, level + 1):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
-            error = self.api.start_research(unit_type.value, level + 1, forge_id)
+            error = self.api.start_research(unit_type.value, level + 1, self.buildings.forge.id)
             if error == Error.ok:
                 self.update_self_info()
                 self.notifications.append("Upgrade *{}*.".format(unit_type.name))
@@ -313,36 +306,7 @@ class Bot:
         else:
             return 0
 
-    @staticmethod
-    def get_building_levels(buildings: List[Building]) -> Dict[BuildingType, int]:
-        """
-        Gets maximum level of each building type.
-        """
-        levels = defaultdict(int)
-        for building in buildings:
-            levels[building.type] = max(levels[building.type], building.level)
-        return levels
-
-    def get_building_sorting_key(self, building: Building) -> Tuple:
-        """
-        Gets the sorting key for the building.
-        It's used to define the building traverse order when upgrading.
-        """
-        return (
-            # Upgrade pricey buildings first to spend as much sand as we can until it's stolen.
-            -self.library.requirements.get((building.type, building.level + 1), {}).get(ResourceType.sand, 0),
-            # Otherwise, upgrade fast buildings first to upgrade as much buildings as we can.
-            self.library.construction_time.get((building.type, building.level + 1), 0),
-            # Otherwise, just start with low levels.
-            building.level,
-        )
-
-    def can_upgrade(
-        self,
-        entity_type: Union[BuildingType, UnitType],
-        level: int,
-        building_levels: Dict[BuildingType, int],
-    ) -> bool:
+    def can_upgrade(self, entity_type: Union[BuildingType, UnitType], level: int) -> bool:
         """
         Determines if all requirements are met to upgrade a building or a unit.
         """
@@ -351,7 +315,7 @@ class Bot:
             return False
         # Dictionaries to match resources against.
         current_values = {
-            BuildingType: building_levels,
+            BuildingType: self.buildings.max_level,
             ResourceType: self.self_info.resources,
         }
         for type_, argument in self.library.requirements[entity_type, level].items():
@@ -359,15 +323,6 @@ class Bot:
                 logging.debug("Skip %s (level %s): depends on %s (%s).", entity_type.name, level, type_.name, argument)
                 return False
         return True
-
-    @staticmethod
-    def get_incomplete_buldings(buildings: Iterable[Building]) -> List[Building]:
-        incomplete_buildings = [building for building in buildings if not building.is_completed]
-        if incomplete_buildings:
-            logging.info("Incomplete: %s.", ", ".join(building.type.name for building in incomplete_buildings))
-        else:
-            logging.info("All buildings are completed.")
-        return incomplete_buildings
 
     def log_resources(self):
         """
@@ -378,19 +333,19 @@ class Bot:
             for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand, ResourceType.runes)
         ))
 
-    def send_telegram_notification(self, incomplete_buildings: List[Building]):
+    def send_telegram_notification(self):
         """
         Sends summary Telegram notification.
         """
         logging.info("Sending Telegram notification…")
-        if incomplete_buildings:
+        if self.buildings.incomplete:
             # noinspection PyUnresolvedReferences
             construction = "\n".join(
                 "\N{CONSTRUCTION SIGN} *{}* by *{:%b %d %-H:%M}*".format(
                     building.type.name,
                     datetime.datetime.fromtimestamp(building.complete_time),
                 )
-                for building in incomplete_buildings
+                for building in self.buildings.incomplete
             )
         else:
             construction = "\N{CONSTRUCTION SIGN} \N{warning sign} *none*"
