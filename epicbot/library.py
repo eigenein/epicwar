@@ -5,10 +5,6 @@
 Game library parser.
 """
 
-import gzip
-import json
-import logging
-
 from collections import defaultdict
 from typing import Dict, Tuple
 
@@ -19,17 +15,12 @@ class Library:
     """
     Game entities library. Used to track upgrade requirements and building production.
     """
-    @staticmethod
-    def load(path: str) -> "Library":
-        logging.info("Loading library…")
-        return Library(json.load(gzip.open(path, "rt", encoding="utf-8")))
-
-    def __init__(self, library: Dict):
+    def __init__(self, content: Dict):
         self.requirements = defaultdict(dict)
         self.full_time = {}  # type: Dict[Tuple[BuildingType, int], int]
         self.construction_time = {}  # type: Dict[Tuple[BuildingType, int], int]
         # Process buildings.
-        for building_level in library["buildingLevel"]:
+        for building_level in content["buildingLevel"]:
             if building_level["cost"].get("starmoney", 0) != 0:
                 # Skip buildings that require star money.
                 continue
@@ -82,7 +73,7 @@ class Library:
                     else:
                         self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
         # Process unit research cost.
-        for unit_level in library["unitLevel"]:
+        for unit_level in content["unitLevel"]:
             try:
                 type_ = UnitType(unit_level["unitId"])
             except ValueError:

@@ -26,6 +26,7 @@
 |`bot.py`|Runs the bot once|
 |`command-log.py`|Used to investigate a battle command log|
 |`epicwar.ipynb`|Used to investigate game requests|
+|`generate-library.py`|Used to generate static library content|
 
 ## Configuring
 

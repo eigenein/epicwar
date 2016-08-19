@@ -17,6 +17,7 @@ import click
 import epicbot.api
 import epicbot.bastion
 import epicbot.bot
+import epicbot.content
 import epicbot.library
 import epicbot.utils
 
@@ -71,7 +72,7 @@ def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, min_
     obj.min_bastion_runes = min_bastion_runes
 
     try:
-        library = epicbot.library.Library.load(os.path.join(os.path.dirname(__file__), "lib.json.gz"))
+        library = epicbot.library.Library(epicbot.content.CONTENT)
         random_generator = epicbot.utils.StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
         with contextlib.closing(epicbot.api.Api(obj.user_id, obj.remixsid, random_generator)) as api:
             api.authenticate()
