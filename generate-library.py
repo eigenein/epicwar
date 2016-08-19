@@ -38,7 +38,6 @@ def main(url: str, output: typing.io.TextIO):
         "CONTENT = json.loads(r\"\"\"",
         json.dumps(content, indent=2, sort_keys=True),
         "\"\"\")",
-        "",
     )), file=output)
 
 
