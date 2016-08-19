@@ -98,7 +98,8 @@ def call(obj: epicbot.utils.Context, name: str, args: str):
         except json.JSONDecodeError as ex:
             logging.error("Invalid arguments: %s.", str(ex))
         else:
-            print(json.dumps(api.post(name, **kwargs), indent=2))
+            result, state = api.post(name, call_state=True, **kwargs)
+            print(json.dumps({"result": result, "state": state}, indent=2))
 
 
 if __name__ == "__main__":

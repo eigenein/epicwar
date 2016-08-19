@@ -90,7 +90,6 @@ class Bot:
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
-        logging.info("Calls: %s.", ", ".join(self.api.calls_made))
         logging.info("Made %s requests. Bye!", self.api.request_id)
 
     def update_self_info(self):

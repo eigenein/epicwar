@@ -47,7 +47,6 @@ class Api:
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
 
         self.request_id = 0
-        self.calls_made = []
 
     def authenticate(self):
         """
@@ -87,7 +86,7 @@ class Api:
         """
         Gets information about the player and its village.
         """
-        result = self.post("getSelfInfo")
+        result, _ = self.post("getSelfInfo")
         return SelfInfo(
             user_id=result["user"]["id"],
             caption=result["user"]["villageCaption"],
@@ -112,45 +111,49 @@ class Api:
 
         Note: this method is buggy – sometimes it returns no users.
         """
-        return [
-            receiver["toUserId"]
-            for receiver in self.post("giftGetReceivers")["receivers"]
-        ]
+        result, _ = self.post("giftGetReceivers")
+        return [receiver["toUserId"] for receiver in result["receivers"]]
 
     def send_gift(self, users: List[str]):
         """
         Sends gift to users.
         """
-        return self.parse_error(self.post("giftSend", users=users))
+        result, _ = self.post("giftSend", users=users)
+        return self.parse_error(result)
 
     def get_gift_available(self) -> List[str]:
         """
         Gets available gifts.
         """
-        return [gift["body"]["fromUserId"] for gift in self.post("giftGetAvailable")["gift"]]
+        result, _ = self.post("giftGetAvailable")
+        return [gift["body"]["fromUserId"] for gift in result["gift"]]
 
     def farm_gift(self, user_id: str) -> Error:
         """
         Farms gift from the user.
         """
-        return self.parse_error(self.post("giftFarm", userId=user_id))
+        result, _ = self.post("giftFarm", userId=user_id)
+        return self.parse_error(result)
 
     def collect_resource(self, building_id: int) -> Dict[ResourceType, int]:
         """
         Collects resource from the building.
         """
-        return self.parse_resource_reward(self.post("collectResource", buildingId=building_id)["reward"])
+        result, _ = self.post("collectResource", buildingId=building_id)
+        return self.parse_resource_reward(result["reward"])
 
     def farm_cemetery(self) -> Dict[ResourceType, int]:
         """
         Collects died enemy army.
         """
-        return self.parse_resource_reward(self.post("cemeteryFarm")["reward"])
+        result, _ = self.post("cemeteryFarm")
+        return self.parse_resource_reward(result["reward"])
 
     def get_buildings(self) -> List[Building]:
         """
         Gets all buildings.
         """
+        result, _ = self.post("getBuildings")
         return [
             Building(
                 id=building["id"],
@@ -161,7 +164,7 @@ class Api:
                 hitpoints=building["hitpoints"],
                 storage_fill=building.get("storageFill"),
             )
-            for building in self.post("getBuildings")["building"]
+            for building in result["building"]
             if BuildingType.has_value(building["typeId"])
         ]
 
@@ -169,26 +172,28 @@ class Api:
         """
         Upgrades building to the next level.
         """
-        return self.parse_error(self.post("upgradeBuilding", buildingId=building_id))
+        result, _ = self.post("upgradeBuilding", buildingId=building_id)
+        return self.parse_error(result)
 
     def destruct_building(self, building_id: int, instant: bool):
         """
         Destructs building. Used to clean extended areas.
         """
-        return self.parse_error(self.post("destructBuilding", buildingId=building_id, instant=instant))
+        result, _ = self.post("destructBuilding", buildingId=building_id, instant=instant)
+        return self.parse_error(result)
 
     def start_research(self, unit_id: int, level: int, forge_building_id: int):
         """
         Start unit research.
         """
-        return self.parse_error(self.post(
-            "startResearch", level=level, unitId=unit_id, buildingId=forge_building_id))
+        result, _ = self.post("startResearch", level=level, unitId=unit_id, buildingId=forge_building_id)
+        return self.parse_error(result)
 
     def click_alliance_daily_gift(self):
         """
         Activates alliance daily gift.
         """
-        return self.post("alliance_level_clickDailyGift")
+        self.post("alliance_level_clickDailyGift")
 
     def send_alliance_help(self):
         """
@@ -206,27 +211,24 @@ class Api:
         """
         Gets building IDs with alliance help available.
         """
-        return {
-            helper["job"]["buildingId"]
-            for helper in self.post("alliance_help_getMyHelpers")["helpers"]
-        }
+        result, _ = self.post("alliance_help_getMyHelpers")
+        return {helper["job"]["buildingId"] for helper in result["helpers"]}
 
     def farm_alliance_help(self, building_id: int) -> List[int]:
         """
         Farms help from alliance member. Gets time per help for each job in list.
         """
-        return [
-            job["timePerHelp"]
-            for job in self.post("alliance_help_farm", buildingId=building_id)["jobs"]
-        ]
+        result, _ = self.post("alliance_help_farm", buildingId=building_id)
+        return [job["timePerHelp"] for job in result["jobs"]]
 
     def get_notices(self):
         """
         Gets all notices.
         """
+        result, _ = self.post("getNotices")
         return {
             notice["id"]: NoticeType(notice["type"])
-            for notice in self.post("getNotices")["notices"]
+            for notice in result["notices"]
             if NoticeType.has_value(notice["type"])
         }
 
@@ -234,7 +236,7 @@ class Api:
         """
         Collects notice reward.
         """
-        result = self.post("noticeFarmReward", id=notice_id)
+        result, _ = self.post("noticeFarmReward", id=notice_id)
         if "result" in result:
             return self.parse_reward(result["result"])
         if "error" in result and result["error"]["name"] == Error.not_enough.value:
@@ -245,9 +247,10 @@ class Api:
         """
         Gets enabled artifacts.
         """
+        result, _ = self.post("artefactGetList")
         return {
             ArtifactType(artifact["typeId"])
-            for artifact in self.post("artefactGetList")["artefact"]
+            for artifact in result["artefact"]
             if ArtifactType.has_value(artifact["typeId"]) and artifact["enabled"]
         }
 
@@ -260,7 +263,7 @@ class Api:
         Starts bastion battle.
         Version is taken from scripts/epicwar/haxe/battle/Battle.as.
         """
-        result = self.post("battle_startBastion", version=version, forStarmoney=for_starmoney)
+        result, _ = self.post("battle_startBastion", version=version, forStarmoney=for_starmoney)
         if "error" in result:
             return Error(result["error"]["name"]), None
         return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
@@ -269,25 +272,28 @@ class Api:
         """
         Adds serialized commands to the battle.
         """
-        return self.parse_error(self.post("battle_addCommands", battleId=battle_id, commands=commands))
+        result, _ = self.post("battle_addCommands", battleId=battle_id, commands=commands)
+        return self.parse_error(result)
 
     def finish_battle(self, battle_id: str, commands: str) -> str:
         """
         Finishes battle and returns serialized battle result.
         """
-        return self.post("battle_finish", battleId=battle_id, commands=commands)["battleResult"]
+        result, _ = self.post("battle_finish", battleId=battle_id, commands=commands)
+        return result["battleResult"]
 
     def open_fair_citadel_gate(self):
         """
         Collects bastion gift.
         """
-        return self.parse_reward(self.post("fairCitadelOpenGate"))
+        result, _ = self.post("fairCitadelOpenGate")
+        return self.parse_reward(result)
 
     def spin_event_roulette(self, count=1, is_payed=False) -> Dict[RewardType, int]:
         """
         Spin roulette!
         """
-        result = self.post("event_roulette_spin", count=count, isPayed=is_payed)
+        result, _ = self.post("event_roulette_spin", count=count, isPayed=is_payed)
         if "reward" in result:
             return self.parse_reward(result["reward"])
         if "error" in result and result["error"]["name"] == Error.not_available.value:
@@ -339,16 +345,19 @@ class Api:
             return Error(result["error"]["name"])
         raise ValueError(result)
 
-    def post(self, name: str, **args) -> dict:
+    def post(self, name: str, call_state=False, **arguments) -> Tuple[dict, Union[dict, list, None]]:
         """
         Makes request to the game API.
         """
         if not self.auth_token:
             raise ValueError("not authenticated")
         self.request_id += 1
-        self.calls_made.append(name)
-        logging.debug("#%s %s(%s)", self.request_id, name, args)
-        data = json.dumps({"session": None, "calls": [{"ident": "group_0_body", "name": name, "args": args}]})
+        logging.debug("#%s %s(%s)", self.request_id, name, arguments)
+
+        calls = [{"ident": "group_0_body", "name": name, "args": arguments}]
+        if call_state:
+            calls.append({"ident": "group_1_body", "name": "state", "args": []})
+        data = json.dumps({"session": None, "calls": calls})
         headers = {
             "Referer": "https://epicwar.cdnvideo.ru/vk/v0301/assets/EpicGame.swf",
             "Content-type": "application/json; charset=UTF-8",
@@ -378,10 +387,10 @@ class Api:
         logging.debug("%s", response.text)
         result = response.json()
         if "results" in result:
-            return result["results"][0]["result"]
+            return result["results"][0]["result"], (result["results"][1]["result"] if call_state else None)
         if "error" in result:
             # API developers are strange people… In different cases they return error in different fields…
-            return result
+            return result, None
         raise ValueError(result)
 
     @staticmethod
