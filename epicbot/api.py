@@ -14,7 +14,7 @@ import string
 import time
 import typing
 
-from collections import namedtuple
+from collections import Counter, namedtuple
 from typing import Dict, List, Optional, Set, Tuple, Union
 
 import requests
@@ -305,11 +305,11 @@ class Api:
         """
         Helper method to parse a resource collection method result.
         """
-        return {
+        return Counter({
             ResourceType(resource["id"]): resource["amount"]
             for resource in resources
             if ResourceType.has_value(resource["id"])
-        }
+        })
 
     @staticmethod
     def parse_reward(reward: dict) -> Dict[RewardType, int]:
