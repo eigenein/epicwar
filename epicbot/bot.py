@@ -6,7 +6,7 @@ import logging
 import time
 
 from collections import Counter
-from typing import List, Set, Union
+from typing import Dict, List, Set, Union
 
 import requests
 
@@ -15,7 +15,7 @@ import epicbot.library
 import epicbot.managers
 import epicbot.utils
 
-from epicbot.api import AllianceMember, Api, SelfInfo
+from epicbot.api import AllianceMember, Api
 from epicbot.enums import ArtifactType, BuildingType, Error, NoticeType, ResourceType, UnitType
 
 
@@ -45,10 +45,13 @@ class Bot:
         self.context = context
         self.api = api
         self.library = library
-        # Player info.
-        self.self_info = None  # type: SelfInfo
+        # Self info.
+        self.caption = None  # type: str
         self.resources = Counter()
+        self.cemetery = []
+        self.research = {}  # type: Dict[UnitType, int]
         self.artifacts = []  # type: Set[ArtifactType]
+        self.alliance_members = []  # type: List[AllianceMember]
         self.alliance_membership = None  # type: AllianceMember
         self.buildings = None  # type: epicbot.managers.Buildings
         # Telegram notifications. Contains performed actions.
@@ -59,23 +62,20 @@ class Bot:
         Makes one step.
         """
         # Get player info.
-        self.update_self_info()
-        logging.info("Welcome %s!", self.self_info.caption)
+        self_info = self.api.get_self_info()
+        logging.info("Welcome %s!", self_info.caption)
 
-        self.resources = self.self_info.resources
-        self.log_resources()
-
+        self.caption, self.resources, self.research = (self_info.caption, self_info.resources, self_info.research)
         self.artifacts = self.api.get_artifacts()
+        self.alliance_members = self_info.alliance.members
+        self.alliance_membership = next(member for member in self.alliance_members if member.id == self_info.user_id)
 
-        self.alliance_membership = next(
-            member
-            for member in self.self_info.alliance.members
-            if member.id == self.self_info.user_id
-        )
+        self.log_resources()
         logging.info("Life time score: %s.", self.alliance_membership.life_time_score)
 
         # Collect some food.
-        self.check_cemetery()
+        if self_info.cemetery:
+            self.check_cemetery()
 
         # Check help and gifts.
         self.check_alliance_help()
@@ -87,7 +87,8 @@ class Bot:
         self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
         self.collect_resources()
         self.upgrade_buildings()
-        self.destruct_extended_areas()
+        if not self.buildings.is_destruction_in_progress:
+            self.destruct_extended_areas()
         self.upgrade_units()
 
         # Battles.
@@ -99,23 +100,21 @@ class Bot:
         self.log_resources()
         logging.info("Made %s requests. Bye!", self.api.request_id)
 
-    def update_self_info(self):
+    def update_resources(self):
         """
-        Updates and prints self info.
+        Updates resources.
         """
         # TODO: Deprecated. Should be removed.
-        self.self_info = self.api.get_self_info()
-        self.resources = self.self_info.resources
+        self.resources = self.api.get_self_info().resources
 
     def check_cemetery(self):
         """
-        Checks and collects cemetery.
+        Farms cemetery.
         """
-        if self.self_info.cemetery:
-            amount = self.api.farm_cemetery().get(ResourceType.food, 0)
-            self.update_self_info()
-            logging.info("Cemetery farmed: %s.", amount)
-            self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
+        amount = self.api.farm_cemetery().get(ResourceType.food, 0)
+        self.resources[ResourceType.food] += amount
+        logging.info("Cemetery farmed: %s.", amount)
+        self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
 
     def collect_resources(self):
         """
@@ -173,15 +172,13 @@ class Bot:
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
                 error = self.api.upgrade_building(building.id)
                 if error == Error.ok:
-                    self.update_self_info()
+                    self.update_resources()
                     self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
     def destruct_extended_areas(self):
-        if self.buildings.is_destroy_in_progress:
-            return
         logging.info("Trying to destruct extended areas…")
         for building in self.buildings:
             logging.debug("Check: %s.", building)
@@ -194,7 +191,7 @@ class Bot:
                 logging.info("Cleaning %s #%s…", building.type.name, building.id)
                 error = self.api.destruct_building(building.id, False)
                 if error == Error.ok:
-                    self.update_self_info()
+                    self.update_resources()
                     self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
                     self.notifications.append("Destruct *{}*.".format(building.type.name))
                     # Only one area can be simultaneously destroyed.
@@ -208,13 +205,13 @@ class Bot:
         """
         logging.info("Trying to upgrade units…")
 
-        for unit_type, level in self.self_info.research.items():
+        for unit_type, level in self.research.items():
             if unit_type not in UnitType.upgradable() or not self.can_upgrade(unit_type, level + 1):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
             error = self.api.start_research(unit_type.value, level + 1, self.buildings.forge.id)
             if error == Error.ok:
-                self.update_self_info()
+                self.update_resources()
                 self.notifications.append("Upgrade *{}*.".format(unit_type.name))
                 # One research per time and we've just started a one.
                 break
@@ -266,7 +263,7 @@ class Bot:
             self.notifications.append("Farm \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",
-            self.api.send_gift([member.id for member in self.self_info.alliance.members]).name,
+            self.api.send_gift([member.id for member in self.alliance_members]).name,
         )
 
     def check_roulette(self):
@@ -377,7 +374,7 @@ class Bot:
         else:
             construction = "\N{CONSTRUCTION SIGN} \N{warning sign} *none*"
         text = (
-            "\N{HOUSE BUILDING} *{self_info.caption}*\n"
+            "\N{HOUSE BUILDING} *{caption}*\n"
             "\N{MONEY BAG} *{gold}*\n"
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
@@ -390,7 +387,7 @@ class Bot:
             "\n"
             "{notifications}"
         ).format(
-            self_info=self.self_info,
+            caption=self.caption,
             requests=self.api.request_id,
             food=self.format_amount(self.resources[ResourceType.food]),
             gold=self.format_amount(self.resources[ResourceType.gold]),

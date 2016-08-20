@@ -19,7 +19,7 @@ from typing import Dict, List, Optional, Set, Tuple, Union
 
 import requests
 
-from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, NoticeType, RewardType, SpellType, UnitType
+from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, NoticeType, SpellType, UnitType
 
 
 Alliance = namedtuple("Alliance", "members")
@@ -135,14 +135,14 @@ class Api:
         result, _ = self.post("giftFarm", userId=user_id)
         return self.parse_error(result)
 
-    def collect_resource(self, building_id: int) -> Dict[ResourceType, int]:
+    def collect_resource(self, building_id: int) -> Counter:
         """
         Collects resource from the building.
         """
         result, state = self.post("collectResource", call_state=True, buildingId=building_id)
         return self.parse_resource_reward(result["reward"]), self.parse_resource_reward(state)
 
-    def farm_cemetery(self) -> Dict[ResourceType, int]:
+    def farm_cemetery(self) -> Counter:
         """
         Collects died enemy army.
         """
@@ -232,7 +232,7 @@ class Api:
             if NoticeType.has_value(notice["type"])
         }
 
-    def notice_farm_reward(self, notice_id: str) -> Dict[RewardType, int]:
+    def notice_farm_reward(self, notice_id: str) -> Counter:
         """
         Collects notice reward.
         """
@@ -289,7 +289,7 @@ class Api:
         result, _ = self.post("fairCitadelOpenGate")
         return self.parse_reward(result)
 
-    def spin_event_roulette(self, count=1, is_payed=False) -> Dict[RewardType, int]:
+    def spin_event_roulette(self, count=1, is_payed=False) -> Counter:
         """
         Spin roulette!
         """
@@ -301,7 +301,7 @@ class Api:
         raise ValueError(result)
 
     @staticmethod
-    def parse_resources(resources: List[Dict[str, int]]) -> Dict[ResourceType, int]:
+    def parse_resources(resources: List[Dict[str, int]]) -> Counter:
         """
         Helper method to parse a resource collection method result.
         """
@@ -312,7 +312,7 @@ class Api:
         })
 
     @staticmethod
-    def parse_reward(reward: dict) -> Dict[RewardType, int]:
+    def parse_reward(reward: dict) -> Counter:
         """
         Helper method to parse alliance or bastion reward.
         """
@@ -323,7 +323,7 @@ class Api:
             if reward_type.has_value(obj["id"])
         }
 
-    def parse_resource_reward(self, reward: Optional[dict]) -> Dict[ResourceType, int]:
+    def parse_resource_reward(self, reward: Optional[dict]) -> Counter:
         """
         Helper method to parse resource collection result.
         """

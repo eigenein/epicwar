@@ -26,7 +26,7 @@ class Buildings:
             key=itemgetter(1),
         ))
         self.incomplete = [building for building in buildings if not building.is_completed]
-        self.is_destroy_in_progress = any(
+        self.is_destruction_in_progress = any(
             building.type in BuildingType.extended_areas()
             for building in self.incomplete
         )
