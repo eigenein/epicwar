@@ -165,6 +165,7 @@ class ResourceType(RewardType):
     crystal_blue_10 = 97  # синий кристалл 10-го уровня
     enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
     alliance_runes = 161  # руна знаний (клановый ресурс)
+    fire_water = 171  # огненная вода для прокачки шанса
 
 
 class SpellType(RewardType):
