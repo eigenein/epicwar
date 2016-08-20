@@ -468,7 +468,7 @@ class Bot:
             sand=self.format_amount(self.resources[ResourceType.sand]),
             runes=self.format_amount(self.resources[ResourceType.runes]),
             construction=construction,
-            notifications="\n".join("\N{CONSTRUCTION WORKER} %s" % line for line in self.notifications),
+            notifications="\n".join("\N{incoming envelope} %s" % line for line in self.notifications),
             log_counter=self.context.log_handler.counter,
             execution_time=divmod(int(time.time() - self.context.start_time), 60),
         ).replace("_", "-")
