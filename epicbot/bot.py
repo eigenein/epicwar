@@ -299,7 +299,7 @@ class Bot:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
             self.notifications.append("\N{warning sign} Skip bastion *%s*: %s." % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
-            battle_result, _ = self.api.finish_battle(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
+            battle_result, _ = self.api.finish_battle_serialized(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
             return
 
@@ -307,7 +307,7 @@ class Bot:
         logging.info("Sleeping…")
         time.sleep(self.BASTION_DURATION)
         logging.info("Sending commands…")
-        battle_result, new_resources = self.api.finish_battle(bastion.battle_id, replay.commands)
+        battle_result, new_resources = self.api.finish_battle_serialized(bastion.battle_id, replay.commands)
         logging.info("Battle result: %s.", battle_result)
         self.resources = new_resources or self.resources
 

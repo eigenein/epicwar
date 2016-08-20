@@ -24,10 +24,12 @@ from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, Notic
 
 Alliance = namedtuple("Alliance", "members")
 AllianceMember = namedtuple("AllianceMember", "id life_time_score")
+ArmyQueue = namedtuple("ArmyQueue", "building_id")
 Bastion = namedtuple("Bastion", "fair_id battle_id config")
 Building = namedtuple("Building", "id type level is_completed complete_time hitpoints storage_fill")
 Cemetery = namedtuple("Cemetery", "x y")
-SelfInfo = namedtuple("SelfInfo", "user_id caption resources research alliance cemetery")
+SpawnCommand = namedtuple("SpawnCommand", "time row col unit_type")
+SelfInfo = namedtuple("SelfInfo", "user_id caption resources research alliance cemetery units")
 
 
 class Api:
@@ -35,6 +37,8 @@ class Api:
     Epic War API.
     """
     HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:47.0) Gecko/20100101 Firefox/47.0"}
+    BATTLE_FIELD_WIDTH = 62
+    BATTLE_FIELD_HEIGHT = 62
 
     def __init__(self, user_id: str, remixsid: str, random_generator=None):
         self.user_id = user_id
@@ -106,6 +110,11 @@ class Api:
                 ],
             ),
             cemetery=[Cemetery(x=cemetery["x"], y=cemetery["y"]) for cemetery in result["cemetery"]],
+            units=Counter(
+                (UnitType(unit["id"]), unit["amount"])
+                for unit in result["user"]["unit"]
+                if UnitType.has_value(unit["id"])
+            ),
         )
 
     def get_gift_receivers(self) -> List[str]:
@@ -257,9 +266,24 @@ class Api:
             if ArtifactType.has_value(artifact["typeId"]) and artifact["enabled"]
         }
 
+    def get_army_queue(self) -> List[ArmyQueue]:
+        """
+        Gets unit queues.
+        """
+        result, _ = self.post("getArmyQueue")
+        return [ArmyQueue(building_id=queue["buildingId"]) for queue in result["armyQueue"]]
+
+    def start_units(self, unit_type: UnitType, amount: int, building_id: int) -> Error:
+        """
+        Hires units.
+        """
+        result, _ = self.post("startUnit", unitId=unit_type.value, amount=amount, buildingId=building_id)
+        assert isinstance(result, bool), result
+        return Error(result)
+
     def start_bastion(
         self,
-        version="964ac9315db8d10f385387c03ca157404ef998a7",
+        version="93271667fc58c73c37c16d54b913aaaf3517e604",
         for_starmoney=False,
     ) -> Tuple[Error, Optional[Bastion]]:
         """
@@ -271,6 +295,13 @@ class Api:
             return Error(result["error"]["name"]), None
         return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
 
+    def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> str:
+        """
+        Starts PvP battle and returns battle ID.
+        """
+        result, _ = self.post("battle_startPvp", version=version)
+        return result["battleId"]
+
     def add_battle_commands(self, battle_id: str, commands: str) -> Error:
         """
         Adds serialized commands to the battle.
@@ -278,12 +309,29 @@ class Api:
         result, _ = self.post("battle_addCommands", battleId=battle_id, commands=commands)
         return self.parse_error(result)
 
-    def finish_battle(self, battle_id: str, commands: str) -> Tuple[str, Optional[Counter]]:
+    def finish_battle_serialized(self, battle_id: str, commands: str) -> Tuple[str, Optional[Counter]]:
         """
-        Finishes battle and returns serialized battle result.
+        Finishes battle with serialized commands and returns serialized battle result and resources.
         """
         result, state = self.post("battle_finish", True, battleId=battle_id, commands=commands)
         return result["battleResult"], (self.parse_resource_field(state) if state else None)
+
+    def finish_battle(self, battle_id: str, commands: List[SpawnCommand]) -> Tuple[str, Optional[Counter]]:
+        """
+        Finishes battle and returns serialized battle result and resources.
+        """
+        header = "1^{length}`{last_id}`{length}!".format(length=len(commands), last_id=(len(commands) - 1))
+        serialized_commands = [
+            "1^{0.col}`{id}`spawn`{0.row}`{time}`{type_id}`~1~".format(
+                command,
+                id=_id,
+                time=int(command.time * 1000),
+                type_id=command.unit_type.value,
+            )
+            for _id, command in enumerate(commands)
+        ]
+        footer = "~0~"
+        return self.finish_battle_serialized(battle_id, header + "".join(serialized_commands) + footer)
 
     def open_fair_citadel_gate(self):
         """
@@ -370,7 +418,7 @@ class Api:
     # Making requests to API.
     # ----------------------------------------------------------------------------------------------
 
-    def post(self, name: str, call_state=False, **arguments) -> Tuple[dict, Union[dict, list, None]]:
+    def post(self, name: str, call_state=False, **arguments) -> Tuple[dict, Union[bool, dict, list, None]]:
         """
         Makes request to the game API.
         """

@@ -255,3 +255,4 @@ class Error(enum.Enum):
     vip_required = r"error\VipRequired"  # VIP status is required
     not_enough = r"error\NotEnough"  # not enough… score?
     not_enough_time = r"error\NotEnoughTime"
+    too_many = r"error\TooMany"

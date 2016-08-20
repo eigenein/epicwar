@@ -6,7 +6,8 @@ Game library parser.
 """
 
 from collections import defaultdict
-from typing import Dict, Tuple
+from itertools import chain
+from typing import Dict, Set, Tuple
 
 from epicbot.enums import BuildingType, ResourceType, UnitType
 
@@ -20,6 +21,8 @@ class Library:
         self.full_time = {}  # type: Dict[Tuple[BuildingType, int], int]
         self.construction_time = {}  # type: Dict[Tuple[BuildingType, int], int]
         self.destroy_levels = {}  # type: Dict[BuildingType, int]
+        self.barracks_production = {}  # type: Dict[int, Set[UnitType]]
+        self.units_amount = {}  # type: Dict[int, int]
         # Process building levels.
         for building_level in content["buildingLevel"]:
             if building_level["cost"].get("starmoney", 0) != 0:
@@ -33,6 +36,16 @@ class Library:
             if type_:
                 # Remember construction time.
                 self.construction_time[type_, level] = building_level["constructionTime"]
+                # Remember barracks production unit types.
+                if type_ == BuildingType.barracks:
+                    self.barracks_production[level] = {
+                        UnitType(unit["unitId"])
+                        for unit in building_level["production"]["unit"]
+                        if UnitType.has_value(unit["unitId"])
+                    }
+                # Remember units amounts.
+                if type_ == BuildingType.staff:
+                    self.units_amount[level] = building_level["perks"][0]["value"]
                 # Process build or upgrade cost.
                 for resource in building_level["cost"].get("resource", []):
                     try:
@@ -96,3 +109,8 @@ class Library:
                 except ValueError:
                     continue
                 self.requirements[(type_, unit_level["level"])][resource_type] = resource["amount"]
+        # Propagate unit types from lower levels to upper levels.
+        self.barracks_production = {
+            level: set(chain(*(self.barracks_production[level_] for level_ in range(1, level + 1))))
+            for level, unit_types in self.barracks_production.items()
+        }
