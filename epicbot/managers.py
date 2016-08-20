@@ -18,10 +18,7 @@ class Buildings:
     """
     def __init__(self, buildings: Iterable[Building], library: Library):
         # Keep track of all buildings by building ID.
-        self.buildings = OrderedDict(
-            (building.id, building)
-            for building in sorted(buildings, key=self.sorting_key(library))
-        )
+        self.buildings = sorted(buildings, key=self.sorting_key(library))
         # Cache some frequently used values.
         self.castle_level = next(building.level for building in buildings if building.type == BuildingType.castle)
         self.forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
@@ -41,7 +38,7 @@ class Buildings:
         )
 
     def __iter__(self) -> Iterator[Building]:
-        return iter(self.buildings.values())
+        return iter(self.buildings)
 
     @staticmethod
     def sorting_key(library: Library) -> Callable[[Building], Any]:
