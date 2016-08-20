@@ -110,11 +110,11 @@ class Api:
                 ],
             ),
             cemetery=[Cemetery(x=cemetery["x"], y=cemetery["y"]) for cemetery in result["cemetery"]],
-            units=Counter(
-                (UnitType(unit["id"]), unit["amount"])
+            units=Counter({
+                UnitType(unit["id"]): unit["amount"]
                 for unit in result["user"]["unit"]
                 if UnitType.has_value(unit["id"])
-            ),
+            }),
         )
 
     def get_gift_receivers(self) -> List[str]:

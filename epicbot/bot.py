@@ -2,7 +2,9 @@
 # coding: utf-8
 
 import datetime
+import itertools
 import logging
+import random
 import time
 
 from collections import Counter
@@ -15,7 +17,7 @@ import epicbot.library
 import epicbot.managers
 import epicbot.utils
 
-from epicbot.api import AllianceMember, Api
+from epicbot.api import AllianceMember, Api, SpawnCommand
 from epicbot.enums import ArtifactType, BuildingType, Error, NoticeType, ResourceType, UnitType
 
 
@@ -36,8 +38,9 @@ class Bot:
     # Taken from game UI.
     ALLIANCE_DAILY_GIFT_SCORE = 500
 
-    # Bastion battle lasts for 3 minutes.
-    BASTION_DURATION = 180.0
+    # Battle lasts for 3 minutes.
+    BATTLE_DURATION = 180.0
+
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
 
@@ -49,6 +52,7 @@ class Bot:
         self.caption = None  # type: str
         self.resources = Counter()
         self.research = {}  # type: Dict[UnitType, int]
+        self.units = Counter()
         self.artifacts = []  # type: Set[ArtifactType]
         self.alliance_members = []  # type: List[AllianceMember]
         self.alliance_membership = None  # type: AllianceMember
@@ -64,7 +68,8 @@ class Bot:
         self_info = self.api.get_self_info()
         logging.info("Welcome %s!", self_info.caption)
 
-        self.caption, self.resources, self.research = (self_info.caption, self_info.resources, self_info.research)
+        self.caption, self.resources, self.research, self.units = (
+            self_info.caption, self_info.resources, self_info.research, self_info.units)
         self.artifacts = self.api.get_artifacts()
         self.alliance_members = self_info.alliance.members
         self.alliance_membership = next(member for member in self.alliance_members if member.id == self_info.user_id)
@@ -95,6 +100,8 @@ class Bot:
             self.play_bastion()
         if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
             self.collect_bastion_gift()
+        if self.context.with_pvp:
+            self.play_pvp()
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
@@ -305,7 +312,7 @@ class Bot:
 
         old_runes_count = self.resources[ResourceType.runes]
         logging.info("Sleeping…")
-        time.sleep(self.BASTION_DURATION)
+        time.sleep(self.BATTLE_DURATION)
         logging.info("Sending commands…")
         battle_result, new_resources = self.api.finish_battle_serialized(bastion.battle_id, replay.commands)
         logging.info("Battle result: %s.", battle_result)
@@ -325,6 +332,74 @@ class Bot:
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
         self.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
+
+    def play_pvp(self):
+        """
+        Plays PvP battle.
+        """
+        # Check whether we can produce elves.
+        barracks = [
+            building
+            for building in self.buildings.barracks
+            if UnitType.elf in self.library.barracks_production[building.level]
+        ]
+        if not barracks:
+            logging.warning("Can not produce elves. Skip PvP.")
+            self.notifications.append("Skip PvP: *can not produce elves*.")
+            return
+
+        # Check if army is queued.
+        if self.api.get_army_queue():
+            logging.info("Army is queued. Skip PvP.")
+            self.notifications.append("Skip PvP: *army queued*.")
+            return
+
+        # Build battle commands.
+        logging.info("Building battle commands…")
+        unit_types = [unit_type for unit_type, amount in self.units.items() for _ in range(amount)]
+        random.shuffle(unit_types)
+        commands = [
+            SpawnCommand(col=col, row=row, time=time_, unit_type=UnitType.elf)
+            for (col, row), time_, unit_type in zip(
+                epicbot.utils.traverse_edges(Api.BATTLE_FIELD_WIDTH, Api.BATTLE_FIELD_HEIGHT),
+                itertools.count(0.05, 0.1),
+                unit_types,
+            )
+        ]
+        logging.info("Built %s commands.", len(commands))
+        for command in commands:
+            logging.debug("Command: %s.", command)
+
+        # Start battle.
+        logging.info("Starting PvP…")
+        battle_id = self.api.start_pvp_battle()
+        logging.info("Battle ID: %s.", battle_id)
+
+        # Wait for battle to finish.
+        logging.info("Sleeping… Pray for me!")
+        time.sleep(self.BATTLE_DURATION)
+
+        # Finish battle.
+        logging.info("Finishing battle…")
+        battle_result, new_resources = self.api.finish_battle(battle_id, commands)
+        if new_resources:
+            for resource_type, amount in (new_resources - self.resources).items():
+                logging.info("Farmed: %s %s.", amount, resource_type.name)
+                self.notifications.append("Farm *{} {}* in *PvP*.".format(amount, resource_type.name))
+            self.resources = new_resources
+        else:
+            logging.error("Something went wrong: %s.", battle_result)
+
+        # Start units.
+        elves_per_barracks = self.buildings.units_amount // len(barracks)
+        # FIXME: started only multiple of len(barracks).
+        for building in barracks:
+            logging.info("Start %s units in barracks #%s…", elves_per_barracks, building.id)
+            error = self.api.start_units(UnitType.elf, elves_per_barracks, building.id)
+            if error == Error.ok:
+                self.notifications.append("Start *{} units*.".format(elves_per_barracks))
+            else:
+                logging.error("Failed to start units.")
 
     def can_upgrade(self, entity_type: Union[BuildingType, UnitType], level: int) -> bool:
         """

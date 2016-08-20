@@ -14,6 +14,7 @@ class Context:
     remixsid = None  # type: str
     with_castle = False  # type: bool
     with_bastion = False  # type: bool
+    with_pvp = False  # type: bool
     min_bastion_runes = 0  # type: int
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: typing.Optional[str]
@@ -70,3 +71,18 @@ class ColoredCountingStreamHandler(CountingStreamHandler):
 
     def format(self, record: logging.LogRecord):
         return click.style(super().format(record), fg=self.COLORS[record.levelno])
+
+
+def traverse_edges(width: int, height: int):
+    """
+    Generates coordinates to traverse edges of rectangle.
+    """
+    while True:
+        for x in range(0, width):
+            yield (x, 0)
+        for y in range(1, height):
+            yield (width - 1, y)
+        for x in range(width - 2, -1, -1):
+            yield (x, height - 1)
+        for y in range(height - 2, 0, -1):
+            yield (0, y)

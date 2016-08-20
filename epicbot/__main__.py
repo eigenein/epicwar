@@ -63,14 +63,16 @@ def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log
 @main.command()
 @click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
 @click.option("--with-bastion", help="Enable bastion battles.", is_flag=True)
+@click.option("--with-pvp", help="Enable PvP battles.", is_flag=True)
 @click.option("--min-bastion-runes", help="Limit minimum runes count for recorded battles.", type=int, default=0)
 @click.pass_obj
-def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, min_bastion_runes: int):
+def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, with_pvp: bool, min_bastion_runes: int):
     """
     Perform a step.
     """
     obj.with_castle = with_castle
     obj.with_bastion = with_bastion
+    obj.with_pvp = with_pvp
     obj.min_bastion_runes = min_bastion_runes
 
     try:

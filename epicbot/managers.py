@@ -21,6 +21,12 @@ class Buildings:
         # Cache some frequently used values.
         self.castle_level = next(building.level for building in buildings if building.type == BuildingType.castle)
         self.forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
+        self.barracks = [building for building in buildings if building.type == BuildingType.barracks]
+        self.units_amount = sum(
+            library.units_amount[building.level]
+            for building in buildings
+            if building.type == BuildingType.staff
+        )
         # Build caches.
         self.max_level = dict(sorted(
             [(building.type, building.level) for building in buildings],
