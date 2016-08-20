@@ -146,7 +146,7 @@ class Api:
         """
         Collects died enemy army.
         """
-        result, state = self.post("cemeteryFarm")
+        result, state = self.post("cemeteryFarm", True)
         return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
 
     def get_buildings(self) -> List[Building]:
@@ -342,7 +342,7 @@ class Api:
         """
         Helper method to parse resource collection result.
         """
-        assert isinstance(result, dict) and "resource" in result
+        assert isinstance(result, dict) and "resource" in result, result
         return self.parse_resources(result["resource"])
 
     @staticmethod

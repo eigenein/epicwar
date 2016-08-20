@@ -48,7 +48,6 @@ class Bot:
         # Self info.
         self.caption = None  # type: str
         self.resources = Counter()
-        self.cemetery = []
         self.research = {}  # type: Dict[UnitType, int]
         self.artifacts = []  # type: Set[ArtifactType]
         self.alliance_members = []  # type: List[AllianceMember]
