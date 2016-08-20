@@ -140,14 +140,14 @@ class Api:
         Collects resource from the building.
         """
         result, state = self.post("collectResource", call_state=True, buildingId=building_id)
-        return self.parse_resource_reward(result["reward"]), self.parse_resource_reward(state)
+        return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
 
     def farm_cemetery(self) -> Counter:
         """
         Collects died enemy army.
         """
         result, _ = self.post("cemeteryFarm")
-        return self.parse_resource_reward(result["reward"])
+        return self.parse_resource_field(result["reward"])
 
     def get_buildings(self) -> List[Building]:
         """
@@ -168,13 +168,13 @@ class Api:
             if BuildingType.has_value(building["typeId"])
         ]
 
-    def upgrade_building(self, building_id: int):
+    def upgrade_building(self, building_id: int) -> Tuple[Error, Counter, None]:
         """
         Upgrades building to the next level.
         """
         result, state = self.post("upgradeBuilding", call_state=True, buildingId=building_id)
-        logging.info("upgradeBuilding state: %s", state)
-        return self.parse_error(result)
+        # TODO: parse and return updated building.
+        return self.parse_error(result), self.parse_resource_field(state), None
 
     def destruct_building(self, building_id: int, instant: bool):
         """
@@ -283,7 +283,7 @@ class Api:
         Finishes battle and returns serialized battle result.
         """
         result, state = self.post("battle_finish", call_state=True, battleId=battle_id, commands=commands)
-        return result["battleResult"], self.parse_resource_reward(state)
+        return result["battleResult"], self.parse_resource_field(state)
 
     def open_fair_citadel_gate(self):
         """
@@ -326,11 +326,11 @@ class Api:
             if reward_type.has_value(obj["id"])
         }
 
-    def parse_resource_reward(self, reward: Optional[dict]) -> Counter:
+    def parse_resource_field(self, result: Optional[dict]) -> Counter:
         """
         Helper method to parse resource collection result.
         """
-        return self.parse_resources(reward["resource"])
+        return self.parse_resources(result["resource"])
 
     @staticmethod
     def parse_error(result: Union[bool, dict]) -> Error:

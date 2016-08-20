@@ -183,9 +183,10 @@ class Bot:
                 self.can_upgrade(building.type, building.level + 1)
             ):
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
-                error = self.api.upgrade_building(building.id)
+                error, new_resources, _ = self.api.upgrade_building(building.id)
                 if error == Error.ok:
-                    self.update_resources()
+                    self.resources = new_resources
+                    # TODO: update existing manager with the state.
                     self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
