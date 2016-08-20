@@ -391,13 +391,16 @@ class Bot:
             logging.error("Something went wrong: %s.", battle_result)
 
         # Start units.
-        elves_per_barracks = self.buildings.units_amount // len(barracks)
-        # FIXME: started only multiple of len(barracks).
-        for building in barracks:
-            logging.info("Start %s units in barracks #%s…", elves_per_barracks, building.id)
-            error = self.api.start_units(UnitType.elf, elves_per_barracks, building.id)
+        elves_per_barracks, elves_remainder = divmod(self.buildings.units_amount, len(barracks))
+        for i, building in enumerate(barracks):
+            amount = elves_per_barracks
+            if i < elves_remainder:
+                # Compensate remainder.
+                amount += 1
+            logging.info("Start %s units in barracks #%s…", amount, building.id)
+            error = self.api.start_units(UnitType.elf, amount, building.id)
             if error == Error.ok:
-                self.notifications.append("Start *{} units*.".format(elves_per_barracks))
+                self.notifications.append("Start *{} units*.".format(amount))
             else:
                 logging.error("Failed to start units.")
 
