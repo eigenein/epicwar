@@ -389,6 +389,8 @@ class Bot:
             self.resources = new_resources
         else:
             logging.error("Something went wrong: %s.", battle_result)
+            self.notifications.append("\N{cross mark} PvP failed.")
+            return
 
         # Start units.
         elves_per_barracks, elves_remainder = divmod(self.buildings.units_amount, len(barracks))
