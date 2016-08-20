@@ -180,7 +180,7 @@ class Api:
         return (
             self.parse_error(result),
             (self.parse_resource_field(state) if state else None),
-            (self.parse_building(state["buildingChanged"]) if state else None),
+            (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
     def destruct_building(self, building_id: int, instant: bool) -> Tuple[Error, Optional[Counter], Optional[Building]]:
@@ -191,7 +191,7 @@ class Api:
         return (
             self.parse_error(result),
             (self.parse_resource_field(state) if state else None),
-            (self.parse_building(state["buildingChanged"]) if state else None),
+            (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
     def start_research(self, unit_id: int, level: int, forge_building_id: int) -> Tuple[Error, Optional[Counter]]:
