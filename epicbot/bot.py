@@ -230,7 +230,7 @@ class Bot:
                 # One research per time and we've just started a one.
                 break
             else:
-                logging.error("Failed to upgrade: %s.", error.name)
+                logging.warning("Failed to upgrade: %s.", error.name)
 
     def check_alliance_help(self):
         """
