@@ -17,7 +17,7 @@
 * 🆘 Collects help from alliance members.
 * 👦 Simulates user behavior by making random delays between requests.
 * 🏆 Participates in known bastion battles.
-* 🏆 Participates PvP battles.
+* 🏆 Participates in PvP battles.
 * 🎲 Spins event roulette.
 * 📨 Sends Telegram notification.
 
