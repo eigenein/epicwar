@@ -428,7 +428,13 @@ class Bot:
         """
         logging.info("Resources: %s.", ", ".join(
             "{}: {}".format(resource_type.name, self.resources[resource_type])
-            for resource_type in (ResourceType.gold, ResourceType.food, ResourceType.sand, ResourceType.runes)
+            for resource_type in (
+                ResourceType.gold,
+                ResourceType.food,
+                ResourceType.sand,
+                ResourceType.runes,
+                ResourceType.enchanted_coins,
+            )
         ))
 
     def send_telegram_notification(self):
@@ -453,6 +459,7 @@ class Bot:
             "\N{HAMBURGER} *{food}*\n"
             "\N{SPARKLES} *{sand}*\n"
             "\N{squared cjk unified ideograph-7a7a} *{runes}*\n"
+            "\N{squared cjk unified ideograph-6307} *{coins}*\n"
             "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
             " \N{clock face one oclock} *{execution_time[0]}m{execution_time[1]:02}s*"
@@ -467,6 +474,7 @@ class Bot:
             gold=self.format_amount(self.resources[ResourceType.gold]),
             sand=self.format_amount(self.resources[ResourceType.sand]),
             runes=self.format_amount(self.resources[ResourceType.runes]),
+            coins=self.format_amount(self.resources[ResourceType.enchanted_coins]),
             construction=construction,
             notifications="\n".join("\N{incoming envelope} %s" % line for line in self.notifications),
             log_counter=self.context.log_handler.counter,
