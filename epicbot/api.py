@@ -313,6 +313,9 @@ class Api:
         """
         Finishes battle with serialized commands and returns serialized battle result and resources.
         """
+        # FIXME: remove the following line.
+        logging.info("Add commands: %s.", self.add_battle_commands(battle_id, commands))
+        
         result, state = self.post("battle_finish", True, battleId=battle_id, commands=commands)
         return result["battleResult"], (self.parse_resource_field(state) if state else None)
 
