@@ -359,7 +359,7 @@ class Bot:
         unit_types = [unit_type for unit_type, amount in self.units.items() for _ in range(amount)]
         random.shuffle(unit_types)
         commands = [
-            SpawnCommand(col=col, row=row, time=time_, unit_type=UnitType.elf)
+            SpawnCommand(col=col, row=row, time=time_, unit_type=unit_type)
             for (col, row), time_, unit_type in zip(
                 epicbot.utils.traverse_edges(Api.BATTLE_FIELD_WIDTH, Api.BATTLE_FIELD_HEIGHT),
                 itertools.count(0.05, 0.1),
@@ -377,7 +377,7 @@ class Bot:
 
         # Wait for battle to finish.
         logging.info("Sleeping… Pray for me!")
-        time.sleep(60.0)
+        time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
         logging.info("Finishing battle…")
