@@ -172,21 +172,24 @@ class Api:
         """
         Upgrades building to the next level.
         """
-        result, _ = self.post("upgradeBuilding", buildingId=building_id)
+        result, state = self.post("upgradeBuilding", call_state=True, buildingId=building_id)
+        logging.info("upgradeBuilding state: %s", state)
         return self.parse_error(result)
 
     def destruct_building(self, building_id: int, instant: bool):
         """
         Destructs building. Used to clean extended areas.
         """
-        result, _ = self.post("destructBuilding", buildingId=building_id, instant=instant)
+        result, state = self.post("destructBuilding", call_state=True, buildingId=building_id, instant=instant)
+        logging.info("destructBuilding state: %s", state)
         return self.parse_error(result)
 
     def start_research(self, unit_id: int, level: int, forge_building_id: int):
         """
         Start unit research.
         """
-        result, _ = self.post("startResearch", level=level, unitId=unit_id, buildingId=forge_building_id)
+        result, state = self.post("startResearch", call_state=True, level=level, unitId=unit_id, buildingId=forge_building_id)
+        logging.info("startResearch state: %s", state)
         return self.parse_error(result)
 
     def click_alliance_daily_gift(self):
