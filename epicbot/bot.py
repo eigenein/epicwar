@@ -192,7 +192,7 @@ class Bot:
             if (
                 building.type in BuildingType.extended_areas() and
                 building.is_completed and
-                self.buildings.castle.level >= self.library.destroy_levels[building.type] and
+                self.buildings.castle_level >= self.library.destroy_levels[building.type] and
                 self.can_upgrade(building.type, building.level)
             ):
                 logging.info("Destructing %s #%s…", building.type.name, building.id)
@@ -216,7 +216,7 @@ class Bot:
             if unit_type not in UnitType.upgradable() or not self.can_upgrade(unit_type, level + 1):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
-            error, new_resources = self.api.start_research(unit_type.value, level + 1, self.buildings.forge.id)
+            error, new_resources = self.api.start_research(unit_type.value, level + 1, self.buildings.forge_id)
             if error == Error.ok:
                 self.resources = new_resources
                 self.notifications.append("Upgrade *{}*.".format(unit_type.name))

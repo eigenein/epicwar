@@ -3,6 +3,7 @@
 
 import logging
 
+from collections import OrderedDict
 from operator import itemgetter
 from typing import Any, Callable, Iterable, Iterator
 
@@ -16,10 +17,14 @@ class Buildings:
     Building manager.
     """
     def __init__(self, buildings: Iterable[Building], library: Library):
-        self.buildings = sorted(buildings, key=self.sorting_key(library))
-        # Special buildings.
-        self.castle = next(building for building in self.buildings if building.type == BuildingType.castle)
-        self.forge = next(building for building in self.buildings if building.type == BuildingType.forge)
+        # Keep track of all buildings by building ID.
+        self.buildings = OrderedDict(
+            (building.id, building)
+            for building in sorted(buildings, key=self.sorting_key(library))
+        )
+        # Cache some frequently used values.
+        self.castle_level = next(building.level for building in buildings if building.type == BuildingType.castle)
+        self.forge_id = next(building.id for building in buildings if building.type == BuildingType.forge)
         # Build caches.
         self.max_level = dict(sorted(
             [(building.type, building.level) for building in buildings],
@@ -36,7 +41,7 @@ class Buildings:
         )
 
     def __iter__(self) -> Iterator[Building]:
-        return iter(self.buildings)
+        return iter(self.buildings.values())
 
     @staticmethod
     def sorting_key(library: Library) -> Callable[[Building], Any]:
