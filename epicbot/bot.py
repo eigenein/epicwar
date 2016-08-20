@@ -114,6 +114,7 @@ class Bot:
         Farms cemetery.
         """
         amount = self.api.farm_cemetery().get(ResourceType.food, 0)
+        # FIXME: update resources from state.
         self.resources[ResourceType.food] += amount
         logging.info("Cemetery farmed: %s.", amount)
         self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
@@ -316,8 +317,9 @@ class Bot:
         logging.info("Sleeping…")
         time.sleep(self.BASTION_DURATION)
         logging.info("Sending commands…")
-        battle_result, self.resources = self.api.finish_battle(bastion.battle_id, replay.commands)
+        battle_result, new_resources = self.api.finish_battle(bastion.battle_id, replay.commands)
         logging.info("Battle result: %s.", battle_result)
+        self.resources = new_resources or self.resources
 
         runes_farmed = self.resources[ResourceType.runes] - old_runes_count
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)

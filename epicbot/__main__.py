@@ -10,9 +10,11 @@ import json
 import logging
 import os
 import time
+import traceback
 import typing
 
 import click
+import requests
 
 import epicbot.api
 import epicbot.bastion
@@ -78,8 +80,23 @@ def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, min_
             api.authenticate()
             epicbot.bot.Bot(obj, api, library).step()
     except Exception as ex:
-        if not isinstance(ex, click.ClickException):
-            logging.critical("Critical error.", exc_info=ex)
+        # Skip expected CLI exceptions.
+        if isinstance(ex, click.ClickException):
+            raise
+        # Log the error since it will be caught by click.
+        logging.critical("Critical error.", exc_info=ex)
+        # Send Telegram notification if enabled.
+        if not obj.telegram_enabled:
+            raise
+        requests.get(
+            "https://api.telegram.org/bot%s/sendMessage" % obj.telegram_token,
+            params={
+                "chat_id": obj.telegram_chat_id,
+                "text": "\N{cross mark} *Critical error*:\n\n```\n%s\n```" % traceback.format_exc(),
+                "parse_mode": "markdown",
+            },
+        )
+        # Finally propagate it up.
         raise
 
 

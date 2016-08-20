@@ -168,13 +168,13 @@ class Api:
             if BuildingType.has_value(building["typeId"])
         ]
 
-    def upgrade_building(self, building_id: int) -> Tuple[Error, Counter, None]:
+    def upgrade_building(self, building_id: int) -> Tuple[Error, Optional[Counter], None]:
         """
         Upgrades building to the next level.
         """
         result, state = self.post("upgradeBuilding", call_state=True, buildingId=building_id)
         # TODO: parse and return updated building.
-        return self.parse_error(result), self.parse_resource_field(state), None
+        return self.parse_error(result), (self.parse_resource_field(state) if state else None), None
 
     def destruct_building(self, building_id: int, instant: bool):
         """
@@ -278,12 +278,12 @@ class Api:
         result, _ = self.post("battle_addCommands", battleId=battle_id, commands=commands)
         return self.parse_error(result)
 
-    def finish_battle(self, battle_id: str, commands: str) -> str:
+    def finish_battle(self, battle_id: str, commands: str) -> Tuple[str, Optional[Counter]]:
         """
         Finishes battle and returns serialized battle result.
         """
         result, state = self.post("battle_finish", call_state=True, battleId=battle_id, commands=commands)
-        return result["battleResult"], self.parse_resource_field(state)
+        return result["battleResult"], (self.parse_resource_field(state) if state else None)
 
     def open_fair_citadel_gate(self):
         """
@@ -330,6 +330,7 @@ class Api:
         """
         Helper method to parse resource collection result.
         """
+        assert isinstance(result, dict) and "resource" in result
         return self.parse_resources(result["resource"])
 
     @staticmethod
