@@ -93,7 +93,9 @@ class Bot:
 
         # Battles.
         if self.context.with_bastion:
-            self.check_bastion()
+            self.play_bastion()
+        if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
+            self.collect_bastion_gift()
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
@@ -275,17 +277,10 @@ class Bot:
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
 
-    def check_bastion(self):
+    def play_bastion(self):
         """
-        Plays a bastion battle and/or collects a gift.
+        Plays a bastion battle.
         """
-        if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
-            logging.info("Collecting bastion gift…")
-            for reward_type, amount in self.api.open_fair_citadel_gate().items():
-                logging.info("Collected %s %s.", amount, reward_type.name)
-                self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
-            self.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
-
         logging.info("Starting bastion…")
         error, bastion = self.api.start_bastion()
         if error == Error.not_enough_time:
@@ -316,6 +311,16 @@ class Bot:
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)
         self.notifications.append("Farm *{} of {} runes* in bastion *{}*.".format(
             runes_farmed, replay.runes, bastion.fair_id))
+
+    def collect_bastion_gift(self):
+        """
+        Collects bastion gift.
+        """
+        logging.info("Collecting bastion gift…")
+        for reward_type, amount in self.api.open_fair_citadel_gate().items():
+            logging.info("Collected %s %s.", amount, reward_type.name)
+            self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
+        self.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
 
     def get_alliance_builder_count(self) -> int:
         """
