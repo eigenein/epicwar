@@ -61537,15 +61537,15 @@ CONTENT = json.loads(r"""
   },
   "error": {
     "ALLIANCE_INCORRECT_TITLE": {
-      "description": "\u041d\u0435\u0434\u043e\u043f\u0443\u0441\u0442\u0438\u043c\u044b\u0435 \u0441\u0438\u043c\u0432\u043e\u043b\u044b \u0432 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u0438 \u0431\u0440\u0430\u0442\u0441\u0442\u0432\u0430.",
+      "description": "Недопустимые символы в названии братства.",
       "key": "ALLIANCE_INCORRECT_TITLE"
     },
     "ALLIANCE_REQUEST_EXPIRED": {
-      "description": "\u0412\u0440\u0435\u043c\u044f \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044f \u0437\u0430\u044f\u0432\u043a\u0438 \u0438\u0441\u0442\u0435\u043a\u043b\u043e.",
+      "description": "Время действия заявки истекло.",
       "key": "ALLIANCE_REQUEST_EXPIRED"
     },
     "ALLIANCE_TITLE_EXIST": {
-      "description": "\u0411\u0440\u0430\u0442\u0441\u0442\u0432\u043e \u0441 \u0442\u0430\u043a\u0438\u043c \u0438\u043c\u0435\u043d\u0435\u043c \u0443\u0436\u0435 \u0441\u0443\u0449\u0435\u0441\u0442\u0432\u0443\u0435\u0442.",
+      "description": "Братство с таким именем уже существует.",
       "key": "ALLIANCE_TITLE_EXIST"
     },
     "ALREADY": {
@@ -61557,27 +61557,27 @@ CONTENT = json.loads(r"""
       "key": "APPLICATION_NOT_FOUND"
     },
     "BATTLE_NOT_FOUND": {
-      "description": "\u0417\u0430\u043f\u0438\u0441\u044c \u043e \u0431\u043e\u0435 \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442.",
+      "description": "Запись о бое отсутствует.",
       "key": "BATTLE_NOT_FOUND"
     },
     "BATTLE_REVENGE_NOT_AVAILABLE": {
-      "description": "\u041d\u0435\u043b\u044c\u0437\u044f \u043d\u0430\u043f\u0430\u0441\u0442\u044c \u043d\u0430 \u044d\u0442\u043e\u0433\u043e \u0438\u0433\u0440\u043e\u043a\u0430 \u0432 \u0434\u0430\u043d\u043d\u044b\u0439 \u043c\u043e\u043c\u0435\u043d\u0442.",
+      "description": "Нельзя напасть на этого игрока в данный момент.",
       "key": "BATTLE_REVENGE_NOT_AVAILABLE"
     },
     "BATTLE_USER_LOCKED": {
-      "description": "\u041d\u0435\u043b\u044c\u0437\u044f \u043d\u0430\u043f\u0430\u0441\u0442\u044c \u043d\u0430 \u044d\u0442\u043e\u0433\u043e \u0438\u0433\u0440\u043e\u043a\u0430 \u0432 \u0434\u0430\u043d\u043d\u044b\u0439 \u043c\u043e\u043c\u0435\u043d\u0442.",
+      "description": "Нельзя напасть на этого игрока в данный момент.",
       "key": "BATTLE_USER_LOCKED"
     },
     "BATTLE_USER_NOT_FOUND": {
-      "description": "\u041d\u0435\u043b\u044c\u0437\u044f \u043d\u0430\u0447\u0430\u0442\u044c \u0431\u0438\u0442\u0432\u0443, \u0446\u0435\u043b\u044c \u0434\u043b\u044f \u043d\u0430\u043f\u0430\u0434\u0435\u043d\u0438\u044f \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u0430.",
+      "description": "Нельзя начать битву, цель для нападения не найдена.",
       "key": "BATTLE_USER_NOT_FOUND"
     },
     "BATTLE_USER_ONLINE": {
-      "description": "\u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u043d\u0430\u043f\u0430\u0441\u0442\u044c \u043d\u0430 \u0438\u0433\u0440\u043e\u043a\u0430 \u043f\u043e\u0437\u0436\u0435.",
+      "description": "Попробуйте напасть на игрока позже.",
       "key": "BATTLE_USER_ONLINE"
     },
     "BATTLE_USER_PROTECTED": {
-      "description": "\u041d\u0435\u043b\u044c\u0437\u044f \u043d\u0430\u0447\u0430\u0442\u044c \u0431\u0438\u0442\u0432\u0443, \u0438\u0433\u0440\u043e\u043a \u043d\u0430\u0445\u043e\u0434\u0438\u0442\u0441\u044f \u043f\u043e\u0434 \u043f\u0440\u043e\u0442\u0435\u043a\u0446\u0438\u0435\u0439.",
+      "description": "Нельзя начать битву, игрок находится под протекцией.",
       "key": "BATTLE_USER_PROTECTED"
     },
     "DUPLICATE_REQUEST": {
@@ -61585,11 +61585,11 @@ CONTENT = json.loads(r"""
       "key": "DUPLICATE_REQUEST"
     },
     "ERROR_UNDER_ATTACK": {
-      "description": "\u041d\u0430 \u0442\u0435\u043a\u0443\u0449\u0435\u0433\u043e \u0438\u0433\u0440\u043e\u043a\u0430 \u0432 \u0434\u0430\u043d\u043d\u044b\u0439 \u043c\u043e\u043c\u0435\u043d\u0442 \u0438\u0434\u0435\u0442 \u043d\u0430\u043f\u0430\u0434\u0435\u043d\u0438\u0435",
+      "description": "На текущего игрока в данный момент идет нападение",
       "key": "ERROR_UNDER_ATTACK"
     },
     "INVALIDSESSION": {
-      "description": "\u0418\u0433\u0440\u0430 \u0440\u0430\u0431\u043e\u0442\u0430\u0435\u0442 \u0432 \u0434\u0440\u0443\u0433\u043e\u0439 \u0441\u0435\u0441\u0441\u0438\u0438.",
+      "description": "Игра работает в другой сессии.",
       "key": "INVALIDSESSION"
     },
     "INVALID_JSON": {
@@ -61609,7 +61609,7 @@ CONTENT = json.loads(r"""
       "key": "INVALID_SIGNATURE"
     },
     "MAINTENANCE": {
-      "description": "\u0412 \u0434\u0430\u043d\u043d\u044b\u0439 \u043c\u043e\u043c\u0435\u043d\u0442 \u043f\u0440\u043e\u0432\u043e\u0434\u044f\u0442\u0441\u044f \u0442\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u0438\u0435 \u0440\u0430\u0431\u043e\u0442\u044b. \u041f\u043e\u043f\u0440\u043e\u0431\u0443\u0439\u0442\u0435 \u0447\u0443\u0442\u044c \u043f\u043e\u0437\u0436\u0435!",
+      "description": "В данный момент проводятся технические работы. Попробуйте чуть позже!",
       "key": "MAINTENANCE"
     },
     "NOT_AVAILABLE": {
@@ -77854,7 +77854,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 12,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e \u043b\u0443\u0447\u043d\u0438\u043a\u043e\u0432",
+      "name": "построить башню лучников",
       "parents": [],
       "reward": {
         "experience": 20,
@@ -77881,7 +77881,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 13,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u0440\u044b\u0446\u0430\u0440\u0435\u0439 10",
+      "name": "нанять рыцарей 10",
       "parents": [
         "12"
       ],
@@ -77910,7 +77910,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 24,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u043e\u0440\u043a\u043e\u0432 10",
+      "name": "нанять орков 10",
       "parents": [
         "115"
       ],
@@ -77939,7 +77939,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 25,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u043a\u0443\u0437\u043d\u0438\u0446\u0443",
+      "name": "построй кузницу",
       "parents": [
         "156"
       ],
@@ -77973,7 +77973,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 26,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0441\u043a\u043b\u0430\u0434 3",
+      "name": "улучшить склад 3",
       "parents": [
         "156"
       ],
@@ -78003,7 +78003,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 27,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0430\u043c\u0431\u0430\u0440 3",
+      "name": "улучшить амбар 3",
       "parents": [
         "26"
       ],
@@ -78031,7 +78031,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 29,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u0440\u044b\u0446\u0430\u0440\u044f 2",
+      "name": "прокачать рыцаря 2",
       "parents": [
         "25"
       ],
@@ -78059,7 +78059,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 30,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u0433\u043e\u0431\u043b\u0438\u043d\u0430 2",
+      "name": "прокачать гоблина 2",
       "parents": [
         "25",
         "157"
@@ -78089,7 +78089,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 31,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u043f\u0443\u0448\u043a\u0443",
+      "name": "построй пушку",
       "parents": [
         "26",
         "27"
@@ -78119,7 +78119,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 32,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0437\u0430\u0431\u043e\u0440 40",
+      "name": "построй забор 40",
       "parents": [
         "149",
         "31"
@@ -78154,7 +78154,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 33,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u0437\u0430\u043c\u043e\u043a 4",
+      "name": "улучши замок 4",
       "parents": [
         "31"
       ],
@@ -78187,7 +78187,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 34,
-      "name": "\u043d\u0430\u0439\u043c\u0438 \u044d\u043b\u044c\u0444\u043e\u0432 30",
+      "name": "найми эльфов 30",
       "parents": [
         "117"
       ],
@@ -78215,7 +78215,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 35,
-      "name": "\u043f\u0440\u043e\u0439\u0434\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 15",
+      "name": "пройди миссию 15",
       "parents": [
         "178",
         "117"
@@ -78250,7 +78250,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 36,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u043a\u0443\u0437\u043d\u0438\u0446\u0443 2",
+      "name": "улучши кузницу 2",
       "parents": [
         "29",
         "30",
@@ -78285,7 +78285,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 37,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0430\u043c\u0431\u0430\u0440 2",
+      "name": "построй амбар 2",
       "parents": [
         "33"
       ],
@@ -78314,7 +78314,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 38,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0441\u043a\u043b\u0430\u0434 2",
+      "name": "построй склад 2",
       "parents": [
         "33"
       ],
@@ -78344,7 +78344,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 39,
-      "name": "\u0443\u0448\u0443\u0447\u0448\u0438 \u043a\u0430\u0437\u0430\u0440\u043c\u0443 5",
+      "name": "ушучши казарму 5",
       "parents": [
         "34",
         "35",
@@ -78378,7 +78378,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 40,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0439 \u043e\u0440\u043a\u0430 2",
+      "name": "прокачай орка 2",
       "parents": [
         "36"
       ],
@@ -78408,7 +78408,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 41,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u0431\u0430\u043b\u043b\u0438\u0441\u0442\u0443 3",
+      "name": "улучши баллисту 3",
       "parents": [
         "37",
         "38"
@@ -78437,7 +78437,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 42,
-      "name": "\u043f\u0440\u043e\u0439\u0434\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 20",
+      "name": "пройди миссию 20",
       "parents": [
         "35",
         "39"
@@ -78471,7 +78471,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 43,
-      "name": "\u043d\u0430\u0439\u043c\u0438 \u0442\u0440\u043e\u043b\u043b\u044f 20",
+      "name": "найми тролля 20",
       "parents": [
         "119"
       ],
@@ -78499,7 +78499,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 44,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0439 \u044d\u043b\u044c\u0444\u0430 2",
+      "name": "прокачай эльфа 2",
       "parents": [
         "40"
       ],
@@ -78528,7 +78528,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 45,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0431\u0430\u0448\u043d\u044e \u043c\u043e\u043b\u043d\u0438\u0438",
+      "name": "построй башню молнии",
       "parents": [
         "41"
       ],
@@ -78558,7 +78558,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 46,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u044c \u0437\u0430\u043c\u043e\u043a 5",
+      "name": "улучшь замок 5",
       "parents": [
         "39",
         "45",
@@ -78592,7 +78592,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 47,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0439 \u0442\u0440\u043e\u043b\u043b\u044f 2",
+      "name": "прокачай тролля 2",
       "parents": [
         "44"
       ],
@@ -78622,7 +78622,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 48,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u0444\u0435\u0440\u043c\u0443 5",
+      "name": "улучши ферму 5",
       "parents": [
         "46"
       ],
@@ -78652,7 +78652,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 49,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u0448\u0430\u0445\u0442\u0443 5",
+      "name": "улучши шахту 5",
       "parents": [
         "46"
       ],
@@ -78682,7 +78682,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 50,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u043a\u0430\u0437\u0430\u0440\u043c\u0443 6",
+      "name": "улучши казарму 6",
       "parents": [
         "42"
       ],
@@ -78715,7 +78715,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 51,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0437\u0430\u0431\u043e\u0440 60",
+      "name": "построй забор 60",
       "parents": [
         "32",
         "48"
@@ -78749,7 +78749,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 52,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0431\u0430\u0448\u043d\u044e \u043b\u044c\u0434\u0430",
+      "name": "построй башню льда",
       "parents": [
         "48",
         "49"
@@ -78780,7 +78780,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 53,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u0448\u0442\u0430\u0431 5",
+      "name": "улучши штаб 5",
       "parents": [
         "119",
         "50"
@@ -78813,7 +78813,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 54,
-      "name": "\u043f\u0440\u043e\u0439\u0434\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 25",
+      "name": "пройди миссию 25",
       "parents": [
         "42",
         "50"
@@ -78848,7 +78848,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 55,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043f\u0443\u0448\u043a\u0443 3",
+      "name": "улучшить пушку 3",
       "parents": [
         "52"
       ],
@@ -78878,7 +78878,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 56,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u0437\u0430\u043c\u043e\u043a 6",
+      "name": "улучши замок 6",
       "parents": [
         "50",
         "55"
@@ -78912,7 +78912,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 57,
-      "name": "\u043d\u0430\u0439\u043c\u0438 \u043e\u0440\u043b\u0430 20",
+      "name": "найми орла 20",
       "parents": [
         "53",
         "50"
@@ -78943,7 +78943,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 58,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u043a\u0443\u0437\u043d\u0438\u0446\u0443 3",
+      "name": "улучши кузницу 3",
       "parents": [
         "47",
         "56"
@@ -78978,7 +78978,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 59,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0444\u0435\u0440\u043c\u0443 7",
+      "name": "улучшить ферму 7",
       "parents": [
         "56"
       ],
@@ -79008,7 +79008,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 60,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0430\u0445\u0442\u0443 7",
+      "name": "улучшить шахту 7",
       "parents": [
         "56"
       ],
@@ -79038,7 +79038,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 61,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438 \u043a\u0430\u0437\u0430\u0440\u043c\u0443 7",
+      "name": "улучши казарму 7",
       "parents": [
         "56"
       ],
@@ -79070,7 +79070,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 62,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0439 \u0440\u044b\u0446\u0430\u0440\u044f 3",
+      "name": "прокачай рыцаря 3",
       "parents": [
         "58"
       ],
@@ -79098,7 +79098,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 63,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u0433\u043e\u0431\u043b\u0438\u043d\u0430 \u0434\u043e \u0443\u0440\u043e\u0432\u043d\u044f 3",
+      "name": "прокачать гоблина до уровня 3",
       "parents": [
         "58"
       ],
@@ -79128,7 +79128,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 64,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u043b\u043b\u0438\u0441\u0442\u0443 6",
+      "name": "улучшить баллисту 6",
       "parents": [
         "59",
         "60"
@@ -79158,7 +79158,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 65,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 3",
+      "name": "построить казарму 3",
       "parents": [
         "56",
         "61"
@@ -79192,7 +79192,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 66,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0448\u0442\u0430\u0431 2",
+      "name": "построить штаб 2",
       "parents": [
         "56",
         "61"
@@ -79225,7 +79225,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 67,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u043e\u0440\u043a\u0430 3",
+      "name": "прокачать орка 3",
       "parents": [
         "62"
       ],
@@ -79253,7 +79253,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 68,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u0442\u0440\u043e\u043b\u043b\u044f 3",
+      "name": "прокачать тролля 3",
       "parents": [
         "63"
       ],
@@ -79283,7 +79283,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 69,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0437\u0430\u043c\u043e\u043a 7",
+      "name": "улучшить замок 7",
       "parents": [
         "61",
         "64"
@@ -79316,7 +79316,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 70,
-      "name": "\u043f\u0440\u043e\u0439\u0442\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 30",
+      "name": "пройти миссию 30",
       "parents": [
         "54",
         "65",
@@ -79351,7 +79351,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 71,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u043c\u0430\u0433\u0430 50",
+      "name": "нанять мага 50",
       "parents": [
         "61"
       ],
@@ -79381,7 +79381,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 72,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0443\u0437\u043d\u0438\u0446\u0443 4",
+      "name": "улучшить кузницу 4",
       "parents": [
         "67",
         "68",
@@ -79416,7 +79416,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 73,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0441\u043a\u043b\u0430\u0434 3",
+      "name": "построить склад 3",
       "parents": [
         "69"
       ],
@@ -79446,7 +79446,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 74,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e \u043b\u044c\u0434\u0430 3",
+      "name": "улучшить башню льда 3",
       "parents": [
         "69"
       ],
@@ -79476,7 +79476,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 75,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e \u043b\u0443\u0447\u043d\u0438\u043a\u043e\u0432 6",
+      "name": "улучшить башню лучников 6",
       "parents": [
         "69",
         "71"
@@ -79507,7 +79507,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 76,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 8",
+      "name": "улучшить казарму 8",
       "parents": [
         "69",
         "70"
@@ -79540,7 +79540,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 77,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u044d\u043b\u044c\u0444\u0430 3",
+      "name": "прокачать эльфа 3",
       "parents": [
         "72"
       ],
@@ -79569,7 +79569,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 78,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0430\u043c\u0431\u0430\u0440 3",
+      "name": "построить амбар 3",
       "parents": [
         "73"
       ],
@@ -79598,7 +79598,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 79,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0437\u0430\u0431\u043e\u0440 80",
+      "name": "построить забор 80",
       "parents": [
         "51",
         "74",
@@ -79634,7 +79634,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 80,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e \u043c\u043e\u043b\u043d\u0438\u0439 3",
+      "name": "улучшить башню молний 3",
       "parents": [
         "74",
         "75"
@@ -79663,7 +79663,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 81,
-      "name": "\u043f\u0440\u043e\u0439\u0442\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 35",
+      "name": "пройти миссию 35",
       "parents": [
         "70",
         "76"
@@ -79697,7 +79697,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 82,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u043e\u0432 20",
+      "name": "нанять призраков 20",
       "parents": [
         "120"
       ],
@@ -79725,7 +79725,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 83,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u043e\u0440\u043b\u0430 2",
+      "name": "прокачать орла 2",
       "parents": [
         "77"
       ],
@@ -79755,7 +79755,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 84,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0437\u0430\u043c\u043e\u043a 8",
+      "name": "улучшить замок 8",
       "parents": [
         "76",
         "78",
@@ -79789,7 +79789,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 85,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u043c\u0430\u0433\u0430 2",
+      "name": "прокачать мага 2",
       "parents": [
         "83"
       ],
@@ -79818,7 +79818,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 86,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0437\u0430\u0431\u043e\u0440 100",
+      "name": "построить забор 100",
       "parents": [
         "79",
         "84"
@@ -79853,7 +79853,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 87,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0443\u0437\u043d\u0438\u0446\u0443 5",
+      "name": "улучшить кузницу 5",
       "parents": [
         "84",
         "85"
@@ -79888,7 +79888,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 88,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0444\u0435\u0440\u043c\u0443 9",
+      "name": "улучшить ферму 9",
       "parents": [
         "84"
       ],
@@ -79918,7 +79918,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 89,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0430\u0445\u0442\u0443 9",
+      "name": "улучшить шахту 9",
       "parents": [
         "84"
       ],
@@ -79948,7 +79948,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 90,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 9",
+      "name": "улучшить казарму 9",
       "parents": [
         "84"
       ],
@@ -79980,7 +79980,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 91,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u0438\u0437\u0440\u0430\u043a\u0430 2",
+      "name": "прокачать призрака 2",
       "parents": [
         "87"
       ],
@@ -80010,7 +80010,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 92,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0437\u0430\u043c\u043e\u043a 9",
+      "name": "улучшить замок 9",
       "parents": [
         "90",
         "94",
@@ -80046,7 +80046,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 93,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e \u043b\u0443\u0447\u043d\u0438\u043a\u043e\u0432 8",
+      "name": "улучшить башню лучников 8",
       "parents": [
         "88",
         "89"
@@ -80077,7 +80077,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 94,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u043b\u043b\u0438\u0441\u0442\u0443 8",
+      "name": "улучшить баллисту 8",
       "parents": [
         "88",
         "89"
@@ -80106,7 +80106,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 95,
-      "name": "\u043f\u0440\u043e\u0439\u0442\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 40",
+      "name": "пройти миссию 40",
       "parents": [
         "81"
       ],
@@ -80139,7 +80139,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 96,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u044d\u043d\u0442\u0430 15",
+      "name": "нанять энта 15",
       "parents": [
         "121"
       ],
@@ -80168,7 +80168,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 97,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u043e\u0431\u0435\u043b\u0438\u0441\u043a \u043e\u0433\u043d\u044f 1",
+      "name": "построить обелиск огня 1",
       "parents": [
         "98",
         "99"
@@ -80199,7 +80199,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 98,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0444\u0435\u0440\u043c\u0443 10",
+      "name": "улучшить ферму 10",
       "parents": [
         "92"
       ],
@@ -80229,7 +80229,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 99,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0430\u0445\u0442\u0443 10",
+      "name": "улучшить шахту 10",
       "parents": [
         "92"
       ],
@@ -80258,7 +80258,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 100,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u0434\u0440\u0430\u043a\u043e\u043d\u0430 10",
+      "name": "нанять дракона 10",
       "parents": [
         "103"
       ],
@@ -80288,7 +80288,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 101,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 10",
+      "name": "улучшить казарму 10",
       "parents": [
         "92"
       ],
@@ -80322,7 +80322,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 102,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0437\u0430\u043c\u043e\u043a 10",
+      "name": "улучшить замок 10",
       "parents": [
         "97",
         "101"
@@ -80357,7 +80357,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 103,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 8",
+      "name": "улучшить штаб 8",
       "parents": [
         "101",
         "121"
@@ -80392,7 +80392,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 104,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0443\u0437\u043d\u0438\u0446\u0443 6",
+      "name": "улучшить кузницу 6",
       "parents": [
         "102",
         "97",
@@ -80416,7 +80416,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 105,
-      "name": "\u043f\u0440\u043e\u0439\u0442\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 45",
+      "name": "пройти миссию 45",
       "parents": [
         "95",
         "101"
@@ -80449,7 +80449,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 106,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u044d\u043d\u0442\u0430 2",
+      "name": "прокачать энта 2",
       "parents": [
         "104"
       ],
@@ -80471,7 +80471,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "WarriorUp",
       "id": 107,
-      "name": "\u043f\u0440\u043e\u043a\u0430\u0447\u0430\u0442\u044c \u0434\u0440\u0430\u043a\u043e\u043d\u0430 2",
+      "name": "прокачать дракона 2",
       "parents": [
         "106"
       ],
@@ -80495,7 +80495,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 108,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 9",
+      "name": "улучшить штаб 9",
       "parents": [
         "102",
         "97",
@@ -80521,7 +80521,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 109,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 10",
+      "name": "улучшить штаб 10",
       "parents": [
         "108"
       ],
@@ -80544,7 +80544,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 111,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0441\u0442\u0435\u043d\u0443 140",
+      "name": "построить стену 140",
       "parents": [
         "102",
         "86"
@@ -80569,7 +80569,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 115,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 3",
+      "name": "улучшить казарму 3",
       "parents": [
         "157"
       ],
@@ -80603,7 +80603,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 116,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 3",
+      "name": "улучшить штаб 3",
       "parents": [
         "178",
         "155"
@@ -80638,7 +80638,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 117,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 4",
+      "name": "улучшить казарму 4",
       "parents": [
         "178",
         "115"
@@ -80673,7 +80673,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 118,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e \u043b\u0443\u0447\u043d\u0438\u043a\u043e\u0432 3",
+      "name": "улучшить башню лучников 3",
       "parents": [
         "37",
         "38"
@@ -80704,7 +80704,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 119,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 4",
+      "name": "улучшить штаб 4",
       "parents": [
         "39",
         "116"
@@ -80739,7 +80739,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 120,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 6",
+      "name": "улучшить штаб 6",
       "parents": [
         "66",
         "76"
@@ -80774,7 +80774,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 121,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 7",
+      "name": "улучшить штаб 7",
       "parents": [
         "90",
         "120"
@@ -80806,7 +80806,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "",
       "id": 123,
-      "name": "\u041f\u0440\u0438\u0433\u043b\u0430\u0441\u0438 \u0434\u0440\u0443\u0437\u0435\u0439, \u0433\u0440\u0443\u043f\u043f\u0430 \u0438 \u043c\u0435\u043d\u044e",
+      "name": "Пригласи друзей, группа и меню",
       "parents": [
         "149"
       ],
@@ -80911,7 +80911,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "",
       "id": 145,
-      "name": "\u041f\u0440\u0438\u0433\u043b\u0430\u0441\u0438 \u0434\u0440\u0443\u0437\u0435\u0439 - 2",
+      "name": "Пригласи друзей - 2",
       "parents": [
         "123"
       ],
@@ -80934,7 +80934,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 146,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0444\u0435\u0440\u043c\u0443 2",
+      "name": "построй ферму 2",
       "parents": [
         "12"
       ],
@@ -80963,7 +80963,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 147,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0448\u0430\u0445\u0442\u0443 2",
+      "name": "построй шахту 2",
       "parents": [
         "146"
       ],
@@ -80991,7 +80991,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 148,
-      "name": "\u043f\u0440\u043e\u0439\u0434\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 3",
+      "name": "пройди миссию 3",
       "parents": [
         "13"
       ],
@@ -81024,7 +81024,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 149,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0439 \u0437\u0430\u0431\u043e\u0440 20",
+      "name": "построй забор 20",
       "parents": [
         "167"
       ],
@@ -81058,7 +81058,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 150,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 2",
+      "name": "улучшить казарму 2",
       "parents": [
         "25"
       ],
@@ -81092,7 +81092,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 151,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0444\u0435\u0440\u043c\u0443 2",
+      "name": "улучшить ферму 2",
       "parents": [
         "155"
       ],
@@ -81122,7 +81122,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 152,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0430\u0445\u0442\u0443 2",
+      "name": "улучшить шахту 2",
       "parents": [
         "151"
       ],
@@ -81152,7 +81152,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 153,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0430\u043c\u0431\u0430\u0440 2",
+      "name": "улучшить амбар 2",
       "parents": [
         "147"
       ],
@@ -81182,7 +81182,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 154,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0441\u043a\u043b\u0430\u0434 2",
+      "name": "улучшить склад 2",
       "parents": [
         "153"
       ],
@@ -81212,7 +81212,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 155,
-      "name": "\u0443\u0448\u0443\u0447\u0448\u0438\u0442\u044c \u0448\u0442\u0430\u0431 2",
+      "name": "ушучшить штаб 2",
       "parents": [
         "149"
       ],
@@ -81246,7 +81246,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "ToolUp",
       "id": 156,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0437\u0430\u043c\u043e\u043a 3",
+      "name": "улучшить замок 3",
       "parents": [
         "179"
       ],
@@ -81279,7 +81279,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 157,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u0433\u043e\u0431\u043b\u0438\u043d\u043e\u0432 20",
+      "name": "нанять гоблинов 20",
       "parents": [
         "150"
       ],
@@ -81308,7 +81308,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 167,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u043a\u0430\u0437\u0430\u0440\u043c\u0443 2",
+      "name": "построить казарму 2",
       "parents": [
         "154"
       ],
@@ -81337,7 +81337,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 168,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u0440\u044b\u0446\u0430\u0440\u0435\u0439 20",
+      "name": "нанять рыцарей 20",
       "parents": [
         "148"
       ],
@@ -81387,7 +81387,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 170,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u0440\u044b\u0446\u0430\u0440\u0435\u0439 20",
+      "name": "нанять рыцарей 20",
       "parents": [
         "171"
       ],
@@ -81415,7 +81415,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 171,
-      "name": "\u043f\u0440\u043e\u0439\u0434\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 4",
+      "name": "пройди миссию 4",
       "parents": [
         "168"
       ],
@@ -81447,7 +81447,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 172,
-      "name": "\u043f\u0440\u043e\u0439\u0442\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 5",
+      "name": "пройти миссию 5",
       "parents": [
         "170"
       ],
@@ -81481,7 +81481,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 174,
-      "name": "\u0443\u043b\u0443\u0447\u0448\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e 2",
+      "name": "улучшить башню 2",
       "parents": [
         "152"
       ],
@@ -81509,7 +81509,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Battle",
       "id": 178,
-      "name": "\u043f\u0440\u043e\u0439\u0434\u0438 \u043c\u0438\u0441\u0441\u0438\u044e 10",
+      "name": "пройди миссию 10",
       "parents": [
         "156",
         "172"
@@ -81543,7 +81543,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 179,
-      "name": "\u043f\u043e\u0441\u0442\u0440\u043e\u0438\u0442\u044c \u0431\u0430\u0448\u043d\u044e 2",
+      "name": "построить башню 2",
       "parents": [
         "174"
       ],
@@ -81576,7 +81576,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Warrior",
       "id": 180,
-      "name": "\u043d\u0430\u043d\u044f\u0442\u044c \u0440\u044b\u0446\u0430\u0440\u0435\u0439 20",
+      "name": "нанять рыцарей 20",
       "parents": [
         "172"
       ],
@@ -81602,7 +81602,7 @@ CONTENT = json.loads(r"""
       "deleted": 0,
       "icon": "Tool",
       "id": 181,
-      "name": "\u0412\u0441\u0442\u0443\u043f\u0438\u0442\u044c \u0432 \u0431\u0440\u0430\u0442\u0441\u0442\u0432\u043e",
+      "name": "Вступить в братство",
       "parents": [
         "148"
       ],
@@ -85066,7 +85066,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Contract",
       "canBuy": "0",
-      "comment": "\u041f\u0440\u0430\u0432\u043e \u043d\u0430 \u043f\u043e\u043a\u0443\u043f\u043a\u0443 \u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044f",
+      "comment": "Право на покупку строителя",
       "groups": [
         "artefact"
       ],
@@ -85077,7 +85077,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "EasterEgg",
       "canBuy": "0",
-      "comment": "\u041f\u0430\u0441\u0445\u0430\u043b\u044c\u043d\u043e\u0435 \u044f\u0439\u0446\u043e",
+      "comment": "Пасхальное яйцо",
       "groups": [
         "artefact"
       ],
@@ -85088,7 +85088,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_18",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u043c\u0443\u0436\u0435\u0441\u0442\u0432\u0430",
+      "comment": "Руна мужества",
       "groups": [
         "artefact"
       ],
@@ -85099,7 +85099,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_19",
       "canBuy": "0",
-      "comment": "\u041e\u0445\u0440\u0430\u043d\u043d\u0430\u044f \u0440\u0443\u043d\u0430",
+      "comment": "Охранная руна",
       "groups": [
         "artefact"
       ],
@@ -85110,7 +85110,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_20",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u0441\u0432\u0435\u0442\u0430",
+      "comment": "Руна света",
       "groups": [
         "artefact"
       ],
@@ -85121,7 +85121,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_21",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u0442\u044c\u043c\u044b (\u0443\u043b\u0443\u0447\u0448\u0435\u043d\u0438\u0435 \u0430\u0440\u0442\u043e\u0432)",
+      "comment": "Руна тьмы (улучшение артов)",
       "groups": [
         "artefact"
       ],
@@ -85132,7 +85132,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_22",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u0437\u043d\u0430\u043d\u0438\u0439 (\u043a\u043b\u0430\u043d\u043e\u0432\u044b\u0439 \u0440\u0435\u0441)",
+      "comment": "Руна знаний (клановый рес)",
       "groups": [
         "artefact"
       ],
@@ -85143,7 +85143,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_23",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u044f\u0440\u043e\u0441\u0442\u0438",
+      "comment": "Руна ярости",
       "groups": [
         "artefact"
       ],
@@ -85154,7 +85154,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_24",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u0443\u0434\u0430\u0447\u0438",
+      "comment": "Руна удачи",
       "groups": [
         "artefact"
       ],
@@ -85165,7 +85165,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "rune_25",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u043f\u0443\u0442\u0438",
+      "comment": "Руна пути",
       "groups": [
         "artefact"
       ],
@@ -85176,7 +85176,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Sand",
       "canBuy": "1",
-      "comment": "\u041c\u0430\u0433\u0438\u0447\u0435\u0441\u043a\u0438\u0439 \u043f\u0435\u0441\u043e\u043a",
+      "comment": "Магический песок",
       "groups": [
         "basic"
       ],
@@ -85187,7 +85187,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ChristmasTreeDecor",
       "canBuy": "0",
-      "comment": "\u0415\u043b\u043e\u0447\u043d\u043e\u0435 \u0443\u043a\u0440\u0430\u0448\u0435\u043d\u0438\u0435",
+      "comment": "Елочное украшение",
       "groups": [
         "basic"
       ],
@@ -85198,7 +85198,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ChristmasToy",
       "canBuy": "0",
-      "comment": "\u0415\u043b\u043e\u0447\u043d\u043e\u0435 \u0443\u043a\u0440\u0430\u0448\u0435\u043d\u0438\u0435",
+      "comment": "Елочное украшение",
       "groups": [
         "basic"
       ],
@@ -85209,7 +85209,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ValentinesDayDecor",
       "canBuy": "0",
-      "comment": "\u0421\u0442\u0440\u0435\u043b\u044b \u0434\u043b\u044f \u0441\u0442\u0430\u0442\u0443\u0438",
+      "comment": "Стрелы для статуи",
       "groups": [
         "basic"
       ],
@@ -85220,7 +85220,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ValentinesDayGift",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043e\u0431\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u043f\u043e\u0434\u0430\u0440\u043a\u043e\u0432 \u043e\u0442 \u0434\u0440\u0443\u0437\u0435\u0439",
+      "comment": "Псевдо-ресурс для обозначения подарков от друзей",
       "groups": [
         "basic"
       ],
@@ -85231,7 +85231,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayGoddess",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#102",
+      "comment": "Псевдо-ресурс для покупки декора#102",
       "groups": [
         "secret"
       ],
@@ -85242,7 +85242,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayMinotaur",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#103",
+      "comment": "Псевдо-ресурс для покупки декора#103",
       "groups": [
         "secret"
       ],
@@ -85253,7 +85253,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayBanner",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#104",
+      "comment": "Псевдо-ресурс для покупки декора#104",
       "groups": [
         "secret"
       ],
@@ -85264,7 +85264,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayFountain",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#105",
+      "comment": "Псевдо-ресурс для покупки декора#105",
       "groups": [
         "secret"
       ],
@@ -85275,7 +85275,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceEasterLair",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#143",
+      "comment": "Псевдо-ресурс для покупки декора#143",
       "groups": [
         "secret"
       ],
@@ -85286,7 +85286,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceEasterLamp",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#144",
+      "comment": "Псевдо-ресурс для покупки декора#144",
       "groups": [
         "secret"
       ],
@@ -85297,7 +85297,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceEasterObelisk",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#145",
+      "comment": "Псевдо-ресурс для покупки декора#145",
       "groups": [
         "secret"
       ],
@@ -85308,7 +85308,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceEasterTree",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#146",
+      "comment": "Псевдо-ресурс для покупки декора#146",
       "groups": [
         "secret"
       ],
@@ -85319,7 +85319,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "EasterDayDecor",
       "canBuy": "0",
-      "comment": "\u042f\u0439\u0446\u0430 \u0434\u043b\u044f \u0441\u0442\u0430\u0442\u0443\u0438",
+      "comment": "Яйца для статуи",
       "groups": [
         "basic"
       ],
@@ -85330,7 +85330,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "EasterDayGift",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043e\u0431\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u043f\u043e\u0434\u0430\u0440\u043a\u043e\u0432 \u043e\u0442 \u0434\u0440\u0443\u0437\u0435\u0439",
+      "comment": "Псевдо-ресурс для обозначения подарков от друзей",
       "groups": [
         "basic"
       ],
@@ -85341,7 +85341,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResPack",
       "canBuy": "0",
-      "comment": "\u0412\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u0440\u0435\u0441\u0443\u0440\u0441 -- \u043f\u0430\u043a\u0435\u0442 \u0440\u0435\u0441\u043e\u0432",
+      "comment": "Виртуальный ресурс -- пакет ресов",
       "groups": [],
       "id": 49,
       "starmoneyCost": 0,
@@ -85350,7 +85350,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "CitadelRune",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441 \u0446\u0438\u0442\u0430\u0434\u0435\u043b\u0438 \u0437\u043b\u0430",
+      "comment": "Ресурс цитадели зла",
       "groups": [
         "basic"
       ],
@@ -85361,7 +85361,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHappyBirthday",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u0434\u0430\u0440\u043a\u0430 \u043d\u0430 2 \u0433\u043e\u0434\u0430",
+      "comment": "Псевдо-ресурс для подарка на 2 года",
       "groups": [
         "secret"
       ],
@@ -85372,7 +85372,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "JuneDayDecor",
       "canBuy": "0",
-      "comment": "\u0416\u0435\u043c\u0447\u0443\u0433 \u0434\u043b\u044f \u0441\u0442\u0430\u0442\u0443\u0438",
+      "comment": "Жемчуг для статуи",
       "groups": [
         "basic"
       ],
@@ -85383,7 +85383,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "JuneDayGift",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043e\u0431\u043e\u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u043f\u043e\u0434\u0430\u0440\u043a\u043e\u0432 \u043e\u0442 \u0434\u0440\u0443\u0437\u0435\u0439",
+      "comment": "Псевдо-ресурс для обозначения подарков от друзей",
       "groups": [
         "basic"
       ],
@@ -85394,7 +85394,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJuneSkull",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#149",
+      "comment": "Псевдо-ресурс для покупки декора#149",
       "groups": [
         "secret"
       ],
@@ -85405,7 +85405,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJuneLamp",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#150",
+      "comment": "Псевдо-ресурс для покупки декора#150",
       "groups": [
         "secret"
       ],
@@ -85416,7 +85416,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJuneMast",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#151",
+      "comment": "Псевдо-ресурс для покупки декора#151",
       "groups": [
         "secret"
       ],
@@ -85427,7 +85427,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJuneChest",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#152",
+      "comment": "Псевдо-ресурс для покупки декора#152",
       "groups": [
         "secret"
       ],
@@ -85438,7 +85438,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 58,
       "starmoneyCost": 0,
@@ -85447,7 +85447,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 59,
       "starmoneyCost": 0,
@@ -85456,7 +85456,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 60,
       "starmoneyCost": 0,
@@ -85465,7 +85465,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 61,
       "starmoneyCost": 0,
@@ -85474,7 +85474,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 62,
       "starmoneyCost": 0,
@@ -85483,7 +85483,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 63,
       "starmoneyCost": 0,
@@ -85492,7 +85492,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 64,
       "starmoneyCost": 0,
@@ -85501,7 +85501,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 65,
       "starmoneyCost": 0,
@@ -85510,7 +85510,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 66,
       "starmoneyCost": 0,
@@ -85519,7 +85519,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 67,
       "starmoneyCost": 0,
@@ -85528,7 +85528,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 68,
       "starmoneyCost": 0,
@@ -85537,7 +85537,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 69,
       "starmoneyCost": 0,
@@ -85546,7 +85546,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 70,
       "starmoneyCost": 0,
@@ -85555,7 +85555,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 71,
       "starmoneyCost": 0,
@@ -85564,7 +85564,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 72,
       "starmoneyCost": 0,
@@ -85573,7 +85573,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 73,
       "starmoneyCost": 0,
@@ -85582,7 +85582,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 74,
       "starmoneyCost": 0,
@@ -85591,7 +85591,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 75,
       "starmoneyCost": 0,
@@ -85600,7 +85600,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 76,
       "starmoneyCost": 0,
@@ -85609,7 +85609,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 77,
       "starmoneyCost": 0,
@@ -85618,7 +85618,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 78,
       "starmoneyCost": 0,
@@ -85627,7 +85627,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 79,
       "starmoneyCost": 0,
@@ -85636,7 +85636,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 80,
       "starmoneyCost": 0,
@@ -85645,7 +85645,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 81,
       "starmoneyCost": 0,
@@ -85654,7 +85654,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 82,
       "starmoneyCost": 0,
@@ -85663,7 +85663,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 83,
       "starmoneyCost": 0,
@@ -85672,7 +85672,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 84,
       "starmoneyCost": 0,
@@ -85681,7 +85681,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 85,
       "starmoneyCost": 0,
@@ -85690,7 +85690,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 86,
       "starmoneyCost": 0,
@@ -85699,7 +85699,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 87,
       "starmoneyCost": 0,
@@ -85708,7 +85708,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 88,
       "starmoneyCost": 0,
@@ -85717,7 +85717,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 89,
       "starmoneyCost": 0,
@@ -85726,7 +85726,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 90,
       "starmoneyCost": 0,
@@ -85735,7 +85735,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 91,
       "starmoneyCost": 0,
@@ -85744,7 +85744,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 92,
       "starmoneyCost": 0,
@@ -85753,7 +85753,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 93,
       "starmoneyCost": 0,
@@ -85762,7 +85762,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 94,
       "starmoneyCost": 0,
@@ -85771,7 +85771,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 95,
       "starmoneyCost": 0,
@@ -85780,7 +85780,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 96,
       "starmoneyCost": 0,
@@ -85789,7 +85789,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0421\u0432\u043e\u0431\u043e\u0434\u043d\u044b\u0435 \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u044b",
+      "comment": "Свободные кристаллы",
       "groups": [],
       "id": 97,
       "starmoneyCost": 0,
@@ -85798,7 +85798,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0412\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0430\u043a \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432 \u0434\u043b\u044f \u044e\u043d\u0438\u0442\u043e\u0432",
+      "comment": "Виртуальный пак кристаллов для юнитов",
       "groups": [],
       "id": 98,
       "starmoneyCost": 0,
@@ -85807,7 +85807,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0412\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0430\u043a \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432 \u0434\u043b\u044f \u0431\u0430\u0448\u0435\u043d",
+      "comment": "Виртуальный пак кристаллов для башен",
       "groups": [],
       "id": 99,
       "starmoneyCost": 0,
@@ -85816,7 +85816,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0412\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0430\u043a \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432 1 \u043c\u0435\u0441\u0442\u043e",
+      "comment": "Виртуальный пак кристаллов 1 место",
       "groups": [],
       "id": 101,
       "starmoneyCost": 0,
@@ -85825,7 +85825,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0412\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0430\u043a \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432 2 \u043c\u0435\u0441\u0442\u043e",
+      "comment": "Виртуальный пак кристаллов 2 место",
       "groups": [],
       "id": 102,
       "starmoneyCost": 0,
@@ -85834,7 +85834,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "",
       "canBuy": "0",
-      "comment": "\u0412\u0438\u0440\u0442\u0443\u0430\u043b\u044c\u043d\u044b\u0439 \u043f\u0430\u043a \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432 3 \u043c\u0435\u0441\u0442\u043e",
+      "comment": "Виртуальный пак кристаллов 3 место",
       "groups": [],
       "id": 103,
       "starmoneyCost": 0,
@@ -85843,7 +85843,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "crystalCoin",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u0441\u043e\u0435\u0434\u0438\u043d\u0435\u043d\u0438\u044f \u043a\u0440\u0438\u0441\u0442\u0430\u043b\u043b\u043e\u0432",
+      "comment": "Ресурс для соединения кристаллов",
       "groups": [
         "basic"
       ],
@@ -85854,7 +85854,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHogwartsGolem",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 505",
+      "comment": "Псевдо-ресурс для покупки декора# 505",
       "groups": [
         "secret"
       ],
@@ -85865,7 +85865,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHogwartsTree",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 506",
+      "comment": "Псевдо-ресурс для покупки декора# 506",
       "groups": [
         "secret"
       ],
@@ -85876,7 +85876,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHogwartsBook",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 507",
+      "comment": "Псевдо-ресурс для покупки декора# 507",
       "groups": [
         "secret"
       ],
@@ -85887,7 +85887,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHogwartsFountain",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 508",
+      "comment": "Псевдо-ресурс для покупки декора# 508",
       "groups": [
         "secret"
       ],
@@ -85898,7 +85898,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHogwartsStudents",
       "canBuy": "0",
-      "comment": "\u0423\u0447\u0435\u043d\u0438\u043a\u0438",
+      "comment": "Ученики",
       "groups": [
         "basic"
       ],
@@ -85909,7 +85909,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet1",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 1",
+      "comment": "Магнит 1",
       "groups": [
         "magnet"
       ],
@@ -85920,7 +85920,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet2",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 2",
+      "comment": "Магнит 2",
       "groups": [
         "magnet"
       ],
@@ -85931,7 +85931,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet3",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 3",
+      "comment": "Магнит 3",
       "groups": [
         "magnet"
       ],
@@ -85942,7 +85942,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet4",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 4",
+      "comment": "Магнит 4",
       "groups": [
         "magnet"
       ],
@@ -85953,7 +85953,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet5",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 5",
+      "comment": "Магнит 5",
       "groups": [
         "magnet"
       ],
@@ -85964,7 +85964,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet6",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 6",
+      "comment": "Магнит 6",
       "groups": [
         "magnet"
       ],
@@ -85975,7 +85975,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet7",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 7",
+      "comment": "Магнит 7",
       "groups": [
         "magnet"
       ],
@@ -85986,7 +85986,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Magnet8",
       "canBuy": "0",
-      "comment": "\u041c\u0430\u0433\u043d\u0438\u0442 8",
+      "comment": "Магнит 8",
       "groups": [
         "magnet"
       ],
@@ -85997,7 +85997,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "MagnetFull",
       "canBuy": "0",
-      "comment": "\u041f\u043e\u043b\u043d\u044b\u0439 \u043d\u0430\u0431\u043e\u0440 \u043c\u0430\u0433\u043d\u0438\u0442\u043e\u0432",
+      "comment": "Полный набор магнитов",
       "groups": [
         "magnet"
       ],
@@ -86008,7 +86008,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "FairStar",
       "canBuy": "0",
-      "comment": "\u0417\u0432\u0435\u0437\u0434\u0430 \u0432 \u0446\u0438\u0442\u0430\u0434\u0435\u043b\u044c\u043d\u043e\u043c \u0442\u0443\u0440\u043d\u0438\u0440\u0435",
+      "comment": "Звезда в цитадельном турнире",
       "groups": [
         "magnet"
       ],
@@ -86019,7 +86019,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "MagnetBacking",
       "canBuy": "0",
-      "comment": "\u041f\u043e\u0434\u043b\u043e\u0436\u043a\u0430 \u0434\u043b\u044f \u043c\u0430\u0433\u043d\u0438\u0442\u043e\u0432",
+      "comment": "Подложка для магнитов",
       "groups": [
         "magnet"
       ],
@@ -86030,7 +86030,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHalloweenScarecrow",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 601",
+      "comment": "Псевдо-ресурс для покупки декора# 601",
       "groups": [
         "secret"
       ],
@@ -86041,7 +86041,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHalloweenPumpkin",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 602",
+      "comment": "Псевдо-ресурс для покупки декора# 602",
       "groups": [
         "secret"
       ],
@@ -86052,7 +86052,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHalloweenBoiler",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 603",
+      "comment": "Псевдо-ресурс для покупки декора# 603",
       "groups": [
         "secret"
       ],
@@ -86063,7 +86063,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHalloweenSkulls",
       "canBuy": "0",
-      "comment": "\u0427\u0435\u0440\u0435\u043f\u0430 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0441\u043a\u043b\u0435\u043f\u0430",
+      "comment": "Черепа для прокачки склепа",
       "groups": [
         "basic"
       ],
@@ -86074,7 +86074,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHalloweenEssence",
       "canBuy": "0",
-      "comment": "\u042d\u0441\u0441\u0435\u043d\u0446\u0438\u044f \u0441\u0442\u0440\u0430\u0445\u0430 \u0434\u043b\u044f \u0443\u043c\u0435\u043d\u0438\u0439",
+      "comment": "Эссенция страха для умений",
       "groups": [
         "basic"
       ],
@@ -86085,7 +86085,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHalloweenCrypt",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 604",
+      "comment": "Псевдо-ресурс для покупки декора# 604",
       "groups": [
         "secret"
       ],
@@ -86096,7 +86096,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "VipUpgrade",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 VIP \u0430\u043a\u043a\u0430\u0443\u043d\u0442\u0430",
+      "comment": "Ресурс для прокачки VIP аккаунта",
       "groups": [],
       "id": 129,
       "starmoneyCost": 0,
@@ -86105,7 +86105,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceUpgradeChance",
       "canBuy": "0",
-      "comment": "\u0440\u0435\u0441\u0443\u0440\u0441-\u043f\u043e\u0434\u0430\u0440\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u043d\u043e \u043f\u043e\u0432\u044b\u0448\u0430\u0435\u0442 \u0448\u0430\u043d\u0441 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u0430 \u0437\u0434\u0430\u043d\u0438\u044f",
+      "comment": "ресурс-подарок, который константно повышает шанс апгрейда здания",
       "groups": [
         "basic"
       ],
@@ -86116,7 +86116,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "NewYearIcicle",
       "canBuy": "0",
-      "comment": "\u041d\u0413 \u043e\u0441\u043a\u043e\u043b\u043e\u043a \u0432\u0435\u0447\u043d\u043e\u0433\u043e \u0445\u043e\u043b\u043e\u0434\u0430",
+      "comment": "НГ осколок вечного холода",
       "groups": [
         "basic"
       ],
@@ -86127,7 +86127,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "NewYearElixir",
       "canBuy": "0",
-      "comment": "\u041d\u0413 \u044d\u043b\u0438\u043a\u0441\u0438\u0440 \u0445\u043e\u043b\u043e\u0434\u0430 \u044d\u0441\u0441\u0435\u043d\u0446\u0438\u044f",
+      "comment": "НГ эликсир холода эссенция",
       "groups": [],
       "id": 132,
       "starmoneyCost": 0,
@@ -86136,7 +86136,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceNewYear2016Lamp",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 609 \u041f\u043e\u0434\u0430\u0440\u043e\u043a",
+      "comment": "Псевдо-ресурс для покупки декора# 609 Подарок",
       "groups": [
         "secret"
       ],
@@ -86147,7 +86147,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceNewYear2016FrozenFlame",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 610",
+      "comment": "Псевдо-ресурс для покупки декора# 610",
       "groups": [
         "secret"
       ],
@@ -86158,7 +86158,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceNewYear2016Dragon",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 611",
+      "comment": "Псевдо-ресурс для покупки декора# 611",
       "groups": [
         "secret"
       ],
@@ -86169,7 +86169,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceNewYear2016Throne",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430# 612",
+      "comment": "Псевдо-ресурс для покупки декора# 612",
       "groups": [
         "secret"
       ],
@@ -86180,7 +86180,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "FreeGemsPack",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e\u0440\u0435\u0441\u0443\u0440\u0441, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043e\u0431\u043c\u0435\u043d\u0438\u0432\u0430\u0435\u0442\u0441\u044f \u043d\u0430 \u0440\u0443\u0431\u0438\u043d\u044b \u0432 \u0442\u0443\u0442\u043e\u0440\u0435.",
+      "comment": "Псевдоресурс, который обменивается на рубины в туторе.",
       "groups": [
         "secret"
       ],
@@ -86191,7 +86191,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayWell",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#614",
+      "comment": "Псевдо-ресурс для покупки декора#614",
       "groups": [
         "secret"
       ],
@@ -86202,7 +86202,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayTempleDecor",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#615",
+      "comment": "Псевдо-ресурс для покупки декора#615",
       "groups": [
         "secret"
       ],
@@ -86213,7 +86213,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayLion",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#616 (\u043f\u043e\u0434\u0430\u0440\u043e\u043a)",
+      "comment": "Псевдо-ресурс для покупки декора#616 (подарок)",
       "groups": [
         "secret"
       ],
@@ -86224,7 +86224,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentinesDayAlcove",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#617",
+      "comment": "Псевдо-ресурс для покупки декора#617",
       "groups": [
         "secret"
       ],
@@ -86235,7 +86235,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentines2016Arrow",
       "canBuy": "0",
-      "comment": "\u0421\u0442\u0440\u0435\u043b\u044b \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0445\u0440\u0430\u043c\u0430",
+      "comment": "Стрелы для прокачки храма",
       "groups": [
         "basic"
       ],
@@ -86246,7 +86246,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceEnergy",
       "canBuy": "0",
-      "comment": "\u041c\u043e\u043b\u043d\u0438\u0438/\u044d\u043d\u0435\u0440\u0433\u0438\u044f \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0448\u0430\u043d\u0441\u0430",
+      "comment": "Молнии/энергия для прокачки шанса",
       "groups": [],
       "id": 143,
       "starmoneyCost": 0,
@@ -86255,7 +86255,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceValentines2016UpgradeChance",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441-\u043f\u043e\u0434\u0430\u0440\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u043d\u043e \u043f\u043e\u0432\u044b\u0448\u0430\u0435\u0442 \u0448\u0430\u043d\u0441 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u0430 \u0437\u0434\u0430\u043d\u0438\u044f",
+      "comment": "Ресурс-подарок, который константно повышает шанс апгрейда здания",
       "groups": [
         "basic"
       ],
@@ -86266,7 +86266,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceApril2016Egg",
       "canBuy": "0",
-      "comment": "\u044f\u0439\u0446\u0430 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u043b\u043e\u0433\u043e\u0432\u0430 \u0434\u0440\u0430\u043a\u043e\u043d\u0430",
+      "comment": "яйца для прокачки логова дракона",
       "groups": [
         "basic"
       ],
@@ -86277,7 +86277,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceFireElixir",
       "canBuy": "0",
-      "comment": "\u042d\u043b\u0438\u043a\u0441\u0438\u0440 \u043e\u0433\u043d\u044f \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0448\u0430\u043d\u0441\u0430",
+      "comment": "Эликсир огня для прокачки шанса",
       "groups": [
         "basic"
       ],
@@ -86288,7 +86288,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceApril2016UpgradeChance",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441-\u043f\u043e\u0434\u0430\u0440\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u043d\u043e \u043f\u043e\u0432\u044b\u0448\u0430\u0435\u0442 \u0448\u0430\u043d\u0441 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u0430 \u0437\u0434\u0430\u043d\u0438\u044f",
+      "comment": "Ресурс-подарок, который константно повышает шанс апгрейда здания",
       "groups": [
         "basic"
       ],
@@ -86299,7 +86299,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceApril2016Fountain",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#619",
+      "comment": "Псевдо-ресурс для покупки декора#619",
       "groups": [
         "secret"
       ],
@@ -86310,7 +86310,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceApril2016Altar",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#620",
+      "comment": "Псевдо-ресурс для покупки декора#620",
       "groups": [
         "secret"
       ],
@@ -86321,7 +86321,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceApril2016Obelisk",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#621",
+      "comment": "Псевдо-ресурс для покупки декора#621",
       "groups": [
         "secret"
       ],
@@ -86332,7 +86332,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceApril2016Totem",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#622 \u043f\u043e\u0434\u0430\u0440\u043e\u043a",
+      "comment": "Псевдо-ресурс для покупки декора#622 подарок",
       "groups": [
         "secret"
       ],
@@ -86343,7 +86343,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceClanBuilder",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043a\u043b\u0430\u043d\u043e\u0432\u043e\u0433\u043e \u0441\u0442\u0440\u043e\u0438\u0442\u0435\u043b\u044f",
+      "comment": "Псевдо-ресурс для кланового строителя",
       "groups": [
         "secret"
       ],
@@ -86354,7 +86354,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceMay2016Ring",
       "canBuy": "0",
-      "comment": "\u043a\u043e\u043b\u044c\u0446\u0430 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0442\u0435\u043c\u043d\u043e\u0439 \u0431\u0430\u0448\u043d\u0438",
+      "comment": "кольца для прокачки темной башни",
       "groups": [
         "basic"
       ],
@@ -86365,7 +86365,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceLightElixir",
       "canBuy": "0",
-      "comment": "\u042d\u043b\u0438\u043a\u0441\u0438\u0440 \u0441\u0432\u0435\u0442\u0430 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0448\u0430\u043d\u0441\u0430",
+      "comment": "Эликсир света для прокачки шанса",
       "groups": [
         "basic"
       ],
@@ -86376,7 +86376,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceMay2016UpgradeChance",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441-\u043f\u043e\u0434\u0430\u0440\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u043d\u043e \u043f\u043e\u0432\u044b\u0448\u0430\u0435\u0442 \u0448\u0430\u043d\u0441 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u0430 \u0437\u0434\u0430\u043d\u0438\u044f",
+      "comment": "Ресурс-подарок, который константно повышает шанс апгрейда здания",
       "groups": [
         "basic"
       ],
@@ -86387,7 +86387,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceMay2016ElfPond",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#626 - \u043f\u043e\u0434\u0430\u0440\u043e\u043a",
+      "comment": "Псевдо-ресурс для покупки декора#626 - подарок",
       "groups": [
         "secret"
       ],
@@ -86398,7 +86398,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceMay2016FlyingSword",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#627",
+      "comment": "Псевдо-ресурс для покупки декора#627",
       "groups": [
         "secret"
       ],
@@ -86409,7 +86409,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceMay2016FortressDecor",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#628",
+      "comment": "Псевдо-ресурс для покупки декора#628",
       "groups": [
         "secret"
       ],
@@ -86420,7 +86420,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceMay2016BattleHorn",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#629",
+      "comment": "Псевдо-ресурс для покупки декора#629",
       "groups": [
         "secret"
       ],
@@ -86431,7 +86431,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceHHquest",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#630 (\u043a\u0432\u0435\u0441\u0442 \u0425\u0425)",
+      "comment": "Псевдо-ресурс для покупки декора#630 (квест ХХ)",
       "groups": [
         "secret"
       ],
@@ -86442,7 +86442,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "Resource161",
       "canBuy": "0",
-      "comment": "\u0420\u0443\u043d\u0430 \u0437\u043d\u0430\u043d\u0438\u0439 (\u043a\u043b\u0430\u043d\u043e\u0432\u044b\u0439 \u0440\u0435\u0441)",
+      "comment": "Руна знаний (клановый рес)",
       "groups": [
         "artefact"
       ],
@@ -86453,7 +86453,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJune2016Scarab",
       "canBuy": "0",
-      "comment": "\u0441\u043a\u0430\u0440\u0430\u0431\u0435\u0438 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u043f\u0438\u0440\u0430\u043c\u0438\u0434\u044b",
+      "comment": "скарабеи для прокачки пирамиды",
       "groups": [
         "basic"
       ],
@@ -86464,7 +86464,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceGoldenElixir",
       "canBuy": "0",
-      "comment": "\u0417\u043e\u043b\u043e\u0442\u043e\u0439 \u044d\u043b\u0438\u043a\u0441\u0438\u0440 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0448\u0430\u043d\u0441\u0430",
+      "comment": "Золотой эликсир для прокачки шанса",
       "groups": [
         "basic"
       ],
@@ -86475,7 +86475,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJune2016UpgradeChance",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441-\u043f\u043e\u0434\u0430\u0440\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u043d\u043e \u043f\u043e\u0432\u044b\u0448\u0430\u0435\u0442 \u0448\u0430\u043d\u0441 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u0430 \u0437\u0434\u0430\u043d\u0438\u044f",
+      "comment": "Ресурс-подарок, который константно повышает шанс апгрейда здания",
       "groups": [
         "basic"
       ],
@@ -86486,7 +86486,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJune2016AnubisDecor",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#633",
+      "comment": "Псевдо-ресурс для покупки декора#633",
       "groups": [
         "secret"
       ],
@@ -86497,7 +86497,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJune2016PharaohDecor",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#634",
+      "comment": "Псевдо-ресурс для покупки декора#634",
       "groups": [
         "secret"
       ],
@@ -86508,7 +86508,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJune2016Bastet",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#635 - \u043f\u043e\u0434\u0430\u0440\u043e\u043a",
+      "comment": "Псевдо-ресурс для покупки декора#635 - подарок",
       "groups": [
         "secret"
       ],
@@ -86519,7 +86519,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceJune2016SunObelisk",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#636",
+      "comment": "Псевдо-ресурс для покупки декора#636",
       "groups": [
         "secret"
       ],
@@ -86530,7 +86530,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAllianceTower",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0437\u0434\u0430\u043d\u0438\u044f#631",
+      "comment": "Псевдо-ресурс для покупки здания#631",
       "groups": [
         "secret"
       ],
@@ -86541,7 +86541,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAugust2016Doubloon",
       "canBuy": "0",
-      "comment": "\u0434\u0443\u0431\u043b\u043e\u043d\u044b \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u043f\u0438\u0440\u0430\u043c\u0438\u0434\u044b",
+      "comment": "дублоны для прокачки пирамиды",
       "groups": [
         "basic"
       ],
@@ -86552,7 +86552,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceFireWater",
       "canBuy": "0",
-      "comment": "\u041e\u0433\u043d\u0435\u043d\u043d\u0430\u044f \u0432\u043e\u0434\u0430 \u0434\u043b\u044f \u043f\u0440\u043e\u043a\u0430\u0447\u043a\u0438 \u0448\u0430\u043d\u0441\u0430",
+      "comment": "Огненная вода для прокачки шанса",
       "groups": [
         "basic"
       ],
@@ -86563,7 +86563,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAugust2016UpgradeChance",
       "canBuy": "0",
-      "comment": "\u0420\u0435\u0441\u0443\u0440\u0441-\u043f\u043e\u0434\u0430\u0440\u043e\u043a, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u043a\u043e\u043d\u0441\u0442\u0430\u043d\u0442\u043d\u043e \u043f\u043e\u0432\u044b\u0448\u0430\u0435\u0442 \u0448\u0430\u043d\u0441 \u0430\u043f\u0433\u0440\u0435\u0439\u0434\u0430 \u0437\u0434\u0430\u043d\u0438\u044f",
+      "comment": "Ресурс-подарок, который константно повышает шанс апгрейда здания",
       "groups": [
         "basic"
       ],
@@ -86574,7 +86574,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAugust2016CoralTree",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#643",
+      "comment": "Псевдо-ресурс для покупки декора#643",
       "groups": [
         "secret"
       ],
@@ -86585,7 +86585,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAugust2016ShipNose",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#644 - \u043f\u043e\u0434\u0430\u0440\u043e\u043a",
+      "comment": "Псевдо-ресурс для покупки декора#644 - подарок",
       "groups": [
         "secret"
       ],
@@ -86596,7 +86596,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAugust2016Pearl",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#645",
+      "comment": "Псевдо-ресурс для покупки декора#645",
       "groups": [
         "secret"
       ],
@@ -86607,7 +86607,7 @@ CONTENT = json.loads(r"""
     {
       "assetKey": "ResourceAugust2016SunWatch",
       "canBuy": "0",
-      "comment": "\u041f\u0441\u0435\u0432\u0434\u043e-\u0440\u0435\u0441\u0443\u0440\u0441 \u0434\u043b\u044f \u043f\u043e\u043a\u0443\u043f\u043a\u0438 \u0434\u0435\u043a\u043e\u0440\u0430#646",
+      "comment": "Псевдо-ресурс для покупки декора#646",
       "groups": [
         "secret"
       ],
@@ -88528,7 +88528,7 @@ CONTENT = json.loads(r"""
     "heroDeathPenalty": "0.5",
     "heroExpBuildingK": "0.01",
     "heroNameLimit": "12",
-    "heroNameRestrict": "A-Za-z0-9\u0410-\u042f\u0430-\u044f",
+    "heroNameRestrict": "A-Za-z0-9А-Яа-я",
     "heroesQuest": {
       "available": true,
       "availableTo": 1642636800,
@@ -95870,7 +95870,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 1,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 10 \u041e\u0440\u043a",
+      "name": "Нанять 10 Орк",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -95900,7 +95900,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 2,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 20 \u0420\u044b\u0446\u0430\u0440\u044c",
+      "name": "Нанять 20 Рыцарь",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -95929,7 +95929,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 3,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -95953,7 +95953,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 4,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -95977,7 +95977,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 5,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96002,7 +96002,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 6,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 30 \u042d\u043b\u044c\u0444",
+      "name": "Нанять 30 Эльф",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96032,7 +96032,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 7,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 15 \u041e\u0440\u043a",
+      "name": "Нанять 15 Орк",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96061,7 +96061,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 8,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -96085,7 +96085,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 9,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -96109,7 +96109,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 10,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96134,7 +96134,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 11,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 10 \u0422\u0440\u043e\u043b\u043b\u044c",
+      "name": "Нанять 10 Тролль",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96164,7 +96164,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 12,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 40 \u042d\u043b\u044c\u0444",
+      "name": "Нанять 40 Эльф",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96194,7 +96194,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 13,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 20 \u041e\u0440\u043a",
+      "name": "Нанять 20 Орк",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96223,7 +96223,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 14,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -96247,7 +96247,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 15,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -96271,7 +96271,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 16,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96296,7 +96296,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 17,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 15 \u041e\u0440\u0435\u043b",
+      "name": "Нанять 15 Орел",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96326,7 +96326,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 18,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 15 \u0422\u0440\u043e\u043b\u043b\u044c",
+      "name": "Нанять 15 Тролль",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96356,7 +96356,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 19,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 60 \u042d\u043b\u044c\u0444",
+      "name": "Нанять 60 Эльф",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96385,7 +96385,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 20,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -96409,7 +96409,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 21,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -96433,7 +96433,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 22,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96458,7 +96458,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 23,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 20 \u041c\u0430\u0433",
+      "name": "Нанять 20 Маг",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96488,7 +96488,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 24,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 20 \u041e\u0440\u0435\u043b",
+      "name": "Нанять 20 Орел",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96518,7 +96518,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 25,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 20 \u0422\u0440\u043e\u043b\u043b\u044c",
+      "name": "Нанять 20 Тролль",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96547,7 +96547,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 26,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -96571,7 +96571,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 27,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -96595,7 +96595,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 28,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96620,7 +96620,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 29,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 10 \u041f\u0440\u0438\u0437\u0440\u0430\u043a",
+      "name": "Нанять 10 Призрак",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96650,7 +96650,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 30,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 25 \u041c\u0430\u0433",
+      "name": "Нанять 25 Маг",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96680,7 +96680,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 31,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 25 \u041e\u0440\u0435\u043b",
+      "name": "Нанять 25 Орел",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96709,7 +96709,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 32,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -96733,7 +96733,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 33,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -96757,7 +96757,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 34,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96782,7 +96782,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 35,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 6 \u042d\u043d\u0442",
+      "name": "Нанять 6 Энт",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96812,7 +96812,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 36,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 12 \u041f\u0440\u0438\u0437\u0440\u0430\u043a",
+      "name": "Нанять 12 Призрак",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96842,7 +96842,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 37,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 25 \u041c\u0430\u0433",
+      "name": "Нанять 25 Маг",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96871,7 +96871,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 38,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -96895,7 +96895,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 39,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -96919,7 +96919,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 40,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -96944,7 +96944,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 41,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 3 \u0414\u0440\u0430\u043a\u043e\u043d",
+      "name": "Нанять 3 Дракон",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -96974,7 +96974,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 42,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 6 \u042d\u043d\u0442",
+      "name": "Нанять 6 Энт",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -97004,7 +97004,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 43,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 12 \u041f\u0440\u0438\u0437\u0440\u0430\u043a",
+      "name": "Нанять 12 Призрак",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -97033,7 +97033,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 44,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -97057,7 +97057,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 45,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -97081,7 +97081,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 46,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -97106,7 +97106,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 47,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 3 \u0414\u0440\u0430\u043a\u043e\u043d",
+      "name": "Нанять 3 Дракон",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -97136,7 +97136,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 48,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 6 \u042d\u043d\u0442",
+      "name": "Нанять 6 Энт",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -97166,7 +97166,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 49,
-      "name": "\u041d\u0430\u043d\u044f\u0442\u044c 12 \u041f\u0440\u0438\u0437\u0440\u0430\u043a",
+      "name": "Нанять 12 Призрак",
       "questType": "unitHire",
       "requirements": {
         "building": [
@@ -97195,7 +97195,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 50,
-      "name": "\u0410\u0442\u0430\u043a\u0443\u0439 5 \u0440\u0430\u0437",
+      "name": "Атакуй 5 раз",
       "questType": "attack",
       "requirements": {
         "user": {
@@ -97219,7 +97219,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 51,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437",
+      "name": "Победи 3 раз",
       "questType": "attackWin",
       "requirements": {
         "user": {
@@ -97243,7 +97243,7 @@ CONTENT = json.loads(r"""
       },
       "cooldown": 14400,
       "id": 52,
-      "name": "\u041f\u043e\u0431\u0435\u0434\u0438 3 \u0440\u0430\u0437 \u043f\u043e\u0434\u0440\u044f\u0434",
+      "name": "Победи 3 раз подряд",
       "questType": "attackWinStreak",
       "requirements": {
         "user": {
@@ -122374,7 +122374,7 @@ CONTENT = json.loads(r"""
   ],
   "visual": [
     {
-      "comment": "\u0417\u043d\u0430\u0447\u0435\u043d\u0438\u044f \u043f\u043e \u0443\u043c\u043e\u043b\u0447\u0430\u043d\u0438\u044e",
+      "comment": "Значения по умолчанию",
       "data": {
         "directions": 4,
         "hpBar": {
@@ -122396,7 +122396,7 @@ CONTENT = json.loads(r"""
       "id": 0
     },
     {
-      "comment": "2 \u043a\u043b\u0435\u0442\u043a\u0438",
+      "comment": "2 клетки",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122416,7 +122416,7 @@ CONTENT = json.loads(r"""
       "id": 1
     },
     {
-      "comment": "3 \u043a\u043b\u0435\u0442\u043a\u0438",
+      "comment": "3 клетки",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122436,7 +122436,7 @@ CONTENT = json.loads(r"""
       "id": 2
     },
     {
-      "comment": "5 \u043a\u043b\u0435\u0442\u043e\u043a",
+      "comment": "5 клеток",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122552,7 +122552,7 @@ CONTENT = json.loads(r"""
       "id": 10
     },
     {
-      "comment": "\u041a\u043b\u0430\u043d\u043e\u0432\u044b\u0439 \u0434\u043e\u043c\u0438\u043a",
+      "comment": "Клановый домик",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122588,7 +122588,7 @@ CONTENT = json.loads(r"""
       "id": 12
     },
     {
-      "comment": "\u0448\u0430\u0445\u0442\u044b",
+      "comment": "шахты",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122608,7 +122608,7 @@ CONTENT = json.loads(r"""
       "id": 13
     },
     {
-      "comment": "\u0442\u0430\u0432\u0435\u0440\u043d\u0430",
+      "comment": "таверна",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122628,7 +122628,7 @@ CONTENT = json.loads(r"""
       "id": 14
     },
     {
-      "comment": "2 \u043a\u043b\u0435\u0442\u043a\u0438 (\u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 \u0432\u044b\u0441\u0442\u0440\u0435\u043b\u0430 \u043d\u0435 \u0438\u043c\u0435\u0435\u0442 \u0437\u043d\u0430\u0447\u0435\u043d\u0438\u044f)",
+      "comment": "2 клетки (направление выстрела не имеет значения)",
       "data": {
         "directions": 1,
         "hpBar": {
@@ -122649,7 +122649,7 @@ CONTENT = json.loads(r"""
       "id": 15
     },
     {
-      "comment": "\u043c\u0435\u043b\u044c\u043d\u0438\u0446\u044b",
+      "comment": "мельницы",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122669,7 +122669,7 @@ CONTENT = json.loads(r"""
       "id": 16
     },
     {
-      "comment": "\u0437\u0430\u043c\u043e\u043a",
+      "comment": "замок",
       "data": {
         "hpBar": {
           "height": 8,
@@ -122689,7 +122689,7 @@ CONTENT = json.loads(r"""
       "id": 17
     },
     {
-      "comment": "2 \u043a\u043b\u0435\u0442\u043a\u0438 (8 \u043d\u0430\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0439 \u0432\u044b\u0441\u0442\u0440\u0435\u043b\u0430)",
+      "comment": "2 клетки (8 направлений выстрела)",
       "data": {
         "directions": 8,
         "hpBar": {
@@ -122758,7 +122758,7 @@ CONTENT = json.loads(r"""
       "id": 23
     },
     {
-      "comment": "5 \u043a\u043b\u0435\u0442\u043e\u043a",
+      "comment": "5 клеток",
       "data": {
         "hpBar": {
           "height": 8,
