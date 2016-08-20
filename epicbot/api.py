@@ -139,7 +139,7 @@ class Api:
         """
         Collects resource from the building.
         """
-        result, state = self.post("collectResource", call_state=True, buildingId=building_id)
+        result, state = self.post("collectResource", True, buildingId=building_id)
         return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
 
     def farm_cemetery(self) -> Tuple[Counter, Counter]:
@@ -164,7 +164,7 @@ class Api:
         """
         Upgrades building to the next level.
         """
-        result, state = self.post("upgradeBuilding", call_state=True, buildingId=building_id)
+        result, state = self.post("upgradeBuilding", True, buildingId=building_id)
         return (
             self.parse_error(result),
             (self.parse_resource_field(state) if state else None),
@@ -175,7 +175,7 @@ class Api:
         """
         Destructs building. Used to clean extended areas.
         """
-        result, state = self.post("destructBuilding", call_state=True, buildingId=building_id, instant=instant)
+        result, state = self.post("destructBuilding", True, buildingId=building_id, instant=instant)
         return (
             self.parse_error(result),
             (self.parse_resource_field(state) if state else None),
@@ -186,7 +186,7 @@ class Api:
         """
         Start unit research.
         """
-        result, state = self.post("startResearch", call_state=True, level=level, unitId=unit_id, buildingId=forge_building_id)
+        result, state = self.post("startResearch", True, level=level, unitId=unit_id, buildingId=forge_building_id)
         return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
     def click_alliance_daily_gift(self):
@@ -279,7 +279,7 @@ class Api:
         """
         Finishes battle and returns serialized battle result.
         """
-        result, state = self.post("battle_finish", call_state=True, battleId=battle_id, commands=commands)
+        result, state = self.post("battle_finish", True, battleId=battle_id, commands=commands)
         return result["battleResult"], (self.parse_resource_field(state) if state else None)
 
     def open_fair_citadel_gate(self):
