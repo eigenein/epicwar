@@ -3,7 +3,6 @@
 
 import logging
 
-from collections import OrderedDict
 from operator import itemgetter
 from typing import Any, Callable, Iterable, Iterator
 
@@ -39,6 +38,17 @@ class Buildings:
 
     def __iter__(self) -> Iterator[Building]:
         return iter(self.buildings)
+
+    def update_incomplete(self, building: Building):
+        """
+        Updates caches with an incomplete building.
+        """
+        assert not building.is_completed
+        if building.type in BuildingType.extended_areas():
+            self.is_destruction_in_progress = True
+        if building.type != BuildingType.wall:
+            # Walls are upgraded instantly.
+            self.incomplete.append(building)
 
     @staticmethod
     def sorting_key(library: Library) -> Callable[[Building], Any]:

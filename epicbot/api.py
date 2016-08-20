@@ -155,34 +155,32 @@ class Api:
         """
         result, _ = self.post("getBuildings")
         return [
-            Building(
-                id=building["id"],
-                type=BuildingType(building["typeId"]),
-                level=building["level"],
-                is_completed=building["completed"],
-                complete_time=building["completeTime"],
-                hitpoints=building["hitpoints"],
-                storage_fill=building.get("storageFill"),
-            )
+            self.parse_building(building)
             for building in result["building"]
             if BuildingType.has_value(building["typeId"])
         ]
 
-    def upgrade_building(self, building_id: int) -> Tuple[Error, Optional[Counter], None]:
+    def upgrade_building(self, building_id: int) -> Tuple[Error, Optional[Counter], Optional[Building]]:
         """
         Upgrades building to the next level.
         """
         result, state = self.post("upgradeBuilding", call_state=True, buildingId=building_id)
-        # TODO: parse and return updated building.
-        return self.parse_error(result), (self.parse_resource_field(state) if state else None), None
+        return (
+            self.parse_error(result),
+            (self.parse_resource_field(state) if state else None),
+            (self.parse_building(state["buildingChanged"]) if state else None),
+        )
 
-    def destruct_building(self, building_id: int, instant: bool) -> Tuple[Error, Optional[Counter], None]:
+    def destruct_building(self, building_id: int, instant: bool) -> Tuple[Error, Optional[Counter], Optional[Building]]:
         """
         Destructs building. Used to clean extended areas.
         """
         result, state = self.post("destructBuilding", call_state=True, buildingId=building_id, instant=instant)
-        # TODO: parse and return updated building.
-        return self.parse_error(result), (self.parse_resource_field(state) if state else None), None
+        return (
+            self.parse_error(result),
+            (self.parse_resource_field(state) if state else None),
+            (self.parse_building(state["buildingChanged"]) if state else None),
+        )
 
     def start_research(self, unit_id: int, level: int, forge_building_id: int) -> Tuple[Error, Optional[Counter]]:
         """
@@ -301,6 +299,21 @@ class Api:
         if "error" in result and result["error"]["name"] == Error.not_available.value:
             return {}
         raise ValueError(result)
+
+    @staticmethod
+    def parse_building(building: dict) -> Building:
+        """
+        Helper method to parse a building.
+        """
+        return Building(
+            id=building["id"],
+            type=BuildingType(building["typeId"]),
+            level=building["level"],
+            is_completed=building["completed"],
+            complete_time=building["completeTime"],
+            hitpoints=building["hitpoints"],
+            storage_fill=building.get("storageFill"),
+        )
 
     @staticmethod
     def parse_resources(resources: List[Dict[str, int]]) -> Counter:

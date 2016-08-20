@@ -176,11 +176,10 @@ class Bot:
                 self.can_upgrade(building.type, building.level + 1)
             ):
                 logging.info("Upgrading %s #%s to level %s…", building.type.name, building.id, building.level + 1)
-                error, new_resources, _ = self.api.upgrade_building(building.id)
+                error, new_resources, new_building = self.api.upgrade_building(building.id)
                 if error == Error.ok:
                     self.resources = new_resources
-                    # TODO: update existing manager with the state.
-                    self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
+                    self.buildings.update_incomplete(new_building)
                     self.notifications.append("Upgrade *{}*.".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
@@ -196,10 +195,10 @@ class Bot:
                 self.can_upgrade(building.type, building.level)
             ):
                 logging.info("Destructing %s #%s…", building.type.name, building.id)
-                error, new_resources, _ = self.api.destruct_building(building.id, False)
+                error, new_resources, new_building = self.api.destruct_building(building.id, False)
                 if error == Error.ok:
                     self.resources = new_resources
-                    self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
+                    self.buildings.update_incomplete(new_building)
                     self.notifications.append("Destruct *{}*.".format(building.type.name))
                     # Only one area can be simultaneously destructed.
                     return
