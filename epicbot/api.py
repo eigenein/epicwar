@@ -82,6 +82,9 @@ class Api:
         self.auth_token = match.group(1)
         logging.debug("Authentication token: %s", self.auth_token)
 
+    # Public API.
+    # ----------------------------------------------------------------------------------------------
+
     def get_self_info(self):
         """
         Gets information about the player and its village.
@@ -300,6 +303,9 @@ class Api:
             return {}
         raise ValueError(result)
 
+    # Utilities and helpers.
+    # ----------------------------------------------------------------------------------------------
+
     @staticmethod
     def parse_building(building: dict) -> Building:
         """
@@ -360,6 +366,9 @@ class Api:
         if "error" in result:
             return Error(result["error"]["name"])
         raise ValueError(result)
+
+    # Making requests to API.
+    # ----------------------------------------------------------------------------------------------
 
     def post(self, name: str, call_state=False, **arguments) -> Tuple[dict, Union[dict, list, None]]:
         """
