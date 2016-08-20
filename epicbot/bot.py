@@ -377,7 +377,7 @@ class Bot:
 
         # Wait for battle to finish.
         logging.info("Sleeping… Pray for me!")
-        time.sleep(self.BATTLE_DURATION)
+        time.sleep(60.0)
 
         # Finish battle.
         logging.info("Finishing battle…")
@@ -389,7 +389,7 @@ class Bot:
             self.resources = new_resources
         else:
             logging.error("Something went wrong: %s.", battle_result)
-            self.notifications.append("\N{cross mark} PvP failed.")
+            self.notifications.append("\N{cross mark} *PvP failed*.")
             return
 
         # Start units.
