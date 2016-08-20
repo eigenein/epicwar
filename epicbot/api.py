@@ -135,19 +135,19 @@ class Api:
         result, _ = self.post("giftFarm", userId=user_id)
         return self.parse_error(result)
 
-    def collect_resource(self, building_id: int) -> Counter:
+    def collect_resource(self, building_id: int) -> Tuple[Counter, Counter]:
         """
         Collects resource from the building.
         """
         result, state = self.post("collectResource", call_state=True, buildingId=building_id)
         return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
 
-    def farm_cemetery(self) -> Counter:
+    def farm_cemetery(self) -> Tuple[Counter, Counter]:
         """
         Collects died enemy army.
         """
-        result, _ = self.post("cemeteryFarm")
-        return self.parse_resource_field(result["reward"])
+        result, state = self.post("cemeteryFarm")
+        return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
 
     def get_buildings(self) -> List[Building]:
         """
@@ -176,21 +176,20 @@ class Api:
         # TODO: parse and return updated building.
         return self.parse_error(result), (self.parse_resource_field(state) if state else None), None
 
-    def destruct_building(self, building_id: int, instant: bool):
+    def destruct_building(self, building_id: int, instant: bool) -> Tuple[Error, Optional[Counter], None]:
         """
         Destructs building. Used to clean extended areas.
         """
         result, state = self.post("destructBuilding", call_state=True, buildingId=building_id, instant=instant)
-        logging.info("destructBuilding state: %s", state)
-        return self.parse_error(result)
+        # TODO: parse and return updated building.
+        return self.parse_error(result), (self.parse_resource_field(state) if state else None), None
 
-    def start_research(self, unit_id: int, level: int, forge_building_id: int):
+    def start_research(self, unit_id: int, level: int, forge_building_id: int) -> Tuple[Error, Optional[Counter]]:
         """
         Start unit research.
         """
         result, state = self.post("startResearch", call_state=True, level=level, unitId=unit_id, buildingId=forge_building_id)
-        logging.info("startResearch state: %s", state)
-        return self.parse_error(result)
+        return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
     def click_alliance_daily_gift(self):
         """

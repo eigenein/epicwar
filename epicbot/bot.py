@@ -102,20 +102,12 @@ class Bot:
         self.log_resources()
         logging.info("Made %s requests. Bye!", self.api.request_id)
 
-    def update_resources(self):
-        """
-        Updates resources.
-        """
-        # TODO: Deprecated. Should be removed.
-        self.resources = self.api.get_self_info().resources
-
     def check_cemetery(self):
         """
         Farms cemetery.
         """
-        amount = self.api.farm_cemetery().get(ResourceType.food, 0)
-        # FIXME: update resources from state.
-        self.resources[ResourceType.food] += amount
+        reward, self.resources = self.api.farm_cemetery()
+        amount = reward.get(ResourceType.food, 0)
         logging.info("Cemetery farmed: %s.", amount)
         self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
 
@@ -203,16 +195,16 @@ class Bot:
                 self.buildings.castle.level >= self.library.destroy_levels[building.type] and
                 self.can_upgrade(building.type, building.level)
             ):
-                logging.info("Cleaning %s #%s…", building.type.name, building.id)
-                error = self.api.destruct_building(building.id, False)
+                logging.info("Destructing %s #%s…", building.type.name, building.id)
+                error, new_resources, _ = self.api.destruct_building(building.id, False)
                 if error == Error.ok:
-                    self.update_resources()
+                    self.resources = new_resources
                     self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
                     self.notifications.append("Destruct *{}*.".format(building.type.name))
-                    # Only one area can be simultaneously destroyed.
+                    # Only one area can be simultaneously destructed.
                     return
                 else:
-                    logging.error("Failed to clean extended area.")
+                    logging.error("Failed to destruct extended area.")
 
     def upgrade_units(self):
         """
@@ -224,11 +216,11 @@ class Bot:
             if unit_type not in UnitType.upgradable() or not self.can_upgrade(unit_type, level + 1):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
-            error = self.api.start_research(unit_type.value, level + 1, self.buildings.forge.id)
+            error, new_resources = self.api.start_research(unit_type.value, level + 1, self.buildings.forge.id)
             if error == Error.ok:
-                self.update_resources()
+                self.resources = new_resources
                 self.notifications.append("Upgrade *{}*.".format(unit_type.name))
-                # One research per time and we've just started a one.
+                # Only one research can be simultaneously performed.
                 break
             else:
                 logging.warning("Failed to upgrade: %s.", error.name)
