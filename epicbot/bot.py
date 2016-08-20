@@ -152,14 +152,25 @@ class Bot:
         """
         Upgrades buildings.
         """
-        builder_count = self.buildings.max_level[BuildingType.builder_hut] + self.get_alliance_builder_count()
-        logging.info("Builder count: %s.", builder_count)
+        # By default builder count is defined by builder hut level.
+        max_incomplete_count = self.buildings.max_level[BuildingType.builder_hut]
+        # Additional alliance builder.
+        if (
+            ArtifactType.alliance_builder in self.artifacts and
+            self.alliance_membership.life_time_score >= self.ALLIANCE_BUILDER_SCORE
+        ):
+            # Hardcoded hack. It's much simple than re-writing boost and artifact managers.
+            max_incomplete_count += 1
+        # Destruction doesn't consumes a builder.
+        if self.buildings.is_destruction_in_progress:
+            max_incomplete_count += 1
+        logging.info("Max incomplete count: %s.", max_incomplete_count)
 
         for building in self.buildings:
             logging.debug("Check: %s.", building)
             if (
                 # Builder is available.
-                len(self.buildings.incomplete) < builder_count and
+                len(self.buildings.incomplete) < max_incomplete_count and
                 # Castle is upgraded optionally.
                 (building.type != BuildingType.castle or self.context.with_castle) and
                 # Building type is not ignored explicitly.
@@ -321,19 +332,6 @@ class Bot:
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
         self.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
-
-    def get_alliance_builder_count(self) -> int:
-        """
-        Gets alliance builder count.
-        """
-        if (
-            ArtifactType.alliance_builder in self.artifacts and
-            self.alliance_membership.life_time_score >= self.ALLIANCE_BUILDER_SCORE
-        ):
-            # Hardcoded hack. It's much simple than re-writing boost and artifact managers.
-            return 1
-        else:
-            return 0
 
     def can_upgrade(self, entity_type: Union[BuildingType, UnitType], level: int) -> bool:
         """
