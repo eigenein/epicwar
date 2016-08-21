@@ -327,7 +327,7 @@ class Bot:
         Collects bastion gift.
         """
         logging.info("Collecting bastion gift…")
-        reward, self.resources = self.api.open_fair_citadel_gate()
+        reward, self.resources, self.units = self.api.open_fair_citadel_gate()
         for reward_type, amount in reward.items():
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* in *bastion*.".format(amount, reward_type.name))

@@ -106,7 +106,7 @@ class Api:
                 ],
             ),
             cemetery=[Cemetery(x=cemetery["x"], y=cemetery["y"]) for cemetery in result["cemetery"]],
-            units=Counter({UnitType(int(unit["id"])): unit["amount"] for unit in result["user"]["unit"]}),
+            units=self.parse_units(result["user"]["unit"]),
         )
 
     def get_gift_receivers(self) -> List[str]:
@@ -317,12 +317,12 @@ class Api:
         footer = "~0~"
         return self.finish_battle_serialized(battle_id, header + "".join(serialized_commands) + footer)
 
-    def open_fair_citadel_gate(self) -> Tuple[Counter, Counter]:
+    def open_fair_citadel_gate(self) -> Tuple[Counter, Counter, Counter]:
         """
         Collects bastion gift.
         """
         result, state = self.post("fairCitadelOpenGate", True)
-        return self.parse_reward(result), self.parse_resource_field(state)
+        return self.parse_reward(result), self.parse_resource_field(state), self.parse_units(state["unit"])
 
     def spin_event_roulette(self, count=1, is_payed=False) -> Counter:
         """
@@ -377,6 +377,10 @@ class Api:
         """
         assert isinstance(result, dict) and "resource" in result, result
         return self.parse_resources(result["resource"])
+
+    @staticmethod
+    def parse_units(units: List[Dict]) -> Counter:
+        return Counter({UnitType(int(unit["id"])): unit["amount"] for unit in units})
 
     @staticmethod
     def parse_error(result: Union[bool, dict]) -> Error:
