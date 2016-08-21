@@ -98,11 +98,7 @@ class Api:
             user_id=result["user"]["id"],
             caption=result["user"]["villageCaption"],
             resources=self.parse_resources(result["user"]["resource"]),
-            research={
-                UnitType(unit["unitId"]): unit["level"]
-                for unit in result["user"]["research"]
-                if UnitType.has_value(unit["unitId"])
-            },
+            research={UnitType(unit["unitId"]): unit["level"] for unit in result["user"]["research"]},
             alliance=Alliance(
                 members=[
                     AllianceMember(id=member["id"], life_time_score=int(member["randomWarsScore"]["lifeTime"]))
@@ -110,11 +106,7 @@ class Api:
                 ],
             ),
             cemetery=[Cemetery(x=cemetery["x"], y=cemetery["y"]) for cemetery in result["cemetery"]],
-            units=Counter({
-                UnitType(unit["id"]): unit["amount"]
-                for unit in result["user"]["unit"]
-                if UnitType.has_value(unit["id"])
-            }),
+            units=Counter({UnitType(unit["id"]): unit["amount"] for unit in result["user"]["unit"]}),
         )
 
     def get_gift_receivers(self) -> List[str]:
@@ -166,11 +158,7 @@ class Api:
         Gets all buildings.
         """
         result, _ = self.post("getBuildings")
-        return [
-            self.parse_building(building)
-            for building in result["building"]
-            if BuildingType.has_value(building["typeId"])
-        ]
+        return [self.parse_building(building) for building in result["building"]]
 
     def upgrade_building(self, building_id: int) -> Tuple[Error, Optional[Counter], Optional[Building]]:
         """
@@ -238,10 +226,11 @@ class Api:
         Gets all notices.
         """
         result, _ = self.post("getNotices")
+        # noinspection PyProtectedMember
         return {
             notice["id"]: NoticeType(notice["type"])
             for notice in result["notices"]
-            if NoticeType.has_value(notice["type"])
+            if notice["type"] in NoticeType._value2member_map_
         }
 
     def notice_farm_reward(self, notice_id: str) -> Counter:
@@ -260,11 +249,7 @@ class Api:
         Gets enabled artifacts.
         """
         result, _ = self.post("artefactGetList")
-        return {
-            ArtifactType(artifact["typeId"])
-            for artifact in result["artefact"]
-            if ArtifactType.has_value(artifact["typeId"]) and artifact["enabled"]
-        }
+        return {ArtifactType(artifact["typeId"]) for artifact in result["artefact"] if artifact["enabled"]}
 
     def get_army_queue(self) -> List[ArmyQueue]:
         """
@@ -375,11 +360,7 @@ class Api:
         """
         Helper method to parse a resource collection method result.
         """
-        return Counter({
-            ResourceType(resource["id"]): resource["amount"]
-            for resource in resources
-            if ResourceType.has_value(resource["id"])
-        })
+        return Counter({ResourceType(resource["id"]): resource["amount"] for resource in resources})
 
     @staticmethod
     def parse_reward(reward: dict) -> Counter:
@@ -390,7 +371,6 @@ class Api:
             reward_type(obj["id"]): obj["amount"]
             for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
             for obj in reward.get(key, ())
-            if reward_type.has_value(obj["id"])
         }
 
     def parse_resource_field(self, result: Optional[dict]) -> Counter:

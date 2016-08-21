@@ -8,188 +8,7 @@ Game enumerations.
 import enum
 
 
-class LookupEnum(enum.Enum):
-    """
-    Adds fast lookup of values.
-    """
-    @classmethod
-    def has_value(cls, value) -> bool:
-        # noinspection PyProtectedMember
-        return value in cls._value2member_map_
-
-
-class BuildingType(LookupEnum):
-    """
-    Building type. Don't forget to check the ignore list while adding any new types.
-    """
-    castle = 1  # замок
-    mine = 2  # шахта
-    treasury = 3  # казна
-    mill = 4  # мельница
-    barn = 5  # амбар
-    barracks = 6  # казарма
-    staff = 7  # штаб
-    builder_hut = 8  # дом строителя
-    forge = 9  # кузница
-    ballista = 10  # башня
-    wall = 11  # стена
-    archer_tower = 12  # башня лучников
-    cannon = 13  # пушка
-    thunder_tower = 14  # штормовой шпиль
-    ice_tower = 15  # зиккурат
-    fire_tower = 16  # башня огня
-    clan_house = 17  # дом братства
-    dark_tower = 18
-    tavern = 19  # таверна
-    alchemist = 20  # дом алхимика
-    sand_mine = 31  # песчаный карьер
-    sand_warehouse = 32
-    sand_barracks = 33
-    sand_tower = 34
-    crystal_tower = 35
-    sand_forge = 36
-    extended_area_1 = 65  # территория для очистки
-    extended_area_2 = 66  # территория для очистки
-    extended_area_3 = 67  # территория для очистки
-    extended_area_4 = 68  # территория для очистки
-    extended_area_5 = 69  # территория для очистки
-    extended_area_6 = 70  # территория для очистки
-    extended_area_7 = 71  # территория для очистки
-    extended_area_8 = 72  # территория для очистки
-    extended_area_9 = 73  # территория для очистки
-    extended_area_10 = 74  # территория для очистки
-    extended_area_11 = 75  # территория для очистки
-    extended_area_12 = 76  # территория для очистки
-    extended_area_13 = 77  # территория для очистки
-    extended_area_14 = 78  # территория для очистки
-    extended_area_15 = 79  # территория для очистки
-    extended_area_16 = 80  # территория для очистки
-    extended_area_17 = 81  # территория для очистки
-    extended_area_18 = 82  # территория для очистки
-    extended_area_19 = 83  # территория для очистки
-    extended_area_20 = 84  # территория для очистки
-    extended_area_xx = 85  # территория для очистки
-    jeweler_house = 154  # дом ювелира
-    ice_obelisk = 631  # ледяной обелиск
-
-
-class RewardType(LookupEnum):
-    # Base class for all reward enums.
-    pass
-
-
-class ResourceType(RewardType):
-    gold = 1  # золото
-    food = 2  # еда
-    mana = 3  # мана
-    sand = 26  # песок
-    runes = 50  # руны бастиона ужаса
-    crystal_green_2 = 59  # зеленый кристалл 2-го уровня
-    crystal_green_3 = 60  # зеленый кристалл 3-го уровня
-    crystal_green_4 = 61  # зеленый кристалл 4-го уровня
-    crystal_green_5 = 62  # зеленый кристалл 5-го уровня
-    crystal_green_6 = 63  # зеленый кристалл 6-го уровня
-    crystal_green_7 = 64  # зеленый кристалл 7-го уровня
-    crystal_green_8 = 65  # зеленый кристалл 8-го уровня
-    crystal_green_9 = 66  # зеленый кристалл 9-го уровня
-    crystal_green_10 = 67  # зеленый кристалл 10-го уровня
-    crystal_orange_1 = 68  # оранжевый кристалл 1-го уровня
-    crystal_orange_2 = 69  # оранжевый кристалл 2-го уровня
-    crystal_orange_3 = 70  # оранжевый кристалл 3-го уровня
-    crystal_orange_4 = 71  # оранжевый кристалл 4-го уровня
-    crystal_orange_5 = 72  # оранжевый кристалл 5-го уровня
-    crystal_orange_6 = 73  # оранжевый кристалл 6-го уровня
-    crystal_orange_7 = 74  # оранжевый кристалл 7-го уровня
-    crystal_orange_8 = 75  # оранжевый кристалл 8-го уровня
-    crystal_orange_9 = 76  # оранжевый кристалл 9-го уровня
-    crystal_orange_10 = 77  # оранжевый кристалл 10-го уровня
-    crystal_red_1 = 78  # красный кристалл 1-го уровня
-    crystal_red_2 = 79  # красный кристалл 2-го уровня
-    crystal_red_3 = 80  # красный кристалл 3-го уровня
-    crystal_red_4 = 81  # красный кристалл 4-го уровня
-    crystal_red_5 = 82  # красный кристалл 5-го уровня
-    crystal_red_6 = 83  # красный кристалл 6-го уровня
-    crystal_red_7 = 84  # красный кристалл 7-го уровня
-    crystal_red_8 = 85  # красный кристалл 8-го уровня
-    crystal_red_9 = 86  # красный кристалл 9-го уровня
-    crystal_red_10 = 87  # красный кристалл 10-го уровня
-    crystal_blue_1 = 88  # синий кристалл 1-го уровня
-    crystal_blue_2 = 89  # синий кристалл 2-го уровня
-    crystal_blue_3 = 90  # синий кристалл 3-го уровня
-    crystal_blue_4 = 91  # синий кристалл 4-го уровня
-    crystal_blue_5 = 92  # синий кристалл 5-го уровня
-    crystal_blue_6 = 93  # синий кристалл 6-го уровня
-    crystal_blue_7 = 94  # синий кристалл 7-го уровня
-    crystal_blue_8 = 95  # синий кристалл 8-го уровня
-    crystal_blue_9 = 96  # синий кристалл 9-го уровня
-    crystal_blue_10 = 97  # синий кристалл 10-го уровня
-    enchanted_coins = 104  # зачарованные монеты (прокачивание кристаллов)
-    alliance_runes = 161  # руна знаний (клановый ресурс)
-    doubloon = 170  # дублоны для прокачки пирамиды
-    fire_water = 171  # огненная вода для прокачки шанса
-
-
-class SpellType(RewardType):
-    """
-    Spell type.
-    """
-    lightning = 1  # небесная молния
-    fire = 2
-    tornado = 9  # дыхание смерти
-    easter = 12  # огненный раскол
-    patronus = 14  # магическая ловушка
-    silver = 104  # купол грозы
-
-
-class UnitType(RewardType):
-    """
-    Unit type.
-    """
-    knight = 1  # рыцарь
-    goblin = 2  # гоблин
-    orc = 3  # орк
-    elf = 4  # эльф
-    troll = 5  # тролль
-    eagle = 6  # орел
-    mage = 7  # маг
-    ghost = 8  # призрак
-    ent = 9  # энт
-    dragon = 10  # дракон
-    palladin = 11  # пламя возмездия (герой)
-    dwarf = 12  # гномский пушкарь (герой)
-    halloween = 13  # ветрокрылая (герой)
-    white_mage = 14  # повелитель холода (герой)
-    skeleton = 16  # король проклятых (герой)
-    scorpion = 20  # скорпион
-    afreet = 21  # ифрит
-    spider = 22  # арахнит
-    elephant = 23  # слон
-    frozen_ent = 28  # ледяной страж (герой)
-    citadel_santa = 47  # проклятый гном
-    citadel_yeti = 48  # хищник
-    citadel_elf = 49  # стрелок мора
-    citadel_orc = 50  # урук
-    pirates_sirena = 51
-    pirates_shark = 52  # воин глубин
-    pirates_ghost = 53
-    pirates_crab = 54
-    angel_knight = 103  # небожитель (герой)
-    succubus = 108  # огненная бестия (герой)
-    league_orc_3 = 110  # защитник-сержант
-    league_elf_3 = 114  # страж-сержант
-    league_troll_2 = 117  # урук-рядовой
-    league_eagle_2 = 121  # охотник-рядовой
-    ice_golem = 158  # (герой)
-
-
-class ArtifactType(LookupEnum):
-    """
-    Artifact types.
-    """
-    alliance_builder = 757
-
-
-class NoticeType(LookupEnum):
+class NoticeType(enum.Enum):
     """
     Epic War inbox notice type.
     """
@@ -210,6 +29,172 @@ class Error(enum.Enum):
     not_enough = r"error\NotEnough"  # not enough… score?
     not_enough_time = r"error\NotEnoughTime"
     too_many = r"error\TooMany"
+    user_locked = r"error\UserLocked"
+
+
+def create_enum(class_name: str, prefix: str, members: dict):
+    """
+    Creates enum with the given class name.
+    Adds the specified members and auto-generated unknown members.
+    """
+    return enum.Enum(class_name, [
+        (members[_id], _id) if _id in members else ("%s_%s" % (prefix, _id), _id)
+        for _id in range(1000)
+    ])
+
+ArtifactType = create_enum("ArtifactType", "artifact", {
+    757: "alliance_builder",
+})
+
+BuildingType = create_enum("BuildingType", "building", {
+    1: "castle",                # замок
+    2: "mine",                  # шахта
+    3: "treasury",              # казна
+    4: "mill",                  # мельница
+    5: "barn",                  # амбар
+    6: "barracks",              # казарма
+    7: "staff",                 # штаб
+    8: "builder_hut",           # дом строителя
+    9: "forge",                 # кузница
+    10: "ballista",             # башня
+    11: "wall",                 # стена
+    12: "archer_tower",         # башня лучников
+    13: "cannon",               # пушка
+    14: "thunder_tower",        # штормовой шпиль
+    15: "ice_tower",            # зиккурат
+    16: "fire_tower",           # башня огня
+    17: "clan_house",           # дом братства
+    18: "dark_tower",
+    19: "tavern",               # таверна
+    20: "alchemist",            # дом алхимика
+    31: "sand_mine",            # песчаный карьер
+    32: "sand_warehouse",
+    33: "sand_barracks",
+    34: "sand_tower",
+    35: "crystal_tower",
+    36: "sand_forge",
+    65: "extended_area_1",      # территория
+    66: "extended_area_2",      # территория
+    67: "extended_area_3",      # территория
+    68: "extended_area_4",      # территория
+    69: "extended_area_5",      # территория
+    70: "extended_area_6",      # территория
+    71: "extended_area_7",      # территория
+    72: "extended_area_8",      # территория
+    73: "extended_area_9",      # территория
+    74: "extended_area_10",     # территория
+    75: "extended_area_11",     # территория
+    76: "extended_area_12",     # территория
+    77: "extended_area_13",     # территория
+    78: "extended_area_14",     # территория
+    79: "extended_area_15",     # территория
+    80: "extended_area_16",     # территория
+    81: "extended_area_17",     # территория
+    82: "extended_area_18",     # территория
+    83: "extended_area_19",     # территория
+    84: "extended_area_20",     # территория
+    85: "extended_area_xx",     # территория
+    154: "jeweler_house",       # дом ювелира
+    631: "ice_obelisk",         # ледяной обелиск
+})
+
+ResourceType = create_enum("ResourceType", "resource", {
+    1: "gold",                  # золото
+    2: "food",                  # еда
+    3: "mana",                  # мана
+    26: "sand",                 # песок
+    50: "runes",                # руны бастиона ужаса
+    59: "crystal_green_2",      # зеленый кристалл 2-го уровня
+    60: "crystal_green_3",      # зеленый кристалл 3-го уровня
+    61: "crystal_green_4",      # зеленый кристалл 4-го уровня
+    62: "crystal_green_5",      # зеленый кристалл 5-го уровня
+    63: "crystal_green_6",      # зеленый кристалл 6-го уровня
+    64: "crystal_green_7",      # зеленый кристалл 7-го уровня
+    65: "crystal_green_8",      # зеленый кристалл 8-го уровня
+    66: "crystal_green_9",      # зеленый кристалл 9-го уровня
+    67: "crystal_green_10",     # зеленый кристалл 10-го уровня
+    68: "crystal_orange_1",     # оранжевый кристалл 1-го уровня
+    69: "crystal_orange_2",     # оранжевый кристалл 2-го уровня
+    70: "crystal_orange_3",     # оранжевый кристалл 3-го уровня
+    71: "crystal_orange_4",     # оранжевый кристалл 4-го уровня
+    72: "crystal_orange_5",     # оранжевый кристалл 5-го уровня
+    73: "crystal_orange_6",     # оранжевый кристалл 6-го уровня
+    74: "crystal_orange_7",     # оранжевый кристалл 7-го уровня
+    75: "crystal_orange_8",     # оранжевый кристалл 8-го уровня
+    76: "crystal_orange_9",     # оранжевый кристалл 9-го уровня
+    77: "crystal_orange_10",    # оранжевый кристалл 10-го уровня
+    78: "crystal_red_1",        # красный кристалл 1-го уровня
+    79: "crystal_red_2",        # красный кристалл 2-го уровня
+    80: "crystal_red_3",        # красный кристалл 3-го уровня
+    81: "crystal_red_4",        # красный кристалл 4-го уровня
+    82: "crystal_red_5",        # красный кристалл 5-го уровня
+    83: "crystal_red_6",        # красный кристалл 6-го уровня
+    84: "crystal_red_7",        # красный кристалл 7-го уровня
+    85: "crystal_red_8",        # красный кристалл 8-го уровня
+    86: "crystal_red_9",        # красный кристалл 9-го уровня
+    87: "crystal_red_10",       # красный кристалл 10-го уровня
+    88: "crystal_blue_1",       # синий кристалл 1-го уровня
+    89: "crystal_blue_2",       # синий кристалл 2-го уровня
+    90: "crystal_blue_3",       # синий кристалл 3-го уровня
+    91: "crystal_blue_4",       # синий кристалл 4-го уровня
+    92: "crystal_blue_5",       # синий кристалл 5-го уровня
+    93: "crystal_blue_6",       # синий кристалл 6-го уровня
+    94: "crystal_blue_7",       # синий кристалл 7-го уровня
+    95: "crystal_blue_8",       # синий кристалл 8-го уровня
+    96: "crystal_blue_9",       # синий кристалл 9-го уровня
+    97: "crystal_blue_10",      # синий кристалл 10-го уровня
+    104: "enchanted_coins",     # зачарованные монеты (прокачивание кристаллов)
+    161: "alliance_runes",      # руна знаний (клановый ресурс)
+    170: "doubloon",            # дублоны для прокачки пирамиды
+    171: "fire_water",          # огненная вода для прокачки шанса
+})
+
+SpellType = create_enum("SpellType", "spell", {
+    1: "lightning",     # небесная молния
+    2: "fire",
+    9: "tornado",       # дыхание смерти
+    12: "easter",       # огненный раскол
+    14: "patronus",     # магическая ловушка
+    104: "silver",      # купол грозы
+})
+
+UnitType = create_enum("UnitType", "unit", {
+    1: "knight",            # рыцарь
+    2: "goblin",            # гоблин
+    3: "orc",               # орк
+    4: "elf",               # эльф
+    5: "troll",             # тролль
+    6: "eagle",             # орел
+    7: "mage",              # маг
+    8: "ghost",             # призрак
+    9: "ent",               # энт
+    10: "dragon",           # дракон
+    11: "palladin",         # пламя возмездия (герой)
+    12: "dwarf",            # гномский пушкарь (герой)
+    13: "halloween",        # ветрокрылая (герой)
+    14: "white_mage",       # повелитель холода (герой)
+    16: "skeleton",         # король проклятых (герой)
+    20: "scorpion",         # скорпион
+    21: "afreet",           # ифрит
+    22: "spider",           # арахнит
+    23: "elephant",         # слон
+    24: "frozen_ent",       # ледяной страж (герой)
+    47: "citadel_santa",    # проклятый гном
+    48: "citadel_yeti",     # хищник
+    49: "citadel_elf",      # стрелок мора
+    50: "citadel_orc",      # урук
+    51: "pirates_sirena",
+    52: "pirates_shark",    # воин глубин
+    53: "pirates_ghost",
+    54: "pirates_crab",
+    103: "angel_knight",    # небожитель (герой)
+    108: "succubus",        # огненная бестия (герой)
+    110: "league_orc_3",    # защитник-сержант
+    115: "league_elf_3",    # страж-сержант
+    117: "league_troll_2",  # урук-рядовой
+    121: "league_eagle_2",  # охотник-рядовой
+    158: "ice_golem",       # (герой)
+})
 
 
 class Sets:

@@ -24,93 +24,65 @@ class Library:
         self.barracks_production = {}  # type: Dict[int, Set[UnitType]]
         self.units_amount = {}  # type: Dict[int, int]
         # Process building levels.
-        for building_level in content["buildingLevel"]:
-            if building_level["cost"].get("starmoney", 0) != 0:
+        for entry in content["buildingLevel"]:
+            if entry["cost"].get("starmoney", 0) != 0:
                 # Skip buildings that require star money.
                 continue
-            try:
-                type_ = BuildingType(building_level["buildingId"])
-            except ValueError:
-                type_ = None
-            level = building_level["level"]
-            if type_:
-                # Remember construction time.
-                self.construction_time[type_, level] = building_level["constructionTime"]
-                # Remember barracks production unit types.
-                if type_ == BuildingType.barracks:
-                    self.barracks_production[level] = {
-                        UnitType(unit["unitId"])
-                        for unit in building_level["production"]["unit"]
-                        if UnitType.has_value(unit["unitId"])
-                    }
-                # Remember units amounts.
-                if type_ == BuildingType.staff:
-                    self.units_amount[level] = building_level["perks"][0]["value"]
-                # Process build or upgrade cost.
-                for resource in building_level["cost"].get("resource", []):
-                    try:
-                        resource_type = ResourceType(resource["id"])
-                    except ValueError:
-                        continue
-                    self.requirements[type_, level][resource_type] = resource["amount"]
-                # Process resource production.
-                if type_ in Sets.production_buildings:
-                    self.full_time[type_, level] = building_level["production"]["resource"]["fullTime"]
-            if "unlock" not in building_level:
+            building_type, building_level = BuildingType(entry["buildingId"]), entry["level"]
+            # Remember construction time.
+            self.construction_time[building_type, building_level] = entry["constructionTime"]
+            # Remember barracks production unit types.
+            if building_type == BuildingType.barracks:
+                self.barracks_production[building_level] = {
+                    UnitType(unit["unitId"])
+                    for unit in entry["production"]["unit"]
+                }
+            # Remember units amounts.
+            if building_type == BuildingType.staff:
+                self.units_amount[building_level] = entry["perks"][0]["value"]
+            # Process build or upgrade cost.
+            for resource in entry["cost"].get("resource", []):
+                resource_type = ResourceType(resource["id"])
+                self.requirements[building_type, building_level][resource_type] = resource["amount"]
+            # Process resource production.
+            if building_type in Sets.production_buildings:
+                self.full_time[building_type, building_level] = entry["production"]["resource"]["fullTime"]
+            if "unlock" not in entry:
                 continue
             # Process dependent buildings.
-            for unlock in building_level["unlock"].get("building", []):
-                try:
-                    unlocked_type = BuildingType(unlock["typeId"])
-                except ValueError:
-                    continue
-                assert type_
+            for unlock in entry["unlock"].get("building", []):
+                unlocked_type = BuildingType(unlock["typeId"])
                 for unlocked_level in range(1, unlock["maxLevel"] + 1):
                     try:
-                        existing_level = self.requirements[unlocked_type, unlocked_level][type_]
+                        existing_level = self.requirements[unlocked_type, unlocked_level][building_type]
                     except KeyError:
-                        self.requirements[unlocked_type, unlocked_level][type_] = level
+                        self.requirements[unlocked_type, unlocked_level][building_type] = building_level
                     else:
-                        self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
+                        self.requirements[unlocked_type, unlocked_level][building_type] = min(building_level, existing_level)
             # Process dependent units.
-            for unlock in building_level["unlock"].get("unit", []):
-                try:
-                    unlocked_type = UnitType(unlock["unitId"])
-                except ValueError:
-                    continue
-                assert type_
+            for unlock in entry["unlock"].get("unit", []):
+                unlocked_type = UnitType(unlock["unitId"])
                 for unlocked_level in range(1, unlock["maxLevel"] + 1):
                     try:
-                        existing_level = self.requirements[unlocked_type, unlocked_level][type_]
+                        existing_level = self.requirements[unlocked_type, unlocked_level][building_type]
                     except KeyError:
-                        self.requirements[unlocked_type, unlocked_level][type_] = level
+                        self.requirements[unlocked_type, unlocked_level][building_type] = building_level
                     else:
-                        self.requirements[unlocked_type, unlocked_level][type_] = min(level, existing_level)
+                        self.requirements[unlocked_type, unlocked_level][building_type] = min(building_level, existing_level)
         # Process buildings.
-        for building in content["building"]:
-            try:
-                type_ = BuildingType(building["id"])
-            except ValueError:
-                continue
+        for entry in content["building"]:
+            building_type = BuildingType(entry["id"])
             # Remember castle level to destroy this extended area.
-            if type_ in Sets.extended_areas:
-                self.destroy_levels[type_] = building["destroyConditions"]["building"][0]["level"]
+            if building_type in Sets.extended_areas:
+                self.destroy_levels[building_type] = entry["destroyConditions"]["building"][0]["level"]
         # Process unit research cost.
-        for unit_level in content["unitLevel"]:
-            try:
-                type_ = UnitType(unit_level["unitId"])
-            except ValueError:
-                continue
-            if "researchCost" not in unit_level:
-                continue
-            for resource in unit_level["researchCost"]["resource"]:
-                try:
-                    resource_type = ResourceType(resource["id"])
-                except ValueError:
-                    continue
-                self.requirements[(type_, unit_level["level"])][resource_type] = resource["amount"]
+        for entry in content["unitLevel"]:
+            unit_type, unit_level = UnitType(entry["unitId"]), entry["level"]
+            for resource in entry.get("researchCost", {}).get("resource", []):
+                resource_type = ResourceType(resource["id"])
+                self.requirements[unit_type, unit_level][resource_type] = resource["amount"]
         # Propagate unit types from lower levels to upper levels.
         self.barracks_production = {
-            level: set(chain(*(self.barracks_production[level_] for level_ in range(1, level + 1))))
-            for level, unit_types in self.barracks_production.items()
+            barracks_level: set(chain(*(self.barracks_production[i] for i in range(1, barracks_level + 1))))
+            for barracks_level, unit_types in self.barracks_production.items()
         }
