@@ -77,6 +77,7 @@ BuildingType = create_enum("BuildingType", "building", {
     34: "sand_tower",
     35: "crystal_tower",
     36: "sand_forge",
+    37: "artefacts_house",
     65: "extended_area_1",      # территория
     66: "extended_area_2",      # территория
     67: "extended_area_3",      # территория
@@ -98,8 +99,10 @@ BuildingType = create_enum("BuildingType", "building", {
     83: "extended_area_19",     # территория
     84: "extended_area_20",     # территория
     85: "extended_area_xx",     # территория
+    147: "portal",              # призрачный портал
     154: "jeweler_house",       # дом ювелира
     631: "ice_obelisk",         # ледяной обелиск
+    642: "pirate_ship_2016",
 })
 
 ResourceType = create_enum("ResourceType", "resource", {
@@ -233,9 +236,12 @@ class Sets:
     }
 
     non_upgradable_buildings = extended_areas | {
+        BuildingType.artefacts_house,
         BuildingType.builder_hut,
         BuildingType.clan_house,
         BuildingType.jeweler_house,
+        BuildingType.pirate_ship_2016,
+        BuildingType.portal,
         BuildingType.tavern,
     }
 
