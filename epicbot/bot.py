@@ -2,13 +2,14 @@
 # coding: utf-8
 
 import datetime
+import enum
 import itertools
 import logging
 import random
 import time
 
 from collections import Counter
-from typing import Dict, List, Set, Union
+from typing import Dict, List, Set
 
 import requests
 
@@ -372,10 +373,13 @@ class Bot:
         # Start battle.
         logging.info("Starting PvP…")
         battle_id = self.api.start_pvp_battle()
-        logging.info("Battle ID: %s.", battle_id)
+        if not battle_id:
+            logging.warning("Unable to start PvP.")
+            self.notifications.append("\N{warning sign} Unable to start PvP.")
+            return
 
         # Wait for battle to finish.
-        logging.info("Sleeping… Pray for me!")
+        logging.info("Battle ID: %s. Sleeping… Pray for me!", battle_id)
         time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
@@ -405,7 +409,7 @@ class Bot:
             else:
                 logging.error("Failed to start units.")
 
-    def can_upgrade(self, entity_type: Union[BuildingType, UnitType], level: int) -> bool:
+    def can_upgrade(self, entity_type: enum.Enum, level: int) -> bool:
         """
         Determines if all requirements are met to upgrade a building or a unit.
         """

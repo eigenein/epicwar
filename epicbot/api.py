@@ -280,12 +280,12 @@ class Api:
             return Error(result["error"]["name"]), None
         return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
 
-    def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> str:
+    def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> Optional[str]:
         """
         Starts PvP battle and returns battle ID.
         """
         result, _ = self.post("battle_startPvp", version=version)
-        return result["battleId"]
+        return result.get("battleId")
 
     def add_battle_commands(self, battle_id: str, commands: str) -> Error:
         """
