@@ -49,12 +49,12 @@ class Buildings:
         """
         Updates caches with an incomplete building.
         """
+        if building.type == BuildingType.wall:
+            # Walls are upgraded instantly.
+            return
         assert not building.is_completed
         if building.type in BuildingType.extended_areas():
             self.is_destruction_in_progress = True
-        if building.type != BuildingType.wall:
-            # Walls are upgraded instantly.
-            self.incomplete.append(building)
 
     @staticmethod
     def sorting_key(library: Library) -> Callable[[Building], Any]:
