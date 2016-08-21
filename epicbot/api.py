@@ -322,7 +322,7 @@ class Api:
         Collects bastion gift.
         """
         result, state = self.post("fairCitadelOpenGate", True)
-        return self.parse_reward(result), self.parse_resource_field(state), self.parse_units(state["unit"])
+        return self.parse_reward(result), self.parse_resource_field(state), self.parse_units(state.get("unit", []))
 
     def spin_event_roulette(self, count=1, is_payed=False) -> Counter:
         """
@@ -354,7 +354,7 @@ class Api:
         )
 
     @staticmethod
-    def parse_resources(resources: List[Dict[str, int]]) -> Counter:
+    def parse_resources(resources: List[Dict]) -> Counter:
         """
         Helper method to parse a resource collection method result.
         """
@@ -375,8 +375,8 @@ class Api:
         """
         Helper method to parse resource collection result.
         """
-        assert isinstance(result, dict) and "resource" in result, result
-        return self.parse_resources(result["resource"])
+        assert isinstance(result, dict), result
+        return self.parse_resources(result.get("resource", []))
 
     @staticmethod
     def parse_units(units: List[Dict]) -> Counter:
