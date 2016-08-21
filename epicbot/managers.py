@@ -7,7 +7,7 @@ from operator import itemgetter
 from typing import Any, Callable, Iterable, Iterator
 
 from epicbot.api import Building
-from epicbot.enums import BuildingType, ResourceType
+from epicbot.enums import Sets, BuildingType, ResourceType
 from epicbot.library import Library
 
 
@@ -34,7 +34,7 @@ class Buildings:
         ))
         self.incomplete = [building for building in buildings if not building.is_completed]
         self.is_destruction_in_progress = any(
-            building.type in BuildingType.extended_areas()
+            building.type in Sets.extended_areas
             for building in self.incomplete
         )
         logging.info(
@@ -53,7 +53,7 @@ class Buildings:
             # Walls are upgraded instantly.
             return
         assert not building.is_completed
-        if building.type in BuildingType.extended_areas():
+        if building.type in Sets.extended_areas:
             self.is_destruction_in_progress = True
 
     @staticmethod

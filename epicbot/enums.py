@@ -6,7 +6,6 @@ Game enumerations.
 """
 
 import enum
-import typing
 
 
 class LookupEnum(enum.Enum):
@@ -72,45 +71,6 @@ class BuildingType(LookupEnum):
     extended_area_xx = 85  # территория для очистки
     jeweler_house = 154  # дом ювелира
     ice_obelisk = 631  # ледяной обелиск
-
-    @classmethod
-    def not_upgradable(cls):
-        return {
-            cls.builder_hut,
-            cls.clan_house,
-            cls.jeweler_house,
-            cls.tavern,
-        }
-
-    @classmethod
-    def production(cls):
-        return {cls.mine, cls.mill, cls.sand_mine}
-
-    @classmethod
-    def extended_areas(cls):
-        return {
-            cls.extended_area_1,
-            cls.extended_area_2,
-            cls.extended_area_3,
-            cls.extended_area_4,
-            cls.extended_area_5,
-            cls.extended_area_6,
-            cls.extended_area_7,
-            cls.extended_area_8,
-            cls.extended_area_9,
-            cls.extended_area_10,
-            cls.extended_area_11,
-            cls.extended_area_12,
-            cls.extended_area_13,
-            cls.extended_area_14,
-            cls.extended_area_15,
-            cls.extended_area_16,
-            cls.extended_area_17,
-            cls.extended_area_18,
-            cls.extended_area_19,
-            cls.extended_area_20,
-            cls.extended_area_xx,
-        }
 
 
 class RewardType(LookupEnum):
@@ -221,16 +181,6 @@ class UnitType(RewardType):
     league_eagle_2 = 121  # охотник-рядовой
     ice_golem = 158  # (герой)
 
-    @classmethod
-    def upgradable(cls) -> typing.Set["UnitType"]:
-        """
-        Gets upgradable unit types.
-        """
-        return {
-            cls.knight, cls.goblin, cls.orc, cls.elf, cls.troll, cls.eagle, cls.mage, cls.ghost, cls.ent, cls.dragon,
-            cls.scorpion, cls.afreet, cls.spider, cls.elephant,
-        }
-
 
 class ArtifactType(LookupEnum):
     """
@@ -260,3 +210,59 @@ class Error(enum.Enum):
     not_enough = r"error\NotEnough"  # not enough… score?
     not_enough_time = r"error\NotEnoughTime"
     too_many = r"error\TooMany"
+
+
+class Sets:
+    """
+    Some frequently used sets of enum members.
+    """
+
+    production_buildings = {BuildingType.mine, BuildingType.mill, BuildingType.sand_mine}
+
+    extended_areas = {
+        BuildingType.extended_area_1,
+        BuildingType.extended_area_2,
+        BuildingType.extended_area_3,
+        BuildingType.extended_area_4,
+        BuildingType.extended_area_5,
+        BuildingType.extended_area_6,
+        BuildingType.extended_area_7,
+        BuildingType.extended_area_8,
+        BuildingType.extended_area_9,
+        BuildingType.extended_area_10,
+        BuildingType.extended_area_11,
+        BuildingType.extended_area_12,
+        BuildingType.extended_area_13,
+        BuildingType.extended_area_14,
+        BuildingType.extended_area_15,
+        BuildingType.extended_area_16,
+        BuildingType.extended_area_17,
+        BuildingType.extended_area_18,
+        BuildingType.extended_area_19,
+        BuildingType.extended_area_20,
+        BuildingType.extended_area_xx,
+    }
+
+    non_upgradable_buildings = extended_areas | {
+        BuildingType.builder_hut,
+        BuildingType.clan_house,
+        BuildingType.jeweler_house,
+        BuildingType.tavern,
+    }
+
+    upgradable_units = {
+        UnitType.knight,
+        UnitType.goblin,
+        UnitType.orc,
+        UnitType.elf,
+        UnitType.troll,
+        UnitType.eagle,
+        UnitType.mage,
+        UnitType.ghost,
+        UnitType.ent,
+        UnitType.dragon,
+        UnitType.scorpion,
+        UnitType.afreet,
+        UnitType.spider,
+        UnitType.elephant,
+    }

@@ -46,4 +46,4 @@ Use "Network" tab in a browser to look for a link like `https://epicwar.cdnvideo
 ### Adding new resource, building and unit types
 
 * Update corresponding class in `epicbot.enums`.
-* Remember to update class methods.
+* Remember to update `Sets` fields.

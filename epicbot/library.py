@@ -9,7 +9,7 @@ from collections import defaultdict
 from itertools import chain
 from typing import Dict, Set, Tuple
 
-from epicbot.enums import BuildingType, ResourceType, UnitType
+from epicbot.enums import Sets, BuildingType, ResourceType, UnitType
 
 
 class Library:
@@ -54,7 +54,7 @@ class Library:
                         continue
                     self.requirements[type_, level][resource_type] = resource["amount"]
                 # Process resource production.
-                if type_ in BuildingType.production():
+                if type_ in Sets.production_buildings:
                     self.full_time[type_, level] = building_level["production"]["resource"]["fullTime"]
             if "unlock" not in building_level:
                 continue
@@ -93,7 +93,7 @@ class Library:
             except ValueError:
                 continue
             # Remember castle level to destroy this extended area.
-            if type_ in BuildingType.extended_areas():
+            if type_ in Sets.extended_areas:
                 self.destroy_levels[type_] = building["destroyConditions"]["building"][0]["level"]
         # Process unit research cost.
         for unit_level in content["unitLevel"]:

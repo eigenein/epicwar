@@ -18,7 +18,7 @@ import epicbot.managers
 import epicbot.utils
 
 from epicbot.api import AllianceMember, Api, SpawnCommand
-from epicbot.enums import ArtifactType, BuildingType, Error, NoticeType, ResourceType, UnitType
+from epicbot.enums import ArtifactType, Sets, BuildingType, Error, NoticeType, ResourceType, UnitType
 
 
 class Bot:
@@ -125,7 +125,7 @@ class Bot:
         for building in self.buildings:
             if (
                 # Production building.
-                building.type in BuildingType.production() and
+                building.type in Sets.production_buildings and
                 # Makes sense to collect from it.
                 building.type not in stop_collection_from and (
                     # Resource should be collected as often as possible.
@@ -173,9 +173,7 @@ class Bot:
                 # Castle is upgraded optionally.
                 (building.type != BuildingType.castle or self.context.with_castle) and
                 # Building type is not ignored explicitly.
-                building.type not in BuildingType.not_upgradable() and
-                # Building is not an extended area.
-                building.type not in BuildingType.extended_areas() and
+                building.type not in Sets.non_upgradable_buildings and
                 # Building is not in progress.
                 building.is_completed and
                 # Requirements are met.
@@ -195,7 +193,7 @@ class Bot:
         for building in self.buildings:
             logging.debug("Check: %s.", building)
             if (
-                building.type in BuildingType.extended_areas() and
+                building.type in Sets.extended_areas and
                 building.is_completed and
                 self.buildings.castle_level >= self.library.destroy_levels[building.type] and
                 self.can_upgrade(building.type, building.level)
@@ -218,7 +216,7 @@ class Bot:
         logging.info("Trying to upgrade units…")
 
         for unit_type, level in self.research.items():
-            if unit_type not in UnitType.upgradable() or not self.can_upgrade(unit_type, level + 1):
+            if unit_type not in Sets.upgradable_units or not self.can_upgrade(unit_type, level + 1):
                 continue
             logging.info("Upgrading unit %s to level %s…", unit_type.name, level + 1)
             error, new_resources = self.api.start_research(unit_type.value, level + 1, self.buildings.forge_id)
