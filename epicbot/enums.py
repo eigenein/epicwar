@@ -39,11 +39,11 @@ class Error(enum.Enum):
 def create_enum(class_name: str, prefix: str, members: dict):
     """
     Creates enum with the given class name.
-    Adds the specified members and auto-generated unknown members up to ID: 1000.
+    Adds the specified members and auto-generated unknown members up to ID: 2000.
     """
     return enum.Enum(class_name, [
         (members[_id], _id) if _id in members else ("%s_%s" % (prefix, _id), _id)
-        for _id in range(1000)
+        for _id in range(2000)
     ])
 
 ArtifactType = create_enum("ArtifactType", "artifact", {
@@ -51,57 +51,67 @@ ArtifactType = create_enum("ArtifactType", "artifact", {
 })
 
 BuildingType = create_enum("BuildingType", "building", {
-    1: "castle",                # замок
-    2: "mine",                  # шахта
-    3: "treasury",              # казна
-    4: "mill",                  # мельница
-    5: "barn",                  # амбар
-    6: "barracks",              # казарма
-    7: "staff",                 # штаб
-    8: "builder_hut",           # дом строителя
-    9: "forge",                 # кузница
-    10: "ballista",             # башня
-    11: "wall",                 # стена
-    12: "archer_tower",         # башня лучников
-    13: "cannon",               # пушка
-    14: "thunder_tower",        # штормовой шпиль
-    15: "ice_tower",            # зиккурат
-    16: "fire_tower",           # башня огня
-    17: "clan_house",           # дом братства
+    1: "castle",                    # замок
+    2: "mine",                      # шахта
+    3: "treasury",                  # казна
+    4: "mill",                      # мельница
+    5: "barn",                      # амбар
+    6: "barracks",                  # казарма
+    7: "staff",                     # штаб
+    8: "builder_hut",               # дом строителя
+    9: "forge",                     # кузница
+    10: "ballista",                 # башня
+    11: "wall",                     # стена
+    12: "archer_tower",             # башня лучников
+    13: "cannon",                   # пушка
+    14: "thunder_tower",            # штормовой шпиль
+    15: "ice_tower",                # зиккурат
+    16: "fire_tower",               # башня огня
+    17: "clan_house",               # дом братства
     18: "dark_tower",
-    19: "tavern",               # таверна
-    20: "alchemist",            # дом алхимика
-    31: "sand_mine",            # песчаный карьер
+    19: "tavern",                   # таверна
+    20: "alchemist",                # дом алхимика
+    22: "liberator",
+    23: "perfectionist",
+    30: "one_year_fire",
+    31: "sand_mine",                # песчаный карьер
     32: "sand_warehouse",
     33: "sand_barracks",
     34: "sand_tower",
     35: "crystal_tower",
     36: "sand_forge",
     37: "artefacts_house",
-    65: "extended_area_1",      # территория
-    66: "extended_area_2",      # территория
-    67: "extended_area_3",      # территория
-    68: "extended_area_4",      # территория
-    69: "extended_area_5",      # территория
-    70: "extended_area_6",      # территория
-    71: "extended_area_7",      # территория
-    72: "extended_area_8",      # территория
-    73: "extended_area_9",      # территория
-    74: "extended_area_10",     # территория
-    75: "extended_area_11",     # территория
-    76: "extended_area_12",     # территория
-    77: "extended_area_13",     # территория
-    78: "extended_area_14",     # территория
-    79: "extended_area_15",     # территория
-    80: "extended_area_16",     # территория
-    81: "extended_area_17",     # территория
-    82: "extended_area_18",     # территория
-    83: "extended_area_19",     # территория
-    84: "extended_area_20",     # территория
-    85: "extended_area_xx",     # территория
-    147: "portal",              # призрачный портал
-    154: "jeweler_house",       # дом ювелира
-    631: "ice_obelisk",         # ледяной обелиск
+    65: "extended_area_1",          # территория
+    66: "extended_area_2",          # территория
+    67: "extended_area_3",          # территория
+    68: "extended_area_4",          # территория
+    69: "extended_area_5",          # территория
+    70: "extended_area_6",          # территория
+    71: "extended_area_7",          # территория
+    72: "extended_area_8",          # территория
+    73: "extended_area_9",          # территория
+    74: "extended_area_10",         # территория
+    75: "extended_area_11",         # территория
+    76: "extended_area_12",         # территория
+    77: "extended_area_13",         # территория
+    78: "extended_area_14",         # территория
+    79: "extended_area_15",         # территория
+    80: "extended_area_16",         # территория
+    81: "extended_area_17",         # территория
+    82: "extended_area_18",         # территория
+    83: "extended_area_19",         # территория
+    84: "extended_area_20",         # территория
+    85: "extended_area_xx",         # территория
+    146: "easter_tree",
+    147: "portal",                  # призрачный портал
+    150: "pirate_lamp",
+    152: "pirate_chest",
+    154: "jeweler_house",           # дом ювелира
+    504: "happy_birthday_fontan",
+    604: "halloween_crypt",
+    626: "elf_pond",
+    631: "ice_obelisk",             # ледяной обелиск
+    637: "global_wars_building",
     642: "pirate_ship_2016",
 })
 
@@ -233,16 +243,6 @@ class Sets:
         BuildingType.extended_area_19,
         BuildingType.extended_area_20,
         BuildingType.extended_area_xx,
-    }
-
-    non_upgradable_buildings = extended_areas | {
-        BuildingType.artefacts_house,
-        BuildingType.builder_hut,
-        BuildingType.clan_house,
-        BuildingType.jeweler_house,
-        BuildingType.pirate_ship_2016,
-        BuildingType.portal,
-        BuildingType.tavern,
     }
 
     upgradable_units = {

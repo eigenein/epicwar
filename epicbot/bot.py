@@ -173,8 +173,8 @@ class Bot:
                 len(self.buildings.incomplete) < max_incomplete_count and
                 # Castle is upgraded optionally.
                 (building.type != BuildingType.castle or self.context.with_castle) and
-                # Building type is not ignored explicitly.
-                building.type not in Sets.non_upgradable_buildings and
+                # Not an extended area.
+                building.type not in Sets.extended_areas and
                 # Building is not in progress.
                 building.is_completed and
                 # Requirements are met.
@@ -414,7 +414,7 @@ class Bot:
         Determines if all requirements are met to upgrade a building or a unit.
         """
         if (entity_type, level) not in self.library.requirements:
-            logging.warning("Unknown requirements to upgrade %s to level %s.", entity_type.name, level)
+            logging.info("Unknown requirements to upgrade %s to level %s.", entity_type.name, level)
             return False
         # Dictionaries to match resources against.
         current_values = {
