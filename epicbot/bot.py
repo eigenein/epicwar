@@ -97,12 +97,12 @@ class Bot:
         self.upgrade_units()
 
         # Battles.
+        if self.context.with_pvp:
+            self.play_pvp()
         if self.context.with_bastion:
             self.play_bastion()
         if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
             self.collect_bastion_gift()
-        if self.context.with_pvp:
-            self.play_pvp()
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
