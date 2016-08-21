@@ -249,7 +249,7 @@ class Api:
         Gets enabled artifacts.
         """
         result, _ = self.post("artefactGetList")
-        return {ArtifactType(artifact["typeId"]) for artifact in result["artefact"] if artifact["enabled"]}
+        return {ArtifactType(int(artifact["typeId"])) for artifact in result["artefact"] if artifact["enabled"]}
 
     def get_army_queue(self) -> List[ArmyQueue]:
         """
