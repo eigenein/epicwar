@@ -39,7 +39,7 @@ class Error(enum.Enum):
 def create_enum(class_name: str, prefix: str, members: dict):
     """
     Creates enum with the given class name.
-    Adds the specified members and auto-generated unknown members.
+    Adds the specified members and auto-generated unknown members up to ID: 1000.
     """
     return enum.Enum(class_name, [
         (members[_id], _id) if _id in members else ("%s_%s" % (prefix, _id), _id)
