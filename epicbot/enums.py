@@ -209,6 +209,10 @@ class UnitType(RewardType):
     citadel_yeti = 48  # хищник
     citadel_elf = 49  # стрелок мора
     citadel_orc = 50  # урук
+    pirates_sirena = 51
+    pirates_shark = 52  # воин глубин
+    pirates_ghost = 53
+    pirates_crab = 54
     angel_knight = 103  # небожитель (герой)
     succubus = 108  # огненная бестия (герой)
     league_orc_3 = 110  # защитник-сержант
