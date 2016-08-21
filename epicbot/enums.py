@@ -119,6 +119,11 @@ ResourceType = create_enum("ResourceType", "resource", {
     1: "gold",                  # золото
     2: "food",                  # еда
     3: "mana",                  # мана
+    4: "enchant_scroll_1",
+    5: "enchant_scroll_2",
+    6: "enchant_scroll_3",
+    7: "enchant_scroll_4",
+    8: "enchant_scroll_5",
     9: "enchant_scroll_6",
     26: "sand",                 # песок
     50: "runes",                # руны бастиона ужаса
