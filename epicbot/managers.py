@@ -53,6 +53,7 @@ class Buildings:
             # Walls are upgraded instantly.
             return
         assert not building.is_completed
+        self.incomplete.append(building)
         if building.type in Sets.extended_areas:
             self.is_destruction_in_progress = True
 
