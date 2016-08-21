@@ -406,6 +406,7 @@ class Bot:
             if error == Error.ok:
                 self.notifications.append("Start *{} units*.".format(amount))
             else:
+                self.notifications.append("\N{cross mark} Failed to start units.")
                 logging.error("Failed to start units.")
 
     def can_upgrade(self, entity_type: enum.Enum, level: int) -> bool:

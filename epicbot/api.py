@@ -263,8 +263,7 @@ class Api:
         Hires units.
         """
         result, _ = self.post("startUnit", unitId=unit_type.value, amount=amount, buildingId=building_id)
-        assert isinstance(result, bool), result
-        return Error(result)
+        return self.parse_error(result)
 
     def start_bastion(
         self,
@@ -384,6 +383,8 @@ class Api:
         """
         Helper method to parse an error.
         """
+        if isinstance(result, bool):
+            return Error(result)
         if "success" in result:
             return Error(bool(result["success"]))
         if "result" in result:
