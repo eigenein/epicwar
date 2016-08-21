@@ -318,13 +318,12 @@ class Api:
         footer = "~0~"
         return self.finish_battle_serialized(battle_id, header + "".join(serialized_commands) + footer)
 
-    def open_fair_citadel_gate(self):
+    def open_fair_citadel_gate(self) -> Tuple[Counter, Counter]:
         """
         Collects bastion gift.
         """
         result, state = self.post("fairCitadelOpenGate", True)
-        logging.info("fairCitadelOpenGate: %s", state)
-        return self.parse_reward(result)
+        return self.parse_reward(result), self.parse_resource_field(state)
 
     def spin_event_roulette(self, count=1, is_payed=False) -> Counter:
         """
