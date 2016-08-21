@@ -337,7 +337,8 @@ class Api:
         """
         Collects bastion gift.
         """
-        result, _ = self.post("fairCitadelOpenGate")
+        result, state = self.post("fairCitadelOpenGate", True)
+        logging.info("fairCitadelOpenGate: %s", state)
         return self.parse_reward(result)
 
     def spin_event_roulette(self, count=1, is_payed=False) -> Counter:

@@ -329,6 +329,7 @@ class Bot:
         for reward_type, amount in self.api.open_fair_citadel_gate().items():
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* from *bastion*.".format(amount, reward_type.name))
+        # FIXME: update resources from state.
         self.resources[ResourceType.runes] -= self.BASTION_GIFT_RUNES
 
     def play_pvp(self):
