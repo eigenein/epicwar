@@ -23,12 +23,13 @@ class Library:
         self.destroy_levels = {}  # type: Dict[BuildingType, int]
         self.barracks_production = {}  # type: Dict[int, Set[UnitType]]
         self.units_amount = {}  # type: Dict[int, int]
+        self.star_money_upgrades = set()  # Set[Tuple[BuildingType, int]]
         # Process building levels.
         for entry in content["buildingLevel"]:
-            if entry["cost"].get("starmoney", 0) != 0:
-                # Skip buildings that require star money.
-                continue
             building_type, building_level = BuildingType(entry["buildingId"]), entry["level"]
+            # Remember upgrades that require star money.
+            if entry["cost"].get("starmoney", 0) != 0:
+                self.star_money_upgrades.add((building_type, building_level))
             # Remember construction time.
             self.construction_time[building_type, building_level] = entry["constructionTime"]
             # Remember barracks production unit types.

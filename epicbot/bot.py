@@ -169,6 +169,8 @@ class Bot:
         for building in self.buildings:
             logging.debug("Check: %s.", building)
             if (
+                # Upgrade does not require star money.
+                (building.type, building.level + 1) not in self.library.star_money_upgrades and
                 # Builder is available.
                 len(self.buildings.incomplete) < max_incomplete_count and
                 # Castle is upgraded optionally.
