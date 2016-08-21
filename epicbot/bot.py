@@ -341,7 +341,7 @@ class Bot:
         barracks = [
             building
             for building in self.buildings.barracks
-            if UnitType.elf in self.library.barracks_production[building.level]
+            if building.is_completed and UnitType.elf in self.library.barracks_production[building.level]
         ]
         if not barracks:
             logging.warning("Can not produce elves. Skip PvP.")
