@@ -233,15 +233,19 @@ class Api:
             if notice["type"] in NoticeType._value2member_map_
         }
 
-    def notice_farm_reward(self, notice_id: str) -> Counter:
+    def notice_farm_reward(self, notice_id: str) -> Tuple[Counter, Counter, Counter]:
         """
         Collects notice reward.
         """
-        result, _ = self.post("noticeFarmReward", id=notice_id)
+        result, state = self.post("noticeFarmReward", True, id=notice_id)
         if "result" in result:
-            return self.parse_reward(result["result"])
+            return (
+                self.parse_reward(result["result"]),
+                self.parse_resource_field(state),
+                self.parse_units(state.get("unit", [])),
+            )
         if "error" in result and result["error"]["name"] == Error.not_enough.value:
-            return {}
+            return None, None, None
         raise ValueError(result)
 
     def get_artifacts(self) -> Set[ArtifactType]:

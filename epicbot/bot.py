@@ -261,7 +261,11 @@ class Bot:
         for notice_id, notice_type in notices.items():
             if notice_type != NoticeType.alliance_level_daily_gift:
                 continue
-            for reward_type, amount in self.api.notice_farm_reward(notice_id).items():
+            reward, new_resources, new_units = self.api.notice_farm_reward(notice_id)
+            if not reward:
+                break
+            self.resources, self.units = new_resources, new_units
+            for reward_type, amount in reward.items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
                 self.notifications.append("Collect *{} {}* from *alliance*.".format(amount, reward_type.name))
 
