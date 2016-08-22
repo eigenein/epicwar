@@ -403,17 +403,28 @@ class Bot:
         # Start units.
         elves_per_barracks, elves_remainder = divmod(self.buildings.units_amount, len(barracks))
         for i, building in enumerate(barracks):
+            # Calculate unit amount.
             amount = elves_per_barracks
             if i < elves_remainder:
                 # Compensate remainder.
                 amount += 1
-            logging.info("Start %s units in barracks #%s…", amount, building.id)
-            error = self.api.start_units(UnitType.elf, amount, building.id)
-            if error == Error.ok:
-                self.notifications.append("Start *{} units*.".format(amount))
+            # Attempt to start units.
+            for attempt in range(3):
+                logging.info("Start %s units in barracks #%s. Attempt #%s…", amount, building.id, attempt)
+                error = self.api.start_units(UnitType.elf, amount, building.id)
+                if error == Error.user_locked:
+                    # Most likely the user is locked by an incoming battle.
+                    logging.info("User is locked. Sleeping…")
+                    time.sleep(self.BATTLE_DURATION)
+                    continue
+                if error == Error.ok:
+                    self.notifications.append("Start *{} units*.".format(amount))
+                else:
+                    logging.error("Failed to start units: %s.", error.name)
+                    self.notifications.append("\N{cross mark} Failed to start units: *%s*." % error.name)
+                break
             else:
-                self.notifications.append("\N{cross mark} Failed to start units.")
-                logging.error("Failed to start units: %s.", error.name)
+                self.notifications.append("\N{cross mark} Failed to start units: *all attempts failed*.")
 
     def can_upgrade(self, entity_type: enum.Enum, level: int) -> bool:
         """
