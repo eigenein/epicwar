@@ -412,7 +412,7 @@ class Bot:
         if new_resources:
             for resource_type, amount in (new_resources - self.resources).items():
                 logging.info("Farmed: %s %s.", amount, resource_type.name)
-                self.notifications.append("Farm *{} {}* in *PvP*.".format(amount, resource_type.name))
+                self.notifications.append("Farm *{}* in *PvP*.".format(self.format_amount(resource_type, amount)))
             self.resources = new_resources
         else:
             logging.error("Something went wrong: %s.", battle_result)
