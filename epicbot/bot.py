@@ -47,7 +47,6 @@ class Bot:
 
     # Emoji for different resources.
     RESOURCE_EMOJI = {
-        ResourceType.doubloon: "\N{white circle}",
         ResourceType.enchanted_coins: "\N{squared cjk unified ideograph-6307}",
         ResourceType.food: "\N{HAMBURGER}",
         ResourceType.gold: "\N{MONEY BAG}",
