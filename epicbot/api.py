@@ -28,6 +28,7 @@ ArmyQueue = namedtuple("ArmyQueue", "building_id")
 Bastion = namedtuple("Bastion", "fair_id battle_id config")
 Building = namedtuple("Building", "id type level is_completed complete_time hitpoints storage_fill")
 Cemetery = namedtuple("Cemetery", "x y")
+PvpBattle = namedtuple("PvpBattle", "battle_id defender_score")
 SpawnCommand = namedtuple("SpawnCommand", "time row col unit_type")
 SelfInfo = namedtuple("SelfInfo", "user_id caption resources research alliance cemetery units")
 
@@ -307,12 +308,12 @@ class Api:
             return Error(result["error"]["name"]), None
         return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
 
-    def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> Optional[str]:
+    def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> Optional[PvpBattle]:
         """
-        Starts PvP battle and returns battle ID.
+        Starts PvP battle and returns battle ID and defender PvP score.
         """
         result, _ = self.post("battle_startPvp", version=version)
-        return result.get("battleId")
+        return PvpBattle(result["battleId"], result["defender"]["pvpScore"]) if "battleId" in result else None
 
     def add_battle_commands(self, battle_id: str, commands: str) -> Error:
         """

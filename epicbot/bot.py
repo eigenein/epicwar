@@ -396,19 +396,19 @@ class Bot:
 
         # Start battle.
         logging.info("Starting PvP…")
-        battle_id = self.api.start_pvp_battle()
-        if not battle_id:
+        battle = self.api.start_pvp_battle()
+        if not battle:
             logging.warning("Unable to start PvP.")
             self.notifications.append("\N{warning sign} Unable to start PvP.")
             return
 
         # Wait for battle to finish.
-        logging.info("Battle ID: %s. Sleeping… Pray for me!", battle_id)
+        logging.info("Battle ID: %s. Defender score: %s. Sleeping… Pray for me!", battle.id, battle.defender_score)
         time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
         logging.info("Finishing battle…")
-        battle_result, new_resources = self.api.finish_battle(battle_id, commands)
+        battle_result, new_resources = self.api.finish_battle(battle.id, commands)
         if new_resources:
             for resource_type, amount in (new_resources - self.resources).items():
                 logging.info("Farmed: %s %s.", amount, resource_type.name)
