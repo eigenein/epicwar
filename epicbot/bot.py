@@ -415,8 +415,8 @@ class Bot:
                 logging.info("[%s] Skip battle: evaluating.", i)
                 self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
                 continue
-            # Evaluate whether this defender is good enough.
-            if battle.defender_score < statistics.mean(pvp_scores):
+            # Evaluate whether this defender is good enough (14.8% probability).
+            if battle.defender_score < statistics.mean(pvp_scores) - statistics.stdev(pvp_scores):
                 logging.info("[%s] All scores: %s.", i, ", ".join(str(score) for score in sorted(pvp_scores)))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* accepted on iteration *{}*.".format(i))
