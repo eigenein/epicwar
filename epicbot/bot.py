@@ -47,11 +47,12 @@ class Bot:
 
     # Emoji for different resources.
     RESOURCE_EMOJI = {
-        ResourceType.gold: "\N{MONEY BAG}",
-        ResourceType.food: "\N{HAMBURGER}",
-        ResourceType.sand: "\N{SPARKLES}",
-        ResourceType.runes: "\N{squared cjk unified ideograph-7a7a}",
+        ResourceType.doubloon: "\N{white circle}",
         ResourceType.enchanted_coins: "\N{squared cjk unified ideograph-6307}",
+        ResourceType.food: "\N{HAMBURGER}",
+        ResourceType.gold: "\N{MONEY BAG}",
+        ResourceType.runes: "\N{squared cjk unified ideograph-7a7a}",
+        ResourceType.sand: "\N{SPARKLES}",
     }
     # Resources to print out.
     PRINTED_RESOURCES = (
@@ -526,7 +527,7 @@ class Bot:
         """
         Formats amount with thousands separators and emoji.
         """
-        formatted_amount = "{:,}".format(amount).replace(",", " ")
+        formatted_amount = "{:,}".format(amount)
         emoji = self.RESOURCE_EMOJI.get(resource_type)
         if emoji:
             return "{} {}".format(emoji, formatted_amount)
