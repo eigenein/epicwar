@@ -6,6 +6,7 @@ import enum
 import itertools
 import logging
 import random
+import statistics
 import time
 
 from collections import Counter
@@ -41,6 +42,8 @@ class Bot:
 
     # Battle lasts for 3 minutes.
     BATTLE_DURATION = 180.0
+    # Skip first N defenders to evaluate their scores.
+    PVP_SKIP_DEFENDERS = 10
 
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
@@ -394,17 +397,32 @@ class Bot:
         for command in commands:
             logging.debug("Command: %s.", command)
 
-        # Start battle.
-        logging.info("Starting PvP…")
-        battle = self.api.start_pvp_battle()
-        if not battle:
-            logging.warning("Unable to start PvP.")
-            self.notifications.append("\N{warning sign} Unable to start PvP.")
-            return
+        # Battle pick up loop.
+        battle = None
+        pvp_scores = []
+        for i in itertools.count():
+            # Start battle.
+            logging.info("[%s] Starting PvP…", i)
+            battle = self.api.start_pvp_battle()
+            if not battle:
+                logging.warning("[%s] Unable to start PvP.", i)
+                self.notifications.append("\N{warning sign} Unable to start PvP.")
+                return
+            logging.info("[%s] Defender PvP score: %s.", i, battle.defender_score)
+            pvp_scores.append(battle.defender_score)
+            # Skip some first defenders.
+            if i < self.PVP_SKIP_DEFENDERS:
+                logging.info("[%s] Skip battle.", i)
+                self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
+                continue
+            # Evaluate whether this defender is good enough.
+            if battle.defender_score < statistics.mean(pvp_scores):
+                logging.info("[%s] Challenge accepted!", i)
+                logging.info("[%s] Score: %s. All scores: %s.", i, ", ".join(str(score) for score in sorted(pvp_scores)))
+                break
 
         # Wait for battle to finish.
-        assert battle
-        logging.info("Battle ID: %s. Defender score: %s. Sleeping… Pray for me!", battle.battle_id, battle.defender_score)
+        logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id, battle.defender_score)
         time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
