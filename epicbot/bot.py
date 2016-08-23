@@ -412,7 +412,7 @@ class Bot:
             pvp_scores.append(battle.defender_score)
             # Skip some first defenders.
             if i < self.PVP_SKIP_DEFENDERS:
-                logging.info("[%s] Skip battle.", i)
+                logging.info("[%s] Skip battle: evaluating.", i)
                 self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
                 continue
             # Evaluate whether this defender is good enough.
@@ -421,6 +421,7 @@ class Bot:
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* accepted on iteration *{}*.".format(i))
                 break
+            logging.info("[%s] Skip battle: score is too high.", i)
 
         # Wait for battle to finish.
         logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id, battle.defender_score)
