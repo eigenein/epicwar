@@ -403,12 +403,13 @@ class Bot:
             return
 
         # Wait for battle to finish.
-        logging.info("Battle ID: %s. Defender score: %s. Sleeping… Pray for me!", battle.id, battle.defender_score)
+        assert battle
+        logging.info("Battle ID: %s. Defender score: %s. Sleeping… Pray for me!", battle.battle_id, battle.defender_score)
         time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
         logging.info("Finishing battle…")
-        battle_result, new_resources = self.api.finish_battle(battle.id, commands)
+        battle_result, new_resources = self.api.finish_battle(battle.battle_id, commands)
         if new_resources:
             for resource_type, amount in (new_resources - self.resources).items():
                 logging.info("Farmed: %s %s.", amount, resource_type.name)
