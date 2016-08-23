@@ -450,7 +450,7 @@ class Bot:
                 amount += 1
             # Attempt to start units.
             for attempt in range(3):
-                logging.info("Start %s units in barracks #%s. Attempt #%s…", amount, building.id, attempt)
+                logging.info("[%s] Start %s units in barracks #%s.", attempt, amount, building.id)
                 error = self.api.start_units(UnitType.elf, amount, building.id)
                 if error == Error.user_locked:
                     # Most likely the user is locked by an incoming battle.
