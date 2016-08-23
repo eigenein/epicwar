@@ -419,6 +419,7 @@ class Bot:
             if battle.defender_score < statistics.mean(pvp_scores):
                 logging.info("[%s] All scores: %s.", i, ", ".join(str(score) for score in sorted(pvp_scores)))
                 logging.info("[%s] Challenge accepted!", i)
+                self.notifications.append("*PvP* accepted on iteration *{}*.".format(i))
                 break
 
         # Wait for battle to finish.
