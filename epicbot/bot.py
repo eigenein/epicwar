@@ -276,7 +276,9 @@ class Bot:
         user_ids = self.api.get_gift_available()
         logging.info("%s gifts are waiting for you.", len(user_ids))
         for user_id in user_ids:
-            logging.info("Farmed gift from user #%s: %s.", user_id, self.api.farm_gift(user_id).name)
+            error, new_resources = self.api.farm_gift(user_id)
+            self.resources = new_resources or self.resources
+            logging.info("Farmed gift from user #%s: %s.", user_id, error.name)
             self.notifications.append("Farm \N{candy} *gift*.")
         logging.info(
             "Sent gifts to alliance members: %s.",

@@ -132,12 +132,12 @@ class Api:
         result, _ = self.post("giftGetAvailable")
         return [gift["body"]["fromUserId"] for gift in result["gift"]]
 
-    def farm_gift(self, user_id: str) -> Error:
+    def farm_gift(self, user_id: str) -> Tuple[Error, Counter]:
         """
         Farms gift from the user.
         """
-        result, _ = self.post("giftFarm", userId=user_id)
-        return self.parse_error(result)
+        result, state = self.post("giftFarm", True, userId=user_id)
+        return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
     def collect_resource(self, building_id: int) -> Tuple[Counter, Counter]:
         """
