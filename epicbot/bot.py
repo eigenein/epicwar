@@ -29,7 +29,7 @@ class Bot:
 
     # Don't collect resource too often. Specifies waiting time in seconds.
     PRODUCTION_TIME = 4 * 60 * 60
-    # Low-level storages are filled fast.
+    # Collect resource if a storage is full.
     FULL_STORAGE = 0.9
     # Collect sand as often as possible.
     COLLECT_IMMEDIATELY_FROM = {BuildingType.sand_mine}
@@ -44,6 +44,23 @@ class Bot:
 
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
+
+    # Emoji for different resources.
+    RESOURCE_EMOJI = {
+        ResourceType.gold: "\N{MONEY BAG}",
+        ResourceType.food: "\N{HAMBURGER}",
+        ResourceType.sand: "\N{SPARKLES}",
+        ResourceType.runes: "\N{squared cjk unified ideograph-7a7a}",
+        ResourceType.enchanted_coins: "\N{squared cjk unified ideograph-6307}",
+    }
+    # Resources to print out.
+    PRINTED_RESOURCES = (
+        ResourceType.gold,
+        ResourceType.food,
+        ResourceType.sand,
+        ResourceType.runes,
+        ResourceType.enchanted_coins,
+    )
 
     def __init__(self, context: epicbot.utils.Context, api: Api, library: epicbot.library.Library):
         self.context = context
@@ -142,7 +159,7 @@ class Bot:
                 for resource_type, amount in reward.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
-                        self.notifications.append("Collect *{} {}* from *{}*.".format(amount, resource_type.name, building.type.name))
+                        self.notifications.append("Collect *{}* from *{}*.".format(self.format_amount(resource_type.name, amount), building.type.name))
                     else:
                         # Storage is full. Get rid of the following useless requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -452,13 +469,7 @@ class Bot:
         """
         logging.info("Resources: %s.", ", ".join(
             "{}: {}".format(resource_type.name, self.resources[resource_type])
-            for resource_type in (
-                ResourceType.gold,
-                ResourceType.food,
-                ResourceType.sand,
-                ResourceType.runes,
-                ResourceType.enchanted_coins,
-            )
+            for resource_type in self.PRINTED_RESOURCES
         ))
 
     def send_telegram_notification(self):
@@ -479,11 +490,11 @@ class Bot:
             construction = "\N{CONSTRUCTION SIGN} \N{warning sign} *none*"
         text = (
             "\N{HOUSE BUILDING} *{caption}*\n"
-            "\N{MONEY BAG} *{gold}*\n"
-            "\N{HAMBURGER} *{food}*\n"
-            "\N{SPARKLES} *{sand}*\n"
-            "\N{squared cjk unified ideograph-7a7a} *{runes}*\n"
-            "\N{squared cjk unified ideograph-6307} *{coins}*\n"
+            "*{gold}*\n"
+            "*{food}*\n"
+            "*{sand}*\n"
+            "*{runes}*\n"
+            "*{enchanted_coins}*\n"
             "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
             " \N{clock face one oclock} *{execution_time[0]}m{execution_time[1]:02}s*"
@@ -494,15 +505,14 @@ class Bot:
         ).format(
             caption=self.caption,
             requests=self.api.request_id,
-            food=self.format_amount(self.resources[ResourceType.food]),
-            gold=self.format_amount(self.resources[ResourceType.gold]),
-            sand=self.format_amount(self.resources[ResourceType.sand]),
-            runes=self.format_amount(self.resources[ResourceType.runes]),
-            coins=self.format_amount(self.resources[ResourceType.enchanted_coins]),
             construction=construction,
             notifications="\n".join("\N{incoming envelope} %s" % line for line in self.notifications),
             log_counter=self.context.log_handler.counter,
             execution_time=divmod(int(time.time() - self.context.start_time), 60),
+            **{
+                resource_type.name: self.format_amount(resource_type, self.resources[resource_type])
+                for resource_type in self.PRINTED_RESOURCES
+            }
         ).replace("_", "-")
         result = requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
@@ -512,9 +522,13 @@ class Bot:
             logging.error("Telegram API error: \"%s\".", result["description"])
             logging.error("Text: \"%s\".", text)
 
-    @staticmethod
-    def format_amount(amount: int) -> str:
+    def format_amount(self, resource_type: ResourceType, amount: int) -> str:
         """
-        Formats amount with thousands separators.
+        Formats amount with thousands separators and emoji.
         """
-        return "{:,}".format(amount).replace(",", " ")
+        formatted_amount = "{:,}".format(amount).replace(",", " ")
+        emoji = self.RESOURCE_EMOJI.get(resource_type)
+        if emoji:
+            return "{} {}".format(emoji, formatted_amount)
+        else:
+            return "{} {}".format(formatted_amount, resource_type.name)
