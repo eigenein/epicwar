@@ -424,7 +424,7 @@ class Bot:
             logging.info("[%s] Skip battle: score is too high.", i)
 
         # Wait for battle to finish.
-        logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id, battle.defender_score)
+        logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id)
         time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
