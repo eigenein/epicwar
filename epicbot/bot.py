@@ -417,8 +417,8 @@ class Bot:
                 continue
             # Evaluate whether this defender is good enough.
             if battle.defender_score < statistics.mean(pvp_scores):
+                logging.info("[%s] All scores: %s.", i, ", ".join(str(score) for score in sorted(pvp_scores)))
                 logging.info("[%s] Challenge accepted!", i)
-                logging.info("[%s] Score: %s. All scores: %s.", i, ", ".join(str(score) for score in sorted(pvp_scores)))
                 break
 
         # Wait for battle to finish.
