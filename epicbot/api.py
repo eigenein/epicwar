@@ -316,7 +316,7 @@ class Api:
         return PvpBattle(
             battle_id=result["battleId"],
             defender_score=result["defender"]["pvpScore"],
-            defender_level=result["defender"]["level"],
+            defender_level=int(result["defender"]["level"]),
         ) if "battleId" in result else None
 
     def add_battle_commands(self, battle_id: str, commands: str) -> Error:
