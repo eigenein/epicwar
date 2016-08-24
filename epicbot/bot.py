@@ -41,8 +41,6 @@ class Bot:
 
     # Battle lasts for 3 minutes.
     BATTLE_DURATION = 180.0
-    # Maximum number of attempts to start a battle.
-    MAX_PVP_ATTEMPTS = 10
 
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
@@ -397,27 +395,16 @@ class Bot:
         for command in commands:
             logging.debug("Command: %s.", command)
 
-        # Battle pick up loop.
-        battle = None
-        for i in itertools.count(start=1):
-            # Start battle.
-            logging.info("[%s] Starting PvP…", i)
-            battle = self.api.start_pvp_battle()
-            if not battle:
-                logging.warning("[%s] Unable to start PvP.", i)
-                self.notifications.append("\N{warning sign} Unable to start PvP.")
-                return
-            logging.info("[%s] Defender level: %s.", i, battle.defender_level)
-            # Evaluate whether this defender is good enough.
-            if battle.defender_level <= self.level or i >= self.MAX_PVP_ATTEMPTS:
-                logging.info("[%s] Challenge accepted!", i)
-                self.notifications.append("*PvP* started on iteration *{}* and level *{}*.".format(i, battle.defender_level))
-                break
-            logging.info("[%s] Skip battle: level is too high.", i)
-            self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
+        # Start battle.
+        logging.info("Starting PvP…")
+        battle = self.api.start_pvp_battle()
+        if not battle:
+            logging.warning("Unable to start PvP.")
+            self.notifications.append("\N{warning sign} Unable to start PvP.")
+            return
 
         # Wait for battle to finish.
-        logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id)
+        logging.info("Sleeping… Pray for me!")
         time.sleep(self.BATTLE_DURATION)
 
         # Finish battle.
