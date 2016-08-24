@@ -43,7 +43,7 @@ class Bot:
     # Battle lasts for 3 minutes.
     BATTLE_DURATION = 180.0
     # Skip first N defenders to evaluate their scores.
-    PVP_SKIP_DEFENDERS = 10
+    PVP_SKIP_DEFENDERS = 3
 
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
@@ -399,7 +399,7 @@ class Bot:
 
         # Battle pick up loop.
         battle = None
-        pvp_scores = []
+        all_levels = []
         for i in itertools.count():
             # Start battle.
             logging.info("[%s] Starting PvP…", i)
@@ -408,20 +408,20 @@ class Bot:
                 logging.warning("[%s] Unable to start PvP.", i)
                 self.notifications.append("\N{warning sign} Unable to start PvP.")
                 return
-            logging.info("[%s] Defender PvP score: %s.", i, battle.defender_score)
-            pvp_scores.append(battle.defender_score)
+            logging.info("[%s] Defender level: %s.", i, battle.defender_level)
+            all_levels.append(battle.defender_level)
             # Skip some first defenders.
             if i < self.PVP_SKIP_DEFENDERS:
                 logging.info("[%s] Skip battle: evaluating.", i)
                 self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
                 continue
             # Evaluate whether this defender is good enough (14.8% probability).
-            if battle.defender_score < statistics.mean(pvp_scores) - statistics.stdev(pvp_scores):
-                logging.info("[%s] All scores: %s.", i, ", ".join(str(score) for score in sorted(pvp_scores)))
+            if battle.defender_level < statistics.mean(all_levels) - statistics.stdev(all_levels):
+                logging.info("[%s] All levels: %s.", i, ", ".join(str(level) for level in sorted(all_levels)))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* accepted on iteration *{}*.".format(i))
                 break
-            logging.info("[%s] Skip battle: score is too high.", i)
+            logging.info("[%s] Skip battle: level is too high.", i)
 
         # Wait for battle to finish.
         logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id)
