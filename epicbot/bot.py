@@ -416,7 +416,7 @@ class Bot:
                 self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
                 continue
             # Evaluate whether this defender is good enough.
-            if battle.defender_level <= min(all_levels):
+            if battle.defender_level <= self.level:
                 logging.info("[%s] All levels: %s.", i, ", ".join(str(level) for level in sorted(all_levels)))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* started on iteration *{}* and level *{}*.".format(i, battle.defender_level))
