@@ -6,7 +6,6 @@ import enum
 import itertools
 import logging
 import random
-import statistics
 import time
 
 from collections import Counter
@@ -416,7 +415,7 @@ class Bot:
                 self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
                 continue
             # Evaluate whether this defender is good enough.
-            if battle.defender_level < statistics.mean(all_levels):
+            if battle.defender_level <= min(all_levels):
                 logging.info("[%s] All levels: %s.", i, ", ".join(str(level) for level in sorted(all_levels)))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* accepted on iteration *{}*.".format(i))
