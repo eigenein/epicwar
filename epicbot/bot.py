@@ -41,8 +41,6 @@ class Bot:
 
     # Battle lasts for 3 minutes.
     BATTLE_DURATION = 180.0
-    # Skip first N defenders to evaluate their scores.
-    PVP_SKIP_DEFENDERS = 3
 
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
@@ -399,7 +397,7 @@ class Bot:
 
         # Battle pick up loop.
         battle = None
-        all_levels = []
+        level_history = []
         for i in itertools.count():
             # Start battle.
             logging.info("[%s] Starting PvP…", i)
@@ -409,19 +407,15 @@ class Bot:
                 self.notifications.append("\N{warning sign} Unable to start PvP.")
                 return
             logging.info("[%s] Defender level: %s.", i, battle.defender_level)
-            all_levels.append(battle.defender_level)
-            # Skip some first defenders.
-            if i < self.PVP_SKIP_DEFENDERS:
-                logging.info("[%s] Skip battle: evaluating.", i)
-                self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
-                continue
+            level_history.append(battle.defender_level)
             # Evaluate whether this defender is good enough.
             if battle.defender_level <= self.level:
-                logging.info("[%s] All levels: %s.", i, ", ".join(str(level) for level in sorted(all_levels)))
+                logging.info("[%s] Level history: %s.", i, ", ".join(str(level) for level in level_history))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* started on iteration *{}* and level *{}*.".format(i, battle.defender_level))
                 break
             logging.info("[%s] Skip battle: level is too high.", i)
+            self.api.finish_battle_serialized(battle.battle_id, epicbot.bastion.FINISH_BATTLE)
 
         # Wait for battle to finish.
         logging.info("Battle ID: %s. Sleeping… Pray for me!", battle.battle_id)
