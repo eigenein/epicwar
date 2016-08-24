@@ -87,10 +87,10 @@ class Bot:
         """
         # Get player info.
         self_info = self.api.get_self_info()
-        logging.info("Welcome %s!", self_info.caption)
+        logging.info("Welcome %s! Level: %s.", self_info.caption, self_info.level)
 
-        self.caption, self.resources, self.research, self.units = (
-            self_info.caption, self_info.resources, self_info.research, self_info.units)
+        self.caption, self.level, self.resources, self.research, self.units = (
+            self_info.caption, self_info.level, self_info.resources, self_info.research, self_info.units)
         self.artifacts = self.api.get_artifacts()
         self.alliance_members = self_info.alliance.members
         self.alliance_membership = next(member for member in self.alliance_members if member.id == self_info.user_id)
@@ -510,7 +510,7 @@ class Bot:
         else:
             construction = "\N{CONSTRUCTION SIGN} \N{warning sign} *none*"
         text = (
-            "\N{HOUSE BUILDING} *{caption}*\n"
+            "\N{HOUSE BUILDING} *{caption}* \N{white medium star} *{level}*\n"
             "*{gold}*\n"
             "*{food}*\n"
             "*{sand}*\n"
@@ -525,6 +525,7 @@ class Bot:
             "{notifications}"
         ).format(
             caption=self.caption,
+            level=self.level,
             requests=self.api.request_id,
             construction=construction,
             notifications="\n".join("\N{incoming envelope} %s" % line for line in self.notifications),

@@ -30,7 +30,7 @@ Building = namedtuple("Building", "id type level is_completed complete_time hitp
 Cemetery = namedtuple("Cemetery", "x y")
 PvpBattle = namedtuple("PvpBattle", "battle_id defender_score defender_level")
 SpawnCommand = namedtuple("SpawnCommand", "time row col unit_type")
-SelfInfo = namedtuple("SelfInfo", "user_id caption resources research alliance cemetery units")
+SelfInfo = namedtuple("SelfInfo", "user_id caption level resources research alliance cemetery units")
 
 
 # noinspection PyAbstractClass
@@ -122,6 +122,7 @@ class Api:
         return SelfInfo(
             user_id=result["user"]["id"],
             caption=result["user"]["villageCaption"],
+            level=int(result["user"]["level"]),
             resources=self.parse_resources(result["user"]["resource"]),
             research={UnitType(unit["unitId"]): unit["level"] for unit in result["user"]["research"]},
             alliance=Alliance(
