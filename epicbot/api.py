@@ -436,7 +436,7 @@ class Api:
     # Making requests to API.
     # ----------------------------------------------------------------------------------------------
 
-    def post(self, name: str, call_state=False, **arguments) -> (dict, Union[bool, dict, list, None]):
+    def post(self, name: str, return_state=False, **arguments) -> (dict, Union[bool, dict, list, None]):
         """
         Makes request to the game API.
         """
@@ -446,7 +446,7 @@ class Api:
         logging.debug("#%s %s(%s)", self.request_id, name, arguments)
 
         calls = [{"ident": "group_0_body", "name": name, "args": arguments}]
-        if call_state:
+        if return_state:
             calls.append({"ident": "group_1_body", "name": "state", "args": []})
         data = json.dumps({"session": None, "calls": calls})
         headers = {
@@ -478,7 +478,7 @@ class Api:
         logging.debug("%s", response.text)
         result = response.json()
         if "results" in result:
-            return result["results"][0]["result"], (result["results"][1]["result"] if call_state else None)
+            return result["results"][0]["result"], (result["results"][1]["result"] if return_state else None)
         if "error" in result:
             # API developers are strange people… In different cases they return error in different fields…
             return result, None
