@@ -41,6 +41,8 @@ class Bot:
 
     # Battle lasts for 3 minutes.
     BATTLE_DURATION = 180.0
+    # Maximum number of attempts to start a battle.
+    MAX_PVP_ATTEMPTS = 10
 
     # Runes to open the gate.
     BASTION_GIFT_RUNES = 100
@@ -398,7 +400,7 @@ class Bot:
         # Battle pick up loop.
         battle = None
         level_history = []
-        for i in itertools.count():
+        for i in itertools.count(start=1):
             # Start battle.
             logging.info("[%s] Starting PvP…", i)
             battle = self.api.start_pvp_battle()
@@ -409,7 +411,7 @@ class Bot:
             logging.info("[%s] Defender level: %s.", i, battle.defender_level)
             level_history.append(battle.defender_level)
             # Evaluate whether this defender is good enough.
-            if battle.defender_level <= self.level:
+            if battle.defender_level <= self.level or i >= self.MAX_PVP_ATTEMPTS:
                 logging.info("[%s] Level history: %s.", i, ", ".join(str(level) for level in level_history))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* started on iteration *{}* and level *{}*.".format(i, battle.defender_level))
