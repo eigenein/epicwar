@@ -418,7 +418,7 @@ class Bot:
             if battle.defender_level <= min(all_levels):
                 logging.info("[%s] All levels: %s.", i, ", ".join(str(level) for level in sorted(all_levels)))
                 logging.info("[%s] Challenge accepted!", i)
-                self.notifications.append("*PvP* accepted on iteration *{}*.".format(i))
+                self.notifications.append("*PvP* started on iteration *{}* and level *{}*.".format(i, battle.defender_level))
                 break
             logging.info("[%s] Skip battle: level is too high.", i)
 
