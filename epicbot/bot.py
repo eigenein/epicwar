@@ -399,7 +399,6 @@ class Bot:
 
         # Battle pick up loop.
         battle = None
-        level_history = []
         for i in itertools.count(start=1):
             # Start battle.
             logging.info("[%s] Starting PvP…", i)
@@ -409,10 +408,8 @@ class Bot:
                 self.notifications.append("\N{warning sign} Unable to start PvP.")
                 return
             logging.info("[%s] Defender level: %s.", i, battle.defender_level)
-            level_history.append(battle.defender_level)
             # Evaluate whether this defender is good enough.
             if battle.defender_level <= self.level or i >= self.MAX_PVP_ATTEMPTS:
-                logging.info("[%s] Level history: %s.", i, ", ".join(str(level) for level in level_history))
                 logging.info("[%s] Challenge accepted!", i)
                 self.notifications.append("*PvP* started on iteration *{}* and level *{}*.".format(i, battle.defender_level))
                 break
