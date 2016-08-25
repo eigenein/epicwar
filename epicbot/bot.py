@@ -137,7 +137,7 @@ class Bot:
         reward, self.resources = self.api.farm_cemetery()
         amount = reward.get(ResourceType.food, 0)
         logging.info("Cemetery farmed: %s.", amount)
-        self.notifications.append("Farm \N{MEAT ON BONE} *%s*." % amount)
+        self.notifications.append("\N{MEAT ON BONE} *%s*" % amount)
 
     def collect_resources(self):
         """
@@ -163,7 +163,7 @@ class Bot:
                 for resource_type, amount in reward.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
-                        self.notifications.append("*{}* from *{}*.".format(self.format_amount(resource_type, amount), building.type.name))
+                        self.notifications.append("*{}* from *{}*".format(self.format_amount(resource_type, amount), building.type.name))
                     else:
                         # Storage is full. Get rid of the following useless requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -208,7 +208,7 @@ class Bot:
                 if error == Error.ok:
                     self.resources = new_resources
                     self.buildings.update_incomplete(new_building)
-                    self.notifications.append("Upgrade *{}*.".format(building.type.name))
+                    self.notifications.append("Upgrade *{}*".format(building.type.name))
                 else:
                     logging.error("Failed to upgrade: %s.", error.name)
 
@@ -227,7 +227,7 @@ class Bot:
                 if error == Error.ok:
                     self.resources = new_resources
                     self.buildings.update_incomplete(new_building)
-                    self.notifications.append("Destruct *{}*.".format(building.type.name))
+                    self.notifications.append("Destruct *{}*".format(building.type.name))
                     # Only one area can be simultaneously destructed.
                     return
                 else:
@@ -246,7 +246,7 @@ class Bot:
             error, new_resources = self.api.start_research(unit_type.value, level + 1, self.buildings.forge_id)
             if error == Error.ok:
                 self.resources = new_resources
-                self.notifications.append("Upgrade *{}*.".format(unit_type.name))
+                self.notifications.append("Upgrade *{}*".format(unit_type.name))
                 # Only one research can be simultaneously performed.
                 break
             else:
@@ -264,7 +264,7 @@ class Bot:
         for building_id in building_ids:
             help_time = datetime.timedelta(seconds=sum(self.api.farm_alliance_help(building_id)))
             logging.info("Farmed alliance help: %s.", help_time)
-            self.notifications.append("Farm \N{two men holding hands} *%s*." % help_time)
+            self.notifications.append("Farm \N{two men holding hands} *%s*" % help_time)
 
     def check_alliance_daily_gift(self):
         """
@@ -288,7 +288,7 @@ class Bot:
             self.resources, self.units = new_resources, new_units
             for reward_type, amount in reward.items():
                 logging.info("Collected %s %s.", amount, reward_type.name)
-                self.notifications.append("Collect *{} {}* from *alliance*.".format(amount, reward_type.name))
+                self.notifications.append("*Alliance*: *{} {}*".format(amount, reward_type.name))
 
     def check_gifts(self):
         """
@@ -300,7 +300,7 @@ class Bot:
             error, new_resources = self.api.farm_gift(user_id)
             self.resources = new_resources or self.resources
             logging.info("Farmed gift from user #%s: %s.", user_id, error.name)
-            self.notifications.append("Farm \N{candy} *gift*.")
+            self.notifications.append("\N{candy} *gift*")
         logging.info(
             "Sent gifts to alliance members: %s.",
             self.api.send_gift([member.id for member in self.alliance_members]).name,
@@ -313,7 +313,7 @@ class Bot:
         logging.info("Spinning roulette…")
         for reward_type, amount in self.api.spin_event_roulette().items():
             logging.info("Collected %s %s.", amount, reward_type.name)
-            self.notifications.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
+            self.notifications.append("*Roulette*: *{} {}*".format(amount, reward_type.name))
 
     def check_random_wars(self):
         """
@@ -326,9 +326,9 @@ class Bot:
             error = self.api.farm_random_war_task(task_id)
             logging.info("Farm task #%s: %s.", task_id, error.name)
             if error == Error.ok:
-                self.notifications.append("\N{heavy check mark} Complete *random war task*.")
+                self.notifications.append("\N{heavy check mark} *Random war task*")
             else:
-                self.notifications.append("\N{heavy multiplication x} Can't complete *random war task*.")
+                self.notifications.append("\N{heavy multiplication x} Can't complete *random war task*")
 
     def play_bastion(self):
         """
@@ -347,7 +347,7 @@ class Bot:
         replay = epicbot.bastion.REPLAYS.get(bastion.fair_id)
         if not replay or replay.runes < self.context.min_bastion_runes:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
-            self.notifications.append("\N{warning sign} Skip bastion *%s*: %s." % (
+            self.notifications.append("\N{warning sign} Bastion *%s*: %s" % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
             battle_result, _ = self.api.finish_battle_serialized(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
@@ -363,8 +363,7 @@ class Bot:
 
         runes_farmed = self.resources[ResourceType.runes] - old_runes_count
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)
-        self.notifications.append("Farm *{} of {} runes* in bastion *{}*.".format(
-            runes_farmed, replay.runes, bastion.fair_id))
+        self.notifications.append("Bastion *{}*: *{} of {} runes*".format(bastion.fair_id, runes_farmed, replay.runes))
 
     def collect_bastion_gift(self):
         """
@@ -374,7 +373,7 @@ class Bot:
         reward, self.resources, self.units = self.api.open_fair_citadel_gate()
         for reward_type, amount in reward.items():
             logging.info("Collected %s %s.", amount, reward_type.name)
-            self.notifications.append("Collect *{} {}* in *bastion*.".format(amount, reward_type.name))
+            self.notifications.append("*Bastion*: *{} {}*".format(amount, reward_type.name))
 
     def play_pvp(self):
         """
@@ -388,13 +387,13 @@ class Bot:
         ]
         if not barracks:
             logging.warning("Can not produce elves. Skip PvP.")
-            self.notifications.append("Skip PvP: *can not produce elves*.")
+            self.notifications.append("\N{warning sign} *PvP*: can not produce elves")
             return
 
         # Check if army is queued.
         if self.api.get_army_queue():
             logging.info("Army is queued. Skip PvP.")
-            self.notifications.append("Skip PvP: *army queued*.")
+            self.notifications.append("*PvP*: army not ready")
             return
 
         # Build battle commands.
@@ -418,7 +417,7 @@ class Bot:
         battle = self.api.start_pvp_battle()
         if not battle:
             logging.warning("Unable to start PvP.")
-            self.notifications.append("\N{warning sign} Unable to start PvP.")
+            self.notifications.append("\N{warning sign} Unable to start PvP")
             return
 
         # Wait for battle to finish.
@@ -431,11 +430,11 @@ class Bot:
         if new_resources:
             for resource_type, amount in (new_resources - self.resources).items():
                 logging.info("Farmed: %s %s.", amount, resource_type.name)
-                self.notifications.append("*PvP*: *{}*.".format(self.format_amount(resource_type, amount)))
+                self.notifications.append("*PvP*: *{}*".format(self.format_amount(resource_type, amount)))
             self.resources = new_resources
         else:
             logging.error("Something went wrong: %s.", battle_result)
-            self.notifications.append("\N{cross mark} *PvP failed*.")
+            self.notifications.append("\N{cross mark} *PvP failed*")
             return
 
         # Start units.
@@ -456,13 +455,13 @@ class Bot:
                     time.sleep(self.BATTLE_DURATION)
                     continue
                 if error == Error.ok:
-                    self.notifications.append("\N{heavy plus sign} *%s units*." % amount)
+                    self.notifications.append("\N{heavy plus sign} *%s units*" % amount)
                 else:
                     logging.error("Failed to start units: %s.", error.name)
-                    self.notifications.append("\N{cross mark} Failed to start units: *%s*." % error.name)
+                    self.notifications.append("\N{cross mark} Failed to start units: *%s*" % error.name)
                 break
             else:
-                self.notifications.append("\N{cross mark} Failed to start units: *all attempts failed*.")
+                self.notifications.append("\N{cross mark} Failed to start units: *all attempts failed*")
 
     def can_upgrade(self, entity_type: enum.Enum, level: int) -> bool:
         """
