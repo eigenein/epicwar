@@ -342,6 +342,7 @@ class Bot:
         error, bastion = self.api.start_bastion()
         if error == Error.not_enough_time:
             logging.info("Bastion is not available.")
+            self.notifications.append("*Bastion*: *not available*")
             return
         if error != Error.ok:
             logging.error("Failed to start bastion: %s.", error.name)
@@ -397,7 +398,7 @@ class Bot:
         # Check if army is queued.
         if self.api.get_army_queue():
             logging.info("Army is queued. Skip PvP.")
-            self.notifications.append("*PvP*: army not ready")
+            self.notifications.append("*PvP*: *not ready*")
             return
 
         # Build battle commands.
