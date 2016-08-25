@@ -1,6 +1,4 @@
-# Epic War Bot
-
-[![Build Status](https://travis-ci.org/eigenein/epicwar.svg?branch=master)](https://travis-ci.org/eigenein/epicwar)
+# Epic War Bot [![Build Status](https://travis-ci.org/eigenein/epicwar.svg?branch=master)](https://travis-ci.org/eigenein/epicwar)
 
 ## Features
 
