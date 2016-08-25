@@ -11,7 +11,6 @@
 * 🍬 Activates alliance daily gift.
 * 🍬 Collects alliance daily gift.
 * 🆘 Sends help to alliance members.
-* 🆘 Asks alliance members for help.
 * 🆘 Collects help from alliance members.
 * 👦 Simulates user behavior by making random delays between requests.
 * 🏆 Participates in known bastion battles.
