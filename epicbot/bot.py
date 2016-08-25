@@ -96,7 +96,7 @@ class Bot:
         self.log_resources()
         logging.info("Life time score: %s.", self.alliance_membership.life_time_score)
 
-        # Collect some food.
+        # Collect some bones.
         if self_info.cemetery:
             self.check_cemetery()
 
@@ -105,6 +105,9 @@ class Bot:
         self.check_alliance_daily_gift()
         self.check_gifts()
         self.check_roulette()
+
+        # Random wars.
+        self.check_random_wars()
 
         # Check buildings and units.
         self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
@@ -311,6 +314,21 @@ class Bot:
         for reward_type, amount in self.api.spin_event_roulette().items():
             logging.info("Collected %s %s.", amount, reward_type.name)
             self.notifications.append("Collect *{} {}* from *roulette*.".format(amount, reward_type.name))
+
+    def check_random_wars(self):
+        """
+        Checks if we can complete some tasks.
+        """
+        logging.info("Getting random war tasks…")
+        task_ids = self.api.get_random_war_tasks()
+        logging.info("Tasks: %s.", task_ids)
+        for task_id in task_ids:
+            error = self.api.farm_random_war_task(task_id)
+            logging.info("Farm task #%s: %s.", task_id, error.name)
+            if error == Error.ok:
+                self.notifications.append("\N{heavy check mark} Complete *random war task*.")
+            else:
+                self.notifications.append("\N{heavy multiplication x} Can't complete *random war task*.")
 
     def play_bastion(self):
         """

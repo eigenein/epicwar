@@ -369,6 +369,20 @@ class Api:
             return {}
         raise ValueError(result)
 
+    def get_random_war_tasks(self) -> List[int]:
+        """
+        Gets task IDs of active random wars tasks.
+        """
+        result, _ = self.post("alliance_randomWar_task_get")
+        return [task["taskId"] for task in result]
+
+    def farm_random_war_task(self, task_id: int) -> Error:
+        """
+        Complete random wars task.
+        """
+        result, _ = self.post("alliance_randomWar_task_farm", taskId=task_id)
+        return self.parse_error(result)
+
     # Utilities and helpers.
     # ----------------------------------------------------------------------------------------------
 
