@@ -106,9 +106,6 @@ class Bot:
         self.check_gifts()
         self.check_roulette()
 
-        # Random wars.
-        self.check_random_wars()
-
         # Check buildings and units.
         self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
         self.collect_resources()
@@ -124,6 +121,9 @@ class Bot:
             self.play_bastion()
         if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
             self.collect_bastion_gift()
+
+        # Finally check whether we completed any tasks.
+        self.check_random_wars()
 
         if self.context.telegram_enabled:
             self.send_telegram_notification()
