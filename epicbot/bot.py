@@ -163,7 +163,7 @@ class Bot:
                 for resource_type, amount in reward.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
-                        self.notifications.append("Collect *{}* from *{}*.".format(self.format_amount(resource_type, amount), building.type.name))
+                        self.notifications.append("*{}* from *{}*.".format(self.format_amount(resource_type, amount), building.type.name))
                     else:
                         # Storage is full. Get rid of the following useless requests.
                         logging.info("Stopping collection from %s.", building.type.name)
@@ -431,7 +431,7 @@ class Bot:
         if new_resources:
             for resource_type, amount in (new_resources - self.resources).items():
                 logging.info("Farmed: %s %s.", amount, resource_type.name)
-                self.notifications.append("Farm *{}* in *PvP*.".format(self.format_amount(resource_type, amount)))
+                self.notifications.append("*PvP*: *{}*.".format(self.format_amount(resource_type, amount)))
             self.resources = new_resources
         else:
             logging.error("Something went wrong: %s.", battle_result)
@@ -456,7 +456,7 @@ class Bot:
                     time.sleep(self.BATTLE_DURATION)
                     continue
                 if error == Error.ok:
-                    self.notifications.append("Start *{} units*.".format(amount))
+                    self.notifications.append("\N{heavy plus sign} *%s units*." % amount)
                 else:
                     logging.error("Failed to start units: %s.", error.name)
                     self.notifications.append("\N{cross mark} Failed to start units: *%s*." % error.name)
