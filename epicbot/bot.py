@@ -264,7 +264,7 @@ class Bot:
         for building_id in building_ids:
             help_time = datetime.timedelta(seconds=sum(self.api.farm_alliance_help(building_id)))
             logging.info("Farmed alliance help: %s.", help_time)
-            self.notifications.append("Farm \N{two men holding hands} *%s*" % help_time)
+            self.notifications.append("\N{two men holding hands} *%s*" % help_time)
 
     def check_alliance_daily_gift(self):
         """
