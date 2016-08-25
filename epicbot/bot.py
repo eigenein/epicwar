@@ -352,7 +352,7 @@ class Bot:
         replay = epicbot.bastion.REPLAYS.get(bastion.fair_id)
         if not replay or replay.runes < self.context.min_bastion_runes:
             logging.warning("Resign from bastion %s (%s).", bastion.fair_id, bool(replay))
-            self.notifications.append("\N{warning sign} Bastion *%s*: %s" % (
+            self.notifications.append("\N{warning sign} *Bastion %s*: %s" % (
                 bastion.fair_id, "only *%s runes*" % replay.runes if replay else "*unknown*"))
             battle_result, _ = self.api.finish_battle_serialized(bastion.battle_id, epicbot.bastion.FINISH_BATTLE)
             logging.info("Battle result: %s.", battle_result)
