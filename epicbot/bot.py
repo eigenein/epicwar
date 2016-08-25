@@ -536,7 +536,7 @@ class Bot:
                 resource_type.name: self.format_amount(resource_type, self.resources[resource_type])
                 for resource_type in self.PRINTED_RESOURCES
             }
-        ).replace("_", "-")
+        ).replace("_", " ")
         result = requests.get(
             "https://api.telegram.org/bot{.telegram_token}/sendMessage".format(self.context),
             params={"chat_id": self.context.telegram_chat_id, "text": text, "parse_mode": "markdown"},
