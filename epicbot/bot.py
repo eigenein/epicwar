@@ -327,8 +327,11 @@ class Bot:
             logging.info("Farm task #%s: %s.", task_id, error.name)
             if error == Error.ok:
                 self.notifications.append("\N{heavy check mark} *Random war task*")
-            else:
-                self.notifications.append("\N{heavy multiplication x} Can't complete *random war task*")
+            elif error == Error.not_available:
+                # Not completed yet.
+                continue
+            # This should never happen.
+            self.notifications.append("\N{cross mark} *Random war task*: *%s*" % error.name)
 
     def play_bastion(self):
         """
