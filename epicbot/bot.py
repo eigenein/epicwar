@@ -368,7 +368,7 @@ class Bot:
 
         runes_farmed = self.resources[ResourceType.runes] - old_runes_count
         logging.info("Farmed %s of %s runes.", runes_farmed, replay.runes)
-        self.notifications.append("Bastion *{}*: *{} of {} runes*".format(bastion.fair_id, runes_farmed, replay.runes))
+        self.notifications.append("*Bastion {}*: *{} of {} runes*".format(bastion.fair_id, runes_farmed, replay.runes))
 
     def collect_bastion_gift(self):
         """
