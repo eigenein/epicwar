@@ -163,7 +163,7 @@ class Bot:
                 for resource_type, amount in reward.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:
-                        self.notifications.append("*{}* from *{}*".format(self.format_amount(resource_type, amount), building.type.name))
+                        self.notifications.append("*{}*: *{}*".format(building.type.name.capitalize(), self.format_amount(resource_type, amount)))
                     else:
                         # Storage is full. Get rid of the following useless requests.
                         logging.info("Stopping collection from %s.", building.type.name)
