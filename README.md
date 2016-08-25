@@ -16,6 +16,7 @@
 * 🏆 Participates in known bastion battles.
 * 🏆 Participates in PvP battles.
 * 🎲 Spins event roulette.
+* ✔️ Farms Random Wars tasks.
 * 📨 Sends Telegram notification.
 
 ## Scripts
