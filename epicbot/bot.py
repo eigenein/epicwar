@@ -418,11 +418,17 @@ class Bot:
             logging.debug("Command: %s.", command)
 
         # Start battle.
-        logging.info("Starting PvP…")
-        battle = self.api.start_pvp_battle()
-        if not battle:
+        for attempt in range(1, 4):
+            if attempt != 1:
+                logging.info("[%s] Sleeping…", attempt)
+                time.sleep(self.BATTLE_DURATION)
+            logging.info("[%s] Starting PvP…", attempt)
+            battle = self.api.start_pvp_battle()
+            if battle:
+                break
+        else:
             logging.warning("Unable to start PvP.")
-            self.notifications.append("\N{warning sign} Unable to start PvP")
+            self.notifications.append("\N{cross mark} Unable to start PvP")
             return
 
         # Wait for battle to finish.
@@ -443,30 +449,19 @@ class Bot:
             return
 
         # Start units.
-        elves_per_barracks, elves_remainder = divmod(self.buildings.units_amount, len(barracks))
-        for i, building in enumerate(barracks):
-            # Calculate unit amount.
-            amount = elves_per_barracks
-            if i < elves_remainder:
-                # Compensate remainder.
-                amount += 1
-            # Attempt to start units.
-            for attempt in range(3):
-                logging.info("[%s] Start %s units in barracks #%s.", attempt, amount, building.id)
-                error = self.api.start_units(UnitType.elf, amount, building.id)
-                if error == Error.user_locked:
-                    # Most likely the user is locked by an incoming battle.
-                    logging.info("User is locked. Sleeping…")
-                    time.sleep(self.BATTLE_DURATION)
-                    continue
-                if error == Error.ok:
-                    self.notifications.append("\N{heavy plus sign} *%s units*" % amount)
-                else:
-                    logging.error("Failed to start units: %s.", error.name)
-                    self.notifications.append("\N{cross mark} Failed to start units: *%s*" % error.name)
-                break
+        units_amount = self.buildings.units_amount
+        for attempt, building in enumerate(barracks):
+            # Calculate unit amount. Spread remaining units across available barracks.
+            amount = units_amount // (len(barracks) - attempt)
+            # Start units.
+            logging.info("Start %s units in barracks #%s.", amount, building.id)
+            error = self.api.start_units(UnitType.elf, amount, building.id)
+            if error == Error.ok:
+                self.notifications.append("\N{heavy plus sign} *%s units*" % amount)
+                units_amount -= amount
             else:
-                self.notifications.append("\N{cross mark} Failed to start units: *all attempts failed*")
+                logging.error("Failed to start units: %s.", error.name)
+                self.notifications.append("\N{warning sign} Failed to start units: *%s*" % error.name)
 
     def can_upgrade(self, entity_type: enum.Enum, level: int) -> bool:
         """
