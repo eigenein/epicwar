@@ -418,18 +418,17 @@ class Bot:
             logging.debug("Command: %s.", command)
 
         # Start battle.
-        for attempt in range(1, 4):
-            if attempt != 1:
-                logging.info("[%s] Sleeping…", attempt)
-                time.sleep(self.BATTLE_DURATION)
-            logging.info("[%s] Starting PvP…", attempt)
+        logging.info("Starting PvP…")
+        battle = self.api.start_pvp_battle()
+        if not battle:
+            # Probably the user is locked.
+            logging.info("Sleep and retry…")
+            time.sleep(self.BATTLE_DURATION)
             battle = self.api.start_pvp_battle()
-            if battle:
-                break
-        else:
+        if not battle:
+            # Unknown error.
             logging.warning("Unable to start PvP.")
             self.notifications.append("\N{cross mark} Unable to start PvP")
-            return
 
         # Wait for battle to finish.
         logging.info("Sleeping… Pray for me!")
@@ -446,7 +445,9 @@ class Bot:
         else:
             logging.error("Something went wrong: %s.", battle_result)
             self.notifications.append("\N{cross mark} *PvP failed*")
-            return
+            if commands:
+                # Return only if we sent some commands. Start units otherwise.
+                return
 
         # Start units.
         units_amount = self.buildings.units_amount
