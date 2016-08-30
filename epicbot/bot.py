@@ -459,6 +459,8 @@ class Bot:
             if error == Error.ok:
                 self.notifications.append("\N{heavy plus sign} *%s units*" % amount)
                 units_amount -= amount
+            elif error == Error.user_locked:
+                time.sleep(self.BATTLE_DURATION)
             else:
                 logging.error("Failed to start units: %s.", error.name)
                 self.notifications.append("\N{warning sign} Failed to start units: *%s*" % error.name)
