@@ -69,6 +69,7 @@ class Bot:
         self.library = library
         # Self info.
         self.caption = None  # type: str
+        self.level = None  # type: int
         self.resources = Counter()
         self.research = {}  # type: Dict[UnitType, int]
         self.units = Counter()

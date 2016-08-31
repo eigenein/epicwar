@@ -107,7 +107,7 @@ class Api:
         ).text
         match = re.search(r"auth_key=([a-zA-Z0-9.\-]+)", iframe_new)
         if not match:
-            raise ValueError("authentication key is not found")
+            raise ValueError("authentication key is not found: %s" % iframe_new)
         self.auth_token = match.group(1)
         logging.debug("Authentication token: %s", self.auth_token)
 
