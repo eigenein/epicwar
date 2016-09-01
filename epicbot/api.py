@@ -104,6 +104,7 @@ class Api:
             "https://i-epicwar-vk.progrestar.net/iframe/vkontakte/iframe.new.php",
             params=params,
             timeout=10,
+            verify=False,
         ).text
         match = re.search(r"auth_key=([a-zA-Z0-9.\-]+)", iframe_new)
         if not match:
