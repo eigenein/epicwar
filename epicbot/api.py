@@ -104,7 +104,6 @@ class Api:
             "https://i-epicwar-vk.progrestar.net/iframe/vkontakte/iframe.new.php",
             params=params,
             timeout=10,
-            verify=False,
         ).text
         match = re.search(r"auth_key=([a-zA-Z0-9.\-]+)", iframe_new)
         if not match:
@@ -489,7 +488,7 @@ class Api:
             logging.debug("Sleeping for %.3f seconds…", seconds)
             time.sleep(seconds)
         response = self.session.post(
-            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10, verify=False)
+            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
 
         logging.debug("%s", response.text)
         result = response.json()
