@@ -488,7 +488,7 @@ class Api:
             logging.debug("Sleeping for %.3f seconds…", seconds)
             time.sleep(seconds)
         response = self.session.post(
-            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
+            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10, verify=False)
 
         logging.debug("%s", response.text)
         result = response.json()
