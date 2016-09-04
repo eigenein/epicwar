@@ -393,7 +393,7 @@ class Bot:
         ]
         if not barracks:
             logging.warning("Can not produce %s. Skip PvP.", self.context.pvp_unit_type.name)
-            self.notifications.append("\N{warning sign} *PvP*: can not produce elves")
+            self.notifications.append("\N{warning sign} *PvP*: can not produce *%s*" % self.context.pvp_unit_type.name)
             return
 
         # Check if army is queued.
@@ -456,7 +456,7 @@ class Bot:
             # Calculate unit amount. Spread remaining units across available barracks.
             amount = units_amount // (len(barracks) - attempt)
             # Start units.
-            logging.info("Start %s units in barracks #%s.", amount, building.id)
+            logging.info("Start %s %s in barracks #%s.", amount, self.context.pvp_unit_type.name, building.id)
             error = self.api.start_units(UnitType.elf, amount, building.id)
             if error == Error.ok:
                 self.notifications.append("\N{heavy plus sign} *%s units*" % amount)
