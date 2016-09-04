@@ -20,6 +20,7 @@ import epicbot.api
 import epicbot.bastion
 import epicbot.bot
 import epicbot.content
+import epicbot.enums
 import epicbot.library
 import epicbot.utils
 
@@ -63,17 +64,21 @@ def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log
 @main.command()
 @click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
 @click.option("--with-bastion", help="Enable bastion battles.", is_flag=True)
-@click.option("--with-pvp", help="Enable PvP battles.", is_flag=True)
 @click.option("--min-bastion-runes", help="Limit minimum runes count for recorded battles.", type=int, default=0)
+@click.option(
+    "--with-pvp",
+    type=click.Choice([unit_type.name for unit_type in epicbot.enums.Sets.startable_units]),
+    help="Enable PvP battles with the specified unit type.",
+)
 @click.pass_obj
-def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, with_pvp: bool, min_bastion_runes: int):
+def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, min_bastion_runes: int, with_pvp: str):
     """
     Perform a step.
     """
     obj.with_castle = with_castle
     obj.with_bastion = with_bastion
-    obj.with_pvp = with_pvp
     obj.min_bastion_runes = min_bastion_runes
+    obj.pvp_unit_type = epicbot.enums.UnitType[with_pvp] if with_pvp else None
 
     try:
         library = epicbot.library.Library(epicbot.content.CONTENT)

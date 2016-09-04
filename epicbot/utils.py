@@ -8,13 +8,15 @@ import typing
 
 import click
 
+import epicbot.enums
+
 
 class Context:
     user_id = None  # type: str
     remixsid = None  # type: str
     with_castle = False  # type: bool
     with_bastion = False  # type: bool
-    with_pvp = False  # type: bool
+    pvp_unit_type = None  # type: epicbot.enums.UnitType
     min_bastion_runes = 0  # type: int
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: typing.Optional[str]

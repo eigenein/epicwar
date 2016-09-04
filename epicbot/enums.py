@@ -268,3 +268,16 @@ class Sets:
         UnitType.spider,
         UnitType.elephant,
     }
+
+    startable_units = {
+        UnitType.knight,
+        UnitType.goblin,
+        UnitType.orc,
+        UnitType.elf,
+        UnitType.troll,
+        UnitType.eagle,
+        UnitType.mage,
+        UnitType.ghost,
+        UnitType.ent,
+        UnitType.dragon,
+    }

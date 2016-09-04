@@ -116,7 +116,7 @@ class Bot:
         self.upgrade_units()
 
         # Battles.
-        if self.context.with_pvp:
+        if self.context.pvp_unit_type:
             self.play_pvp()
         if self.context.with_bastion:
             self.play_bastion()
@@ -389,10 +389,10 @@ class Bot:
         barracks = [
             building
             for building in self.buildings.barracks
-            if building.is_completed and UnitType.elf in self.library.barracks_production[building.level]
+            if building.is_completed and self.context.pvp_unit_type in self.library.barracks_production[building.level]
         ]
         if not barracks:
-            logging.warning("Can not produce elves. Skip PvP.")
+            logging.warning("Can not produce %s. Skip PvP.", self.context.pvp_unit_type.name)
             self.notifications.append("\N{warning sign} *PvP*: can not produce elves")
             return
 
@@ -451,7 +451,7 @@ class Bot:
                 return
 
         # Start units.
-        units_amount = self.buildings.units_amount
+        units_amount = self.buildings.units_amount // self.library.unit_slots[self.context.pvp_unit_type]
         for attempt, building in enumerate(barracks):
             # Calculate unit amount. Spread remaining units across available barracks.
             amount = units_amount // (len(barracks) - attempt)

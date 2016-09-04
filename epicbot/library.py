@@ -24,6 +24,7 @@ class Library:
         self.barracks_production = {}  # type: Dict[int, Set[UnitType]]
         self.units_amount = {}  # type: Dict[int, int]
         self.star_money_upgrades = set()  # Set[Tuple[BuildingType, int]]
+        self.unit_slots = {}  # type: Dict[UnitType, int]
         # Process building levels.
         for entry in content["buildingLevel"]:
             building_type, building_level = BuildingType(entry["buildingId"]), entry["level"]
@@ -83,7 +84,10 @@ class Library:
                 resource_type = ResourceType(resource["id"])
                 self.requirements[unit_type, unit_level][resource_type] = resource["amount"]
         # Propagate unit types from lower levels to upper levels.
-        self.barracks_production = {
+        self.barracks_production.update({
             barracks_level: set(chain(*(self.barracks_production[i] for i in range(1, barracks_level + 1))))
             for barracks_level, unit_types in self.barracks_production.items()
-        }
+        })
+        # Process units.
+        for entry in content["unit"]:
+            self.unit_slots[UnitType(entry["id"])] = entry["slots"]
