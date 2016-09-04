@@ -410,7 +410,7 @@ class Bot:
             SpawnCommand(col=col, row=row, time=time_, unit_type=unit_type)
             for (col, row), time_, unit_type in zip(
                 epicbot.utils.traverse_edges(Api.BATTLE_FIELD_WIDTH, Api.BATTLE_FIELD_HEIGHT),
-                itertools.count(0.05, 0.1),
+                itertools.count(0.05, 0.03),
                 unit_types,
             )
         ]
