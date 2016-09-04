@@ -457,9 +457,9 @@ class Bot:
             amount = units_amount // (len(barracks) - attempt)
             # Start units.
             logging.info("Start %s %s in barracks #%s.", amount, self.context.pvp_unit_type.name, building.id)
-            error = self.api.start_units(UnitType.elf, amount, building.id)
+            error = self.api.start_units(self.context.pvp_unit_type, amount, building.id)
             if error == Error.ok:
-                self.notifications.append("\N{heavy plus sign} *%s units*" % amount)
+                self.notifications.append("\N{heavy plus sign} *%s %s*" % (amount, self.context.pvp_unit_type.name))
                 units_amount -= amount
             elif error == Error.user_locked:
                 time.sleep(self.BATTLE_DURATION)
