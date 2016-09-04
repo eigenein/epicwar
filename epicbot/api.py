@@ -14,23 +14,12 @@ import string
 import time
 import typing
 
-from collections import Counter, namedtuple
-from typing import Dict, List, Optional, Set, Union
+from collections import Counter
+from typing import Dict, List, NamedTuple, Optional, Set, Union
 
 import requests
 
 from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, NoticeType, SpellType, UnitType
-
-
-Alliance = namedtuple("Alliance", "members")
-AllianceMember = namedtuple("AllianceMember", "id life_time_score")
-ArmyQueue = namedtuple("ArmyQueue", "building_id")
-Bastion = namedtuple("Bastion", "fair_id battle_id config")
-Building = namedtuple("Building", "id type level is_completed complete_time hitpoints storage_fill")
-Cemetery = namedtuple("Cemetery", "x y")
-PvpBattle = namedtuple("PvpBattle", "battle_id defender_score defender_level")
-SpawnCommand = namedtuple("SpawnCommand", "time row col unit_type")
-SelfInfo = namedtuple("SelfInfo", "user_id caption level resources research alliance cemetery units")
 
 
 # noinspection PyAbstractClass
@@ -55,6 +44,57 @@ class UnitCounter(Counter):
     Empty class for better type hinting.
     """
     pass
+
+
+AllianceMember = NamedTuple("AllianceMember", [
+    ("id", int),
+    ("life_time_score", int),
+])
+Alliance = NamedTuple("Alliance", [
+    ("members", List[AllianceMember]),
+])
+ArmyQueue = NamedTuple("ArmyQueue", [
+    ("building_id", int),
+])
+Bastion = NamedTuple("Bastion", [
+    ("fair_id", str),
+    ("battle_id", str),
+    ("config", str),
+])
+Building = NamedTuple("Building", [
+    ("id", int),
+    ("type", BuildingType),
+    ("level", int),
+    ("is_completed", bool),
+    ("complete_time", int),
+    ("hitpoints", int),
+    ("storage_fill", float),
+])
+Cemetery = NamedTuple("Cemetery", [
+    ("x", int),
+    ("y", int),
+])
+PvpBattle = NamedTuple("PvpBattle", [
+    ("battle_id", str),
+    ("defender_score", int),
+    ("defender_level", int),
+])
+SpawnCommand = NamedTuple("SpawnCommand", [
+    ("time", float),
+    ("row", int),
+    ("col", int),
+    ("unit_type", UnitType),
+])
+SelfInfo = NamedTuple("SelfInfo", [
+    ("user_id", int),
+    ("caption", str),
+    ("level", int),
+    ("resources", ResourceCounter),
+    ("research", Dict[UnitType, int]),
+    ("alliance", Alliance),
+    ("cemetery", List[Cemetery]),
+    ("units", UnitCounter),
+])
 
 
 class Api:
@@ -114,7 +154,7 @@ class Api:
     # Public API.
     # ----------------------------------------------------------------------------------------------
 
-    def get_self_info(self):
+    def get_self_info(self) -> SelfInfo:
         """
         Gets information about the player and its village.
         """
