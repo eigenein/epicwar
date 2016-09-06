@@ -514,7 +514,7 @@ class Api:
             "X-Request-Id": str(self.request_id),
             "X-Auth-User-Id": self.user_id,
             "X-Env-Library-Version": "0",
-            "X-Server-Time": int(time.time()),
+            "X-Server-Time": str(int(time.time())),
             "X-Auth-Application-Id": "3644106",
             "Content-length": str(len(data)),
         }
