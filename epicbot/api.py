@@ -516,7 +516,7 @@ class Api:
             "X-Env-Library-Version": "0",
             "X-Server-Time": int(time.time()),
             "X-Auth-Application-Id": "3644106",
-            "Content-length": len(data),
+            "Content-length": str(len(data)),
         }
         if self.request_id == 1:
             headers["X-Auth-Session-Init"] = "1"
