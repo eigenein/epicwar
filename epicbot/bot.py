@@ -403,9 +403,13 @@ class Bot:
             return
 
         # Build battle commands.
-        logging.info("Building battle commands…")
+        heroes = self.api.get_heroes()
+        logging.info("You have %s heroes. Building battle commands…", len(heroes))
+        self.notifications.append("*PvP*: {}".format(", ".join(hero.unit_type for hero in heroes)))
         unit_types = [unit_type for unit_type, amount in self.units.items() for _ in range(amount)]
-        random.shuffle(unit_types)
+        unit_types.extend(hero.unit_type for hero in heroes if hero.available_at < datetime.datetime.now())
+        logging.info("Units: %s.", Counter(unit_types))
+        random.shuffle(unit_types)  # evenly spread different units
         commands = [
             SpawnCommand(col=col, row=row, time=time_, unit_type=unit_type)
             for (col, row), time_, unit_type in zip(

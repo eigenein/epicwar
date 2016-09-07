@@ -5,6 +5,7 @@
 Epic War HTTP API client. Reverse-engineered with ♥️.
 """
 
+import datetime
 import hashlib
 import json
 import logging
@@ -73,6 +74,12 @@ Building = NamedTuple("Building", [
 Cemetery = NamedTuple("Cemetery", [
     ("x", int),
     ("y", int),
+])
+Hero = NamedTuple("Hero", [
+    ("level", int),
+    ("experience", int),
+    ("unit_type", UnitType),
+    ("available_at", datetime.datetime),
 ])
 PvpBattle = NamedTuple("PvpBattle", [
     ("battle_id", str),
@@ -422,6 +429,18 @@ class Api:
         """
         result, _ = self.post("alliance_randomWar_task_farm", taskId=task_id)
         return self.parse_error(result)
+
+    def get_heroes(self) -> List[Hero]:
+        """
+        Gets heroes list.
+        """
+        result, _ = self.post("heroesGetList")
+        return [Hero(
+            level=hero["level"],
+            experience=hero["experience"],
+            unit_type=UnitType(hero["id"]),
+            available_at=datetime.datetime.fromtimestamp(hero["availableTimestamp"]),
+        ) for hero in result["heroes"]]
 
     # Utilities and helpers.
     # ----------------------------------------------------------------------------------------------
