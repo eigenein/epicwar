@@ -191,6 +191,8 @@ class Bot:
         for building in self.buildings:
             logging.debug("Check: %s.", building)
             if (
+                # Building type is not banned.
+                building.type not in Sets.non_upgradable_buildings and
                 # Upgrade does not require star money.
                 (building.type, building.level + 1) not in self.library.star_money_upgrades and
                 # Builder is available.

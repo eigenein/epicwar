@@ -281,3 +281,12 @@ class Sets:
         UnitType.ent,
         UnitType.dragon,
     }
+
+    non_upgradable_buildings = {
+        BuildingType.artefacts_house,
+        BuildingType.clan_house,
+        BuildingType.ice_obelisk,
+        BuildingType.jeweler_house,
+        BuildingType.portal,
+        BuildingType.tavern,
+    }
