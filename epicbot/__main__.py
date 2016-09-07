@@ -30,8 +30,18 @@ import epicbot.utils
 @click.option("-i", "--user-id", help="VK.com user ID.", required=True)
 @click.option("-c", "--remixsid", help="VK.com remixsid cookie.", required=True)
 @click.option("-l", "--log-file", help="Log file.", type=click.File("at", encoding="utf-8"))
+@click.option("--telegram-token", help="Telegram Bot API token.", envvar="EPIC_WAR_TELEGRAM_TOKEN")
+@click.option("--telegram-chat-id", help="Telegram chat ID for notifications.", envvar="EPIC_WAR_TELEGRAM_CHAT_ID")
 @click.pass_context
-def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log_file: typing.io.TextIO):
+def main(
+    context: click.Context,
+    verbose: True,
+    user_id: str,
+    remixsid: str,
+    log_file: typing.io.TextIO,
+    telegram_token: str,
+    telegram_chat_id: str,
+):
     """
     Epic War bot.
     """
@@ -39,8 +49,8 @@ def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log
 
     context.obj.user_id = user_id
     context.obj.remixsid = remixsid
-    context.obj.telegram_token = os.environ.get("EPIC_WAR_TELEGRAM_TOKEN")
-    context.obj.telegram_chat_id = os.environ.get("EPIC_WAR_TELEGRAM_CHAT_ID")
+    context.obj.telegram_token = telegram_token
+    context.obj.telegram_chat_id = telegram_chat_id
     context.obj.telegram_enabled = bool(context.obj.telegram_token and context.obj.telegram_chat_id)
     context.obj.start_time = time.time()
 
