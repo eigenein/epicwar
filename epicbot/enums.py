@@ -202,7 +202,7 @@ UnitType = create_enum("UnitType", "unit", {
     21: "afreet",           # ифрит
     22: "spider",           # арахнит
     23: "elephant",         # слон
-    24: "frozen_ent",       # ледяной страж (герой)
+    28: "frozen_ent",       # ледяной страж (герой)
     47: "citadel_santa",    # проклятый гном
     48: "citadel_yeti",     # хищник
     49: "citadel_elf",      # стрелок мора
