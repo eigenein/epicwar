@@ -434,6 +434,7 @@ class Bot:
             # Unknown error.
             logging.warning("Unable to start PvP.")
             self.notifications.append("\N{cross mark} Unable to start PvP")
+            return
 
         # Wait for battle to finish.
         logging.info("Sleeping… Pray for me!")
