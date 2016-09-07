@@ -8,7 +8,6 @@ Epic War bot.
 import contextlib
 import json
 import logging
-import os
 import time
 import traceback
 import typing
