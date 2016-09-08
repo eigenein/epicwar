@@ -86,6 +86,12 @@ PvpBattle = NamedTuple("PvpBattle", [
     ("defender_score", int),
     ("defender_level", int),
 ])
+RandomWarStatus = NamedTuple("RandomWarStatus", [
+    ("start_time", datetime.datetime),
+    ("end_time", datetime.datetime),
+    ("opponent_score", int),
+    ("score", int),
+])
 SpawnCommand = NamedTuple("SpawnCommand", [
     ("time", float),
     ("row", int),
@@ -415,6 +421,18 @@ class Api:
         if "error" in result and result["error"]["name"] == Error.not_available.value:
             return {}
         raise ValueError(result)
+
+    def get_random_war_status(self) -> Optional[RandomWarStatus]:
+        """
+        Gets random war status.
+        """
+        result, _ = self.post("alliance_randomWar_status")
+        return RandomWarStatus(
+            start_time=datetime.datetime.fromtimestamp(result["war"]["timestampStart"]),
+            end_time=datetime.datetime.fromtimestamp(result["war"]["timestampEnd"]),
+            opponent_score=result["opponent"]["score"],
+            score=result["alliance"]["score"],
+        ) if result else None
 
     def get_random_war_tasks(self) -> List[int]:
         """
