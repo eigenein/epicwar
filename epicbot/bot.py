@@ -404,12 +404,18 @@ class Bot:
             self.notifications.append("*PvP*: *not ready*")
             return
 
-        # Build battle commands.
+        # Get heroes.
         heroes = self.api.get_heroes()
-        logging.info("You have %s heroes. Building battle commands…", len(heroes))
-        self.notifications.append("*PvP*: {}".format(", ".join(hero.unit_type.name for hero in heroes)))
+        available_heroes = [hero for hero in heroes if hero.available_at < datetime.datetime.now()]
+        logging.info("%s of %s heroes available.", len(available_heroes), len(heroes))
+        self.notifications.append("*PvP*: {}".format(", ".join(
+            "*{0.unit_type.name}* ({0.experience})".format(hero)
+            for hero in available_heroes
+        )))
+
+        # Build battle commands.
         unit_types = [unit_type for unit_type, amount in self.units.items() for _ in range(amount)]
-        unit_types.extend(hero.unit_type for hero in heroes if hero.available_at < datetime.datetime.now())
+        unit_types.extend(hero.unit_type for hero in available_heroes)
         logging.info("Units: %s.", Counter(unit_types))
         random.shuffle(unit_types)  # evenly spread different units
         commands = [
