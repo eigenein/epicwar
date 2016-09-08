@@ -14,9 +14,9 @@
 * 🆘 Collects help from alliance members.
 * 👦 Simulates user behavior by making random delays between requests.
 * 🏆 Participates in known bastion battles.
-* 🏆 Participates in PvP battles.
+* 🏆 Participates in PvP battles and uses heroes.
 * 🎲 Spins event roulette.
-* ✔️ Farms Random Wars tasks.
+* ✔️ Farms Random War tasks.
 * 📨 Sends Telegram notification.
 
 ## Scripts
