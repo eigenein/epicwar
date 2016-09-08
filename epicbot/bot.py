@@ -322,6 +322,11 @@ class Bot:
         """
         Checks if we can complete some tasks.
         """
+        status = self.api.get_random_war_status()
+        if not status:
+            logging.info("No active random war.")
+            return
+        self.notifications.append("\N{collision symbol} *Random war*: *%s* vs *%s*" % (status.score, status.opponent_score))
         logging.info("Getting random war tasks…")
         task_ids = self.api.get_random_war_tasks()
         logging.info("Tasks: %s.", task_ids)
