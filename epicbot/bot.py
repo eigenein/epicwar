@@ -417,9 +417,9 @@ class Bot:
 
         # Build battle commands.
         unit_types = [unit_type for unit_type, amount in self.units.items() for _ in range(amount)]
-        unit_types.extend(hero.unit_type for hero in available_heroes)
-        logging.info("Units: %s.", Counter(unit_types))
         random.shuffle(unit_types)  # evenly spread different units
+        unit_types.extend(hero.unit_type for hero in available_heroes)  # spawn heroes at the very end
+        logging.info("Units: %s.", Counter(unit_types))
         commands = [
             SpawnCommand(col=col, row=row, time=time_, unit_type=unit_type)
             for (col, row), time_, unit_type in zip(
