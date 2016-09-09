@@ -269,6 +269,7 @@ class Sets:
         UnitType.elephant,
     }
 
+    # FIXME: this set is not needed in Bot 2.0.
     startable_units = {
         UnitType.knight,
         UnitType.goblin,

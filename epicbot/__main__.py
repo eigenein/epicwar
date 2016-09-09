@@ -34,10 +34,8 @@ def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log
     """
     Epic War bot.
     """
-    context.obj = epicbot.utils.Context()
+    context.obj = epicbot.utils.Context(user_id=user_id, remixsid=remixsid)
 
-    context.obj.user_id = user_id
-    context.obj.remixsid = remixsid
     context.obj.start_time = time.time()
 
     context.obj.log_handler = handler = (
@@ -52,9 +50,6 @@ def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log
     logger = logging.getLogger()
     logger.setLevel(logging.INFO if not verbose else logging.DEBUG)
     logger.addHandler(handler)
-
-    if not context.obj.telegram_enabled:
-        logging.warning("Telegram notifications are not configured.")
 
 
 @main.command()
@@ -89,6 +84,9 @@ def step(
     obj.telegram_chat_id = telegram_chat_id
     obj.telegram_enabled = bool(obj.telegram_token and obj.telegram_chat_id)
 
+    if not obj.telegram_enabled:
+        logging.warning("Telegram notifications are not configured.")
+
     try:
         library = epicbot.library.Library(epicbot.content.CONTENT)
         random_generator = epicbot.utils.StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
@@ -114,6 +112,31 @@ def step(
         )
         # Finally propagate it up.
         raise
+
+
+@main.command()
+@click.option("--telegram-token", help="Telegram Bot API token.", envvar="EPIC_WAR_TELEGRAM_TOKEN")
+@click.option("--telegram-chat-id", help="Telegram chat ID for notifications.", envvar="EPIC_WAR_TELEGRAM_CHAT_ID")
+@click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
+@click.option("--with-bastion", help="Enable bastion battles with the specified minimum runes count.", is_flag=True)
+@click.option(
+    "--with-pvp",
+    type=click.Choice([unit_type.name for unit_type in epicbot.enums.Sets.startable_units]),
+    help="Enable PvP battles with the specified unit type.",
+)
+@click.pass_obj
+def run(
+    obj: epicbot.utils.Context,
+    telegram_token: str,
+    telegram_chat_id: str,
+    with_castle: bool,
+    with_bastion: int,
+    with_pvp: str,
+):
+    """
+    Runs bot as a service.
+    """
+    pass
 
 
 @main.command()

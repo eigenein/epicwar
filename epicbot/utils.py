@@ -14,9 +14,9 @@ import epicbot.enums
 class Context:
     user_id = None  # type: str
     remixsid = None  # type: str
+    # FIXME: the following options are not needed in Bot 2.0.
     start_time = None  # type: float
     log_handler = None  # type: CountingStreamHandler
-    # FIXME: all the following options should be moved out of the context.
     with_castle = False  # type: bool
     with_bastion = False  # type: bool
     pvp_unit_type = None  # type: epicbot.enums.UnitType
@@ -24,6 +24,10 @@ class Context:
     telegram_enabled = False  # type: bool
     telegram_token = None  # type: typing.Optional[str]
     telegram_chat_id = None  # type: typing.Optional[str]
+
+    def __init__(self, user_id: str, remixsid: str):
+        self.user_id = user_id
+        self.remixsid = remixsid
 
 
 class StudentTRandomGenerator:
