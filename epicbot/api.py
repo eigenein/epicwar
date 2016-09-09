@@ -123,7 +123,7 @@ class SpawnCommand:
     __slots__ = ("time", "row", "col", "unit_type")
 
     def __init__(self, time: float, row: int, col: int, unit_type: UnitType):
-        self.time = float
+        self.time = time
         self.row = row
         self.col = col
         self.unit_type = unit_type
