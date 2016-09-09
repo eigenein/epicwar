@@ -18,9 +18,11 @@ import requests
 import epicbot.api
 import epicbot.bastion
 import epicbot.bot
+import epicbot.bot2
 import epicbot.content
 import epicbot.enums
 import epicbot.library
+import epicbot.telegram
 import epicbot.utils
 
 
@@ -39,8 +41,8 @@ def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log
     context.obj.start_time = time.time()
 
     context.obj.log_handler = handler = (
-        epicbot.utils.ColoredCountingStreamHandler(click.get_text_stream("stderr"))
-        if not log_file else epicbot.utils.CountingStreamHandler(log_file)
+        epicbot.utils.ColoredStreamHandler(click.get_text_stream("stderr"))
+        if not log_file else logging.StreamHandler(log_file)
     )
     handler.setFormatter(logging.Formatter(
         fmt="%(asctime)s [%(levelname).1s] %(message)s",
@@ -89,8 +91,7 @@ def step(
 
     try:
         library = epicbot.library.Library(epicbot.content.CONTENT)
-        random_generator = epicbot.utils.StudentTRandomGenerator(1.11, 0.88, 0.57, 0.001, 10.000)
-        with contextlib.closing(epicbot.api.Api(obj.user_id, obj.remixsid, random_generator)) as api:
+        with contextlib.closing(epicbot.api.Api(obj.user_id, obj.remixsid)) as api:
             api.authenticate()
             epicbot.bot.Bot(obj, api, library).step()
     except Exception as ex:
@@ -136,7 +137,13 @@ def run(
     """
     Runs bot as a service.
     """
-    pass
+    library = epicbot.library.Library(epicbot.content.CONTENT)
+    chat = epicbot.telegram.Chat(telegram_token, telegram_chat_id) if telegram_token and telegram_chat_id else None
+    if not chat:
+        logging.warning("Telegram notifications are not configured.")
+    with contextlib.closing(epicbot.api.Api(obj.user_id, obj.remixsid)) as api:
+        api.authenticate()
+        epicbot.bot2.Bot(api, library, chat).run()
 
 
 @main.command()

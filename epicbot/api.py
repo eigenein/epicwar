@@ -115,12 +115,12 @@ class Api:
     Epic War API.
     """
     HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:47.0) Gecko/20100101 Firefox/47.0"}
+    REQUEST_DELAY = 1.5
     BATTLE_FIELD_WIDTH = 62
     BATTLE_FIELD_HEIGHT = 62
 
-    def __init__(self, user_id: str, remixsid: str, random_generator=None):
+    def __init__(self, user_id: str, remixsid: str):
         self.user_id = user_id
-        self.random_generator = random_generator
 
         self.auth_token = None
         self.cookies = {"remixsid": remixsid}
@@ -559,11 +559,7 @@ class Api:
             headers["X-Auth-Session-Init"] = "1"
         headers["X-Auth-Signature"] = self.sign_request(data, headers)
 
-        if self.random_generator:
-            # Perform random delay that emulates a real user behaviour.
-            seconds = self.random_generator()
-            logging.debug("Sleeping for %.3f seconds…", seconds)
-            time.sleep(seconds)
+        time.sleep(self.REQUEST_DELAY)  # FIXME: remove this once Bot 2.0 is implemented.
         response = self.session.post(
             "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
 

@@ -536,9 +536,7 @@ class Bot:
             "*{enchanted_coins}*\n"
             "{construction}\n"
             "\N{clockwise downwards and upwards open circle arrows} *{requests}*"
-            " \N{clock face one oclock} *{execution_time[0]}m{execution_time[1]:02}s*"
-            " \N{warning sign} *{log_counter[WARNING]}*"
-            " \N{cross mark} *{log_counter[ERROR]}*\n"
+            " \N{clock face one oclock} *{execution_time[0]}m{execution_time[1]:02}s*\n"
             "\n"
             "{notifications}"
         ).format(
@@ -547,7 +545,6 @@ class Bot:
             requests=self.api.request_id,
             construction=construction,
             notifications="\n".join("\N{incoming envelope} %s" % line for line in self.notifications),
-            log_counter=self.context.log_handler.counter,
             execution_time=divmod(int(time.time() - self.context.start_time), 60),
             **{
                 resource_type.name: self.format_amount(resource_type, self.resources[resource_type])
