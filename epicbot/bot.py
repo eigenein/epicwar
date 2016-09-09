@@ -105,7 +105,6 @@ class Bot:
         self.check_alliance_help()
         self.check_alliance_daily_gift()
         self.check_gifts()
-        self.check_roulette()
 
         # Check buildings and units.
         self.buildings = epicbot.managers.Buildings(self.api.get_buildings(), self.library)
@@ -122,6 +121,9 @@ class Bot:
             self.play_bastion()
         if self.resources[ResourceType.runes] >= self.BASTION_GIFT_RUNES:
             self.collect_bastion_gift()
+
+        # Spin roulette if any.
+        self.check_roulette()
 
         # Finally check whether we completed any tasks.
         self.check_random_wars()
