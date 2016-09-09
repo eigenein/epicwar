@@ -16,7 +16,7 @@ import time
 import typing
 
 from collections import Counter
-from typing import Dict, List, NamedTuple, Optional, Set, Union
+from typing import Dict, List, Optional, Set, Union
 
 import requests
 
@@ -25,89 +25,122 @@ from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, Notic
 
 # noinspection PyAbstractClass
 class ResourceCounter(Counter):
-    """
-    Empty class for better type hinting.
-    """
     pass
 
 
 # noinspection PyAbstractClass
 class RewardCounter(Counter):
-    """
-    Empty class for better type hinting.
-    """
     pass
 
 
 # noinspection PyAbstractClass
 class UnitCounter(Counter):
-    """
-    Empty class for better type hinting.
-    """
     pass
 
 
-AllianceMember = NamedTuple("AllianceMember", [
-    ("id", int),
-    ("life_time_score", int),
-])
-Alliance = NamedTuple("Alliance", [
-    ("members", List[AllianceMember]),
-])
-ArmyQueue = NamedTuple("ArmyQueue", [
-    ("building_id", int),
-])
-Bastion = NamedTuple("Bastion", [
-    ("fair_id", str),
-    ("battle_id", str),
-    ("config", str),
-])
-Building = NamedTuple("Building", [
-    ("id", int),
-    ("type", BuildingType),
-    ("level", int),
-    ("is_completed", bool),
-    ("complete_time", int),
-    ("hitpoints", int),
-    ("storage_fill", float),
-])
-Cemetery = NamedTuple("Cemetery", [
-    ("x", int),
-    ("y", int),
-])
-Hero = NamedTuple("Hero", [
-    ("level", int),
-    ("experience", int),
-    ("unit_type", UnitType),
-    ("available_at", datetime.datetime),
-])
-PvpBattle = NamedTuple("PvpBattle", [
-    ("battle_id", str),
-    ("defender_score", int),
-    ("defender_level", int),
-])
-RandomWarStatus = NamedTuple("RandomWarStatus", [
-    ("start_time", datetime.datetime),
-    ("end_time", datetime.datetime),
-    ("opponent_score", int),
-    ("score", int),
-])
-SpawnCommand = NamedTuple("SpawnCommand", [
-    ("time", float),
-    ("row", int),
-    ("col", int),
-    ("unit_type", UnitType),
-])
-SelfInfo = NamedTuple("SelfInfo", [
-    ("user_id", int),
-    ("caption", str),
-    ("level", int),
-    ("resources", ResourceCounter),
-    ("research", Dict[UnitType, int]),
-    ("alliance", Alliance),
-    ("cemetery", List[Cemetery]),
-    ("units", UnitCounter),
-])
+class AllianceMember:
+    __slots__ = ("id", "life_time_score")
+
+    def __init__(self, id: int, life_time_score: int):
+        self.id = id
+        self.life_time_score = life_time_score
+
+
+class Alliance:
+    __slots__ = ("members", )
+
+    def __init__(self, members: List[AllianceMember]):
+        self.members = members
+
+
+class ArmyQueue:
+    __slots__ = ("building_id", )
+
+    def __init__(self, building_id: int):
+        self.building_id = building_id
+
+
+class Bastion:
+    __slots__ = ("fair_id", "battle_id", "config")
+
+    def __init__(self, fair_id: str, battle_id: str, config: str):
+        self.fair_id = fair_id
+        self.battle_id = battle_id
+        self.config = config
+
+
+class Building:
+    __slots__ = ("id", "type", "level", "is_completed", "complete_time", "hitpoints", "storage_fill")
+
+    def __init__(self, id: int, type: BuildingType, level: int, is_completed: bool, complete_time: int, hitpoints: int, storage_fill: float):
+        self.id = id
+        self.type = type
+        self.level = level
+        self.is_completed = is_completed
+        self.complete_time = complete_time
+        self.hitpoints = hitpoints
+        self.storage_fill = storage_fill
+
+
+class Cemetery:
+    __slots__ = ("x", "y")
+
+    def __init__(self, x: int, y: int):
+        self.x = x
+        self.y = y
+
+
+class Hero:
+    __slots__ = ("level", "experience", "unit_type", "available_at")
+
+    def __init__(self, level: int, experience: int, unit_type: UnitType, available_at: datetime.datetime):
+        self.level = level
+        self.experience = experience
+        self.unit_type = unit_type
+        self.available_at = available_at
+
+
+class PvpBattle:
+    __slots__ = ("battle_id", "defender_score", "defender_level")
+
+    def __init__(self, battle_id: str, defender_score: int, defender_level: int):
+        self.battle_id = battle_id
+        self.defender_score = defender_score
+        self.defender_level = defender_level
+
+
+class RandomWarStatus:
+    __slots__ = ("start_time", "end_time", "opponent_score", "score")
+
+    def __init__(self, start_time: datetime.datetime, end_time: datetime.datetime, opponent_score: int, score: int):
+        self.start_time = start_time
+        self.end_time = end_time
+        self.opponent_score = opponent_score
+        self.score = score
+
+
+class SpawnCommand:
+    __slots__ = ("time", "row", "col", "unit_type")
+
+    def __init__(self, time: float, row: int, col: int, unit_type: UnitType):
+        self.time = float
+        self.row = row
+        self.col = col
+        self.unit_type = unit_type
+
+
+class SelfInfo:
+    __slots__ = ("user_id", "caption", "level", "resources", "research", "alliance", "cemetery", "units")
+
+    def __init__(self, user_id: int, caption: str, level: int, resources: ResourceCounter, research: Dict[UnitType, int], alliance: Alliance, cemetery: List[Cemetery], units: UnitCounter):
+        self.user_id = user_id
+        self.caption = caption
+        self.level = level
+        self.resources = resources
+        self.research = research
+        self.alliance = alliance
+        self.cemetery = cemetery
+        self.units = units
 
 
 class Api:

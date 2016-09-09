@@ -13,6 +13,7 @@ import click
 
 from epicbot.api import Api
 from epicbot.library import Library
+from epicbot.managers import Buildings
 from epicbot.telegram import Chat
 
 
@@ -28,9 +29,6 @@ class Action:
 
     def __lt__(self, other: "Action"):
         return self.timestamp < other.timestamp
-
-    def __call__(self):
-        return self.callable_()
 
 
 class Bot:
@@ -52,12 +50,12 @@ class Bot:
             logging.info("Next action at %s: %s.", action.timestamp, action.message)
             time.sleep((action.timestamp - datetime.datetime.now()).total_seconds())
             try:
-                action()
+                action.callable_()
             except Exception as ex:
                 if isinstance(ex, click.ClickException):
                     raise
                 logging.error("Error.", exc_info=ex)
-                self.notify("\N{cross mark} Ошибка в аккаунте *%s*:\n```\n%s\n```", traceback.format_exc())
+                self.notify("\N{cross mark} Ошибка:\n```\n%s\n```", traceback.format_exc())
         # The following lines should never be executed normally.
         logging.critical("No actions left.")
         self.notify("\N{cross mark} Очередь действий пуста.")
@@ -69,6 +67,7 @@ class Bot:
         logging.info("Setting up bot…")
         self_info = self.api.get_self_info()
         self.caption = self_info.caption
+        buildings = Buildings(self.api.get_buildings(), self.library)
 
     def notify(self, text: str, *args):
         """
