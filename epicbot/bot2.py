@@ -36,8 +36,11 @@ class Bot:
         self.api = api
         self.library = library
         self.chat = chat
+        # Action queue.
         self.actions = []  # type: List[Action]
+        # Current game state.
         self.caption = None  # type: str
+        self.buildings = None  # type: Buildings
 
     def run(self):
         """
@@ -67,7 +70,7 @@ class Bot:
         logging.info("Setting up bot…")
         self_info = self.api.get_self_info()
         self.caption = self_info.caption
-        buildings = Buildings(self.api.get_buildings(), self.library)
+        self.buildings = Buildings(self.api.get_buildings(), self.library)
 
     def notify(self, text: str, *args):
         """
