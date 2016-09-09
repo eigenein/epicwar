@@ -29,18 +29,8 @@ import epicbot.utils
 @click.option("-i", "--user-id", help="VK.com user ID.", required=True)
 @click.option("-c", "--remixsid", help="VK.com remixsid cookie.", required=True)
 @click.option("-l", "--log-file", help="Log file.", type=click.File("at", encoding="utf-8"))
-@click.option("--telegram-token", help="Telegram Bot API token.", envvar="EPIC_WAR_TELEGRAM_TOKEN")
-@click.option("--telegram-chat-id", help="Telegram chat ID for notifications.", envvar="EPIC_WAR_TELEGRAM_CHAT_ID")
 @click.pass_context
-def main(
-    context: click.Context,
-    verbose: True,
-    user_id: str,
-    remixsid: str,
-    log_file: typing.io.TextIO,
-    telegram_token: str,
-    telegram_chat_id: str,
-):
+def main(context: click.Context, verbose: True, user_id: str, remixsid: str, log_file: typing.io.TextIO):
     """
     Epic War bot.
     """
@@ -48,9 +38,6 @@ def main(
 
     context.obj.user_id = user_id
     context.obj.remixsid = remixsid
-    context.obj.telegram_token = telegram_token
-    context.obj.telegram_chat_id = telegram_chat_id
-    context.obj.telegram_enabled = bool(context.obj.telegram_token and context.obj.telegram_chat_id)
     context.obj.start_time = time.time()
 
     context.obj.log_handler = handler = (
@@ -71,6 +58,8 @@ def main(
 
 
 @main.command()
+@click.option("--telegram-token", help="Telegram Bot API token.", envvar="EPIC_WAR_TELEGRAM_TOKEN")
+@click.option("--telegram-chat-id", help="Telegram chat ID for notifications.", envvar="EPIC_WAR_TELEGRAM_CHAT_ID")
 @click.option("--with-castle", help="Enable castle upgrades.", is_flag=True)
 @click.option("--with-bastion", help="Enable bastion battles.", is_flag=True)
 @click.option("--min-bastion-runes", help="Limit minimum runes count for recorded battles.", type=int, default=0)
@@ -80,7 +69,15 @@ def main(
     help="Enable PvP battles with the specified unit type.",
 )
 @click.pass_obj
-def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, min_bastion_runes: int, with_pvp: str):
+def step(
+    obj: epicbot.utils.Context,
+    telegram_token: str,
+    telegram_chat_id: str,
+    with_castle: bool,
+    with_bastion: bool,
+    min_bastion_runes: int,
+    with_pvp: str,
+):
     """
     Perform a step.
     """
@@ -88,6 +85,9 @@ def step(obj: epicbot.utils.Context, with_castle: bool, with_bastion: bool, min_
     obj.with_bastion = with_bastion
     obj.min_bastion_runes = min_bastion_runes
     obj.pvp_unit_type = epicbot.enums.UnitType[with_pvp] if with_pvp else None
+    obj.telegram_token = telegram_token
+    obj.telegram_chat_id = telegram_chat_id
+    obj.telegram_enabled = bool(obj.telegram_token and obj.telegram_chat_id)
 
     try:
         library = epicbot.library.Library(epicbot.content.CONTENT)
