@@ -38,7 +38,17 @@ class UnitCounter(Counter):
     pass
 
 
-class AllianceMember:
+class Base:
+    __slots__ = ()
+
+    def __repr__(self):
+        return "%s(%s)" % (
+            self.__class__.__name__,
+            ", ".join("%s=%s" % (name, getattr(self, name)) for name in self.__slots__),
+        )
+
+
+class AllianceMember(Base):
     __slots__ = ("id", "life_time_score")
 
     def __init__(self, id: int, life_time_score: int):
@@ -46,21 +56,21 @@ class AllianceMember:
         self.life_time_score = life_time_score
 
 
-class Alliance:
+class Alliance(Base):
     __slots__ = ("members", )
 
     def __init__(self, members: List[AllianceMember]):
         self.members = members
 
 
-class ArmyQueue:
+class ArmyQueue(Base):
     __slots__ = ("building_id", )
 
     def __init__(self, building_id: int):
         self.building_id = building_id
 
 
-class Bastion:
+class Bastion(Base):
     __slots__ = ("fair_id", "battle_id", "config")
 
     def __init__(self, fair_id: str, battle_id: str, config: str):
@@ -69,7 +79,7 @@ class Bastion:
         self.config = config
 
 
-class Building:
+class Building(Base):
     __slots__ = ("id", "type", "level", "is_completed", "complete_time", "hitpoints", "storage_fill", "volume")
 
     def __init__(self, id: int, type: BuildingType, level: int, is_completed: bool, complete_time: int, hitpoints: int, storage_fill: float, volume: int):
@@ -83,7 +93,7 @@ class Building:
         self.volume = volume
 
 
-class Cemetery:
+class Cemetery(Base):
     __slots__ = ("x", "y")
 
     def __init__(self, x: int, y: int):
@@ -91,7 +101,7 @@ class Cemetery:
         self.y = y
 
 
-class Hero:
+class Hero(Base):
     __slots__ = ("level", "experience", "unit_type", "available_at")
 
     def __init__(self, level: int, experience: int, unit_type: UnitType, available_at: datetime.datetime):
@@ -101,7 +111,7 @@ class Hero:
         self.available_at = available_at
 
 
-class PvpBattle:
+class PvpBattle(Base):
     __slots__ = ("battle_id", "defender_score", "defender_level")
 
     def __init__(self, battle_id: str, defender_score: int, defender_level: int):
@@ -110,7 +120,7 @@ class PvpBattle:
         self.defender_level = defender_level
 
 
-class RandomWarStatus:
+class RandomWarStatus(Base):
     __slots__ = ("start_time", "end_time", "opponent_score", "score")
 
     def __init__(self, start_time: datetime.datetime, end_time: datetime.datetime, opponent_score: int, score: int):
@@ -120,7 +130,7 @@ class RandomWarStatus:
         self.score = score
 
 
-class SpawnCommand:
+class SpawnCommand(Base):
     __slots__ = ("time", "row", "col", "unit_type")
 
     def __init__(self, time: float, row: int, col: int, unit_type: UnitType):
@@ -130,7 +140,7 @@ class SpawnCommand:
         self.unit_type = unit_type
 
 
-class SelfInfo:
+class SelfInfo(Base):
     __slots__ = ("user_id", "caption", "level", "resources", "research", "alliance", "cemetery", "units")
 
     def __init__(self, user_id: int, caption: str, level: int, resources: ResourceCounter, research: Dict[UnitType, int], alliance: Alliance, cemetery: List[Cemetery], units: UnitCounter):
