@@ -162,7 +162,7 @@ class Bot:
                 )
             ):
                 logging.debug("Collecting resources from %s…", building)
-                reward, self.resources = self.api.collect_resource(building.id)
+                reward, self.resources, _ = self.api.collect_resource(building.id)
                 for resource_type, amount in reward.items():
                     logging.info("%s %s collected from %s.", amount, resource_type.name, building.type.name)
                     if amount:

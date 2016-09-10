@@ -21,6 +21,6 @@ class Chat:
         self.get("sendMessage", chat_id=self.chat_id, text=text, parse_mode="markdown")
 
     def get(self, method, **params):
-        result = requests.get("{}/{}".format(self.base_url, method), params=params).json()
+        result = self.session.get("{}/{}".format(self.base_url, method), params=params).json()
         if not result["ok"]:
             logging.error("Telegram API error: \"%s\".", result["description"])

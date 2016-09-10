@@ -70,9 +70,9 @@ class Bastion:
 
 
 class Building:
-    __slots__ = ("id", "type", "level", "is_completed", "complete_time", "hitpoints", "storage_fill")
+    __slots__ = ("id", "type", "level", "is_completed", "complete_time", "hitpoints", "storage_fill", "volume")
 
-    def __init__(self, id: int, type: BuildingType, level: int, is_completed: bool, complete_time: int, hitpoints: int, storage_fill: float):
+    def __init__(self, id: int, type: BuildingType, level: int, is_completed: bool, complete_time: int, hitpoints: int, storage_fill: float, volume: int):
         self.id = id
         self.type = type
         self.level = level
@@ -80,6 +80,7 @@ class Building:
         self.complete_time = complete_time
         self.hitpoints = hitpoints
         self.storage_fill = storage_fill
+        self.volume = volume
 
 
 class Cemetery:
@@ -251,12 +252,16 @@ class Api:
         result, state = self.post("giftFarm", True, userId=user_id)
         return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
-    def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter):
+    def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter, Building):
         """
         Collects resource from the building.
         """
         result, state = self.post("collectResource", True, buildingId=building_id)
-        return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
+        return (
+            self.parse_resource_field(result["reward"]),
+            self.parse_resource_field(state),
+            self.parse_building(state["buildingChanged"][0]),
+        )
 
     def farm_cemetery(self) -> (ResourceCounter, ResourceCounter):
         """
@@ -509,6 +514,7 @@ class Api:
             complete_time=building["completeTime"],
             hitpoints=building["hitpoints"],
             storage_fill=building.get("storageFill"),
+            volume=building.get("volume"),
         )
 
     @staticmethod

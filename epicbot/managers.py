@@ -11,6 +11,7 @@ from epicbot.enums import Sets, BuildingType, ResourceType
 from epicbot.library import Library
 
 
+# FIXME: remove this manager once Bot 2.0 is implemented.
 class Buildings:
     """
     Building manager.
