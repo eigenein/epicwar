@@ -31,6 +31,10 @@ class Action:
 
 
 class Bot:
+    """
+    Epic War bot.
+    """
+
     # Ensure that a planned event has happened.
     SAFETY_INTERVAL = timedelta(seconds=1)
     # Sync the whole state periodically.
