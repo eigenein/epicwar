@@ -9,11 +9,11 @@ import traceback
 
 from collections import namedtuple
 from datetime import datetime, timedelta
-from typing import Dict, Iterable, Optional
+from typing import Dict, Iterable, List, Optional
 
 import click
 
-from epicbot.api import Api, Building, ResourceCounter
+from epicbot.api import AllianceMember, Api, Building, Error, ResourceCounter
 from epicbot.enums import Sets
 from epicbot.library import Library
 from epicbot.telegram import Chat
@@ -23,6 +23,8 @@ class ActionType(enum.Enum):
     sync = 0
     collect_resource = 1
     check_alliance_help = 2
+    send_gifts = 3
+    farm_gifts = 4
 
 
 Action = namedtuple("Action", "action_type argument")
@@ -35,8 +37,12 @@ class Bot:
 
     # Check alliance help interval.
     CHECK_HELP_INTERVAL = timedelta(minutes=10)
+    # Farm gifts triple a day.
+    FARM_GIFT_INTERVAL = timedelta(hours=8)
     # Just to be sure that a planned event has happened.
     SAFETY_INTERVAL = timedelta(seconds=1)
+    # Send mana once a day.
+    SEND_GIFT_INTERVAL = timedelta(days=1)
     # Sync the whole state periodically.
     SYNC_INTERVAL = timedelta(hours=4)
 
@@ -51,6 +57,7 @@ class Bot:
         self.level = None  # type: int
         self.buildings = None  # type: Dict[int, Building]
         self.resources = None  # type: ResourceCounter
+        self.alliance_members = None  # type: List[AllianceMember]
         # Chat messages queue.
         self.messages = []
         # For logging.
@@ -96,6 +103,10 @@ class Bot:
             self.collect_resource(action.argument)
         elif action.action_type == ActionType.check_alliance_help:
             self.check_alliance_help()
+        elif action.action_type == ActionType.send_gifts:
+            self.send_gifts()
+        elif action.action_type == ActionType.farm_gifts:
+            self.farm_gifts()
 
     # Schedule helpers.
     # ----------------------------------------------------------------------------------------------
@@ -151,8 +162,12 @@ class Bot:
         self.level = self_info.level
         self.buildings = {building.id: building for building in self.api.get_buildings()}
         self.resources = self_info.resources
-        # Schedule actions initially.
-        self.schedule(datetime.now(), ActionType.check_alliance_help, None)
+        self.alliance_members = self_info.alliance.members
+        # Schedule some initial actions.
+        now = datetime.now()
+        self.schedule(now, ActionType.check_alliance_help, None)
+        self.schedule(now, ActionType.send_gifts, None)
+        self.schedule(now, ActionType.farm_gifts, None)
         self.schedule_collect_resources_from_all()
         # Schedule next sync.
         self.schedule(datetime.now() + self.SYNC_INTERVAL, ActionType.sync, None)
@@ -167,6 +182,7 @@ class Bot:
         reward, self.resources, updated_buildings = self.api.collect_resource(building.id)
         self.update_buildings(updated_buildings)
         resource_type, amount = next(iter(reward.items()))
+        logging.info("Collected %s %s from %s.", amount, resource_type.name, building.type.name)
         if amount == 0:
             return
         self.send_message("Собрано *%s %s* в *%s*", amount, resource_type.name, building.type.name)
@@ -186,10 +202,40 @@ class Bot:
         for building_id in building_ids:
             help_time = timedelta(seconds=sum(self.api.farm_alliance_help(building_id)))
             logging.info("Farmed alliance help: %s.", help_time)
-            self.queue_message("\N{two men holding hands} *%s*" % help_time)
+            self.queue_message("\N{two men holding hands} Принята помощь: *%s*" % help_time)
         self.flush_messages()
         # Schedule next check.
         self.schedule(datetime.now() + self.CHECK_HELP_INTERVAL, ActionType.check_alliance_help, None)
+
+    def send_gifts(self):
+        """
+        Sends free mana.
+        """
+        member_ids = [member.id for member in self.alliance_members]
+        error = self.api.send_gift(member_ids)
+        if error == Error.ok:
+            self.send_message("\N{candy} Отправлена мана")
+        else:
+            logging.warning("Failed to send gifts to alliance members: %s.", error.name)
+            self.queue_message("\N{warning sign} Не удалось отправить ману: *%s*", error.name)
+        self.schedule(datetime.now() + self.SEND_GIFT_INTERVAL, ActionType.send_gifts, None)
+
+    def farm_gifts(self):
+        """
+        Farms mana.
+        """
+        user_ids = self.api.get_gift_available()
+        logging.info("%s gifts are waiting for you.", len(user_ids))
+        for user_id in user_ids:
+            error, new_resources = self.api.farm_gift(user_id)
+            self.resources = new_resources or self.resources
+            if error == Error.ok:
+                self.queue_message("\N{candy} Собрана мана")
+            else:
+                logging.warning("Farmed gift from user #%s: %s.", user_id, error.name)
+                self.queue_message("\N{warning sign} Не удалось собрать ману от пользователя *%s*", user_id)
+        self.flush_messages()
+        self.schedule(datetime.now() + self.FARM_GIFT_INTERVAL, ActionType.farm_gifts, None)
 
     # Notifications.
     # ----------------------------------------------------------------------------------------------
