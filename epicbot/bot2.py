@@ -173,7 +173,7 @@ class Bot:
             logging.info("Collected %s %s from %s.", amount, resource_type.name, building.type.name)
             if amount:
                 # Storage was not full.
-                self.send_message("Собрано *%s %s* с *%s*", amount, resource_type.name, building.type.name)
+                self.send_message("Собрано *%s %s* в *%s*", amount, resource_type.name, building.type.name)
                 if updated_building.volume == 0:
                     # There is still room in storage. Schedule the next collection.
                     self.schedule(
