@@ -41,11 +41,15 @@ class UnitCounter(Counter):
 class Base:
     __slots__ = ()
 
-    def __repr__(self):
-        return "%s(%s)" % (
-            self.__class__.__name__,
-            ", ".join("%s=%s" % (name, getattr(self, name)) for name in self.__slots__),
-        )
+    def update(self, other: "Base"):
+        """
+        Update object attributes.
+        """
+        for name in self.__slots__:
+            setattr(self, name, getattr(other, name))
+
+    def __str__(self):
+        return ", ".join("%s: %r" % (name, getattr(self, name)) for name in self.__slots__)
 
 
 class AllianceMember(Base):
@@ -262,7 +266,7 @@ class Api:
         result, state = self.post("giftFarm", True, userId=user_id)
         return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
-    def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter, Building):
+    def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter, List[Building]):
         """
         Collects resource from the building.
         """
@@ -270,7 +274,7 @@ class Api:
         return (
             self.parse_resource_field(result["reward"]),
             self.parse_resource_field(state),
-            self.parse_building(state["buildingChanged"][0]),
+            [self.parse_building(entry) for entry in state["buildingChanged"]],
         )
 
     def farm_cemetery(self) -> (ResourceCounter, ResourceCounter):
@@ -334,7 +338,7 @@ class Api:
         """
         self.post("alliance_help_askForHelp")
 
-    def get_my_alliance_helpers(self) -> Set[int]:
+    def get_buildings_with_help(self) -> Set[int]:
         """
         Gets building IDs with alliance help available.
         """

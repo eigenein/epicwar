@@ -264,7 +264,7 @@ class Bot:
         logging.info("Sending help to your alliance…")
         self.api.send_alliance_help()
 
-        building_ids = self.api.get_my_alliance_helpers()
+        building_ids = self.api.get_buildings_with_help()
         logging.info("%s buildings with alliance help.", len(building_ids))
         for building_id in building_ids:
             help_time = datetime.timedelta(seconds=sum(self.api.farm_alliance_help(building_id)))
