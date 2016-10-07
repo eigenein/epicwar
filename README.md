@@ -2,6 +2,7 @@
 
 ## Features
 
+* 👷 Multiple accounts.
 * 👷 Upgrades buildings.
 * 👷 Cleans up extended areas.
 * 👷 Upgrades units.
@@ -19,28 +20,22 @@
 * ✔️ Farms Random War tasks.
 * 📨 Sends Telegram notification.
 
-## Scripts
+## Running
+
+See `example.ini` for a configuration file example. Run the bot with `bot.py run --config config.ini`.
+
+## Updating library
+
+Use Web Inspector to look for a link like `https://epicwar.cdnvideo.ru/vk/v0294/lib/lib.json.gz`. Then pass it to `tools/generate-library.py`, commit and push changes.
+
+## Adding new resource, building and unit types
+
+* Update corresponding class in `epicbot.enums`.
+* Update `Sets` class.
+
+## Helper scripts
 
 |File||
 |---|---|
-|`bot.py`|Runs the bot once|
 |`tools/command-log.py`|Used to investigate a battle command log|
 |`tools/generate-library.py`|Used to generate static library content|
-
-## Configuring
-
-### Environment variables
-
-|Variable||
-|---|---|
-|`EPIC_WAR_TELEGRAM_TOKEN`|Telegram bot token|
-|`EPIC_WAR_TELEGRAM_CHAT_ID`|Telegram chat ID|
-
-### Updating library
-
-Use "Network" tab in a browser to look for a link like `https://epicwar.cdnvideo.ru/vk/v0294/lib/lib.json.gz`. Then pass it to `tools/generate-library.py`.
-
-### Adding new resource, building and unit types
-
-* Update corresponding class in `epicbot.enums`.
-* Remember to update `Sets` fields.
