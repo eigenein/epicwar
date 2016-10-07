@@ -50,7 +50,7 @@ class Bot:
         self.api = api
         self.library = library
         self.chat = chat
-        # Action queue.
+        # Task queue.
         self.actions = {}  # type: Dict[Action, datetime]
         # Current game state.
         self.caption = None  # type: str
@@ -82,7 +82,7 @@ class Bot:
                 self.send_message("\N{cross mark} Ошибка:\n```\n%s\n```", traceback.format_exc())
         # This should never happen.
         logging.critical("Queue is empty.")
-        self.send_message("\N{cross mark} Очередь действий пуста!")
+        self.send_message("\N{cross mark} Очередь задач пуста!")
 
     def step(self):
         """
@@ -108,7 +108,7 @@ class Bot:
         elif action.action_type == ActionType.farm_gifts:
             self.farm_gifts()
 
-    # Schedule helpers.
+    # Schedulers.
     # ----------------------------------------------------------------------------------------------
 
     def schedule(self, timestamp: datetime, action_type: ActionType, argument):
@@ -134,21 +134,7 @@ class Bot:
             if building.type in Sets.production_buildings:
                 self.schedule_collect_resources(building)
 
-    # Helpers.
-    # ----------------------------------------------------------------------------------------------
-
-    def update_buildings(self, buildings: Iterable[Building]):
-        """
-        Update buildings attributes according to the provided ones.
-        """
-        for building in buildings:
-            self.buildings[building.id].update(building)
-
-    @staticmethod
-    def strftime(timestamp: datetime):
-        return timestamp.strftime("%Y-%m-%d %H:%M:%S")
-
-    # Actions.
+    # Tasks.
     # ----------------------------------------------------------------------------------------------
 
     def sync(self):
@@ -266,3 +252,32 @@ class Bot:
         """
         self.queue_message(text, *args)
         self.flush_messages()
+
+    # Helpers.
+    # ----------------------------------------------------------------------------------------------
+
+    def update_buildings(self, buildings: Iterable[Building]):
+        """
+        Update buildings attributes according to the provided ones.
+        """
+        for building in buildings:
+            self.buildings[building.id].update(building)
+
+    @staticmethod
+    def strftime(timestamp: datetime):
+        return timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def traverse_edges(width: int, height: int):
+        """
+        Generates coordinates to traverse edges of rectangle.
+        """
+        while True:
+            for x in range(0, width):
+                yield (x, 0)
+            for y in range(1, height):
+                yield (width - 1, y)
+            for x in range(width - 2, -1, -1):
+                yield (x, height - 1)
+            for y in range(height - 2, 0, -1):
+                yield (0, y)
