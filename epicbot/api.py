@@ -163,7 +163,6 @@ class Api:
     Epic War API.
     """
     HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:47.0) Gecko/20100101 Firefox/47.0"}
-    REQUEST_DELAY = 1.5
     BATTLE_FIELD_WIDTH = 62
     BATTLE_FIELD_HEIGHT = 62
 
@@ -612,7 +611,6 @@ class Api:
             headers["X-Auth-Session-Init"] = "1"
         headers["X-Auth-Signature"] = self.sign_request(data, headers)
 
-        time.sleep(self.REQUEST_DELAY)  # FIXME: remove this once Bot 2.0 is implemented.
         response = self.session.post(
             "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
 

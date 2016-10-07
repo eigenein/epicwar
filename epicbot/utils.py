@@ -2,26 +2,13 @@
 # coding: utf-8
 
 import logging
-import typing
 
 import click
-
-import epicbot.enums
 
 
 class Context:
     user_id = None  # type: str
     remixsid = None  # type: str
-    # FIXME: the following options are not needed in Bot 2.0.
-    start_time = None  # type: float
-    log_handler = None  # type: ColoredStreamHandler
-    with_castle = False  # type: bool
-    with_bastion = False  # type: bool
-    pvp_unit_type = None  # type: epicbot.enums.UnitType
-    min_bastion_runes = 0  # type: int
-    telegram_enabled = False  # type: bool
-    telegram_token = None  # type: typing.Optional[str]
-    telegram_chat_id = None  # type: typing.Optional[str]
 
     def __init__(self, user_id: str, remixsid: str):
         self.user_id = user_id
