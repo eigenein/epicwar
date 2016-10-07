@@ -39,7 +39,7 @@
 
 ### Updating library
 
-Use "Network" tab in a browser to look for a link like `https://epicwar.cdnvideo.ru/vk/v0294/lib/lib.json.gz`.
+Use "Network" tab in a browser to look for a link like `https://epicwar.cdnvideo.ru/vk/v0294/lib/lib.json.gz`. Then pass it to `tools/generate-library.py`.
 
 ### Adding new resource, building and unit types
 
