@@ -24,7 +24,6 @@
 |File||
 |---|---|
 |`bot.py`|Runs the bot once|
-|`epicwar.ipynb`|Used to investigate game requests|
 |`tools/command-log.py`|Used to investigate a battle command log|
 |`tools/generate-library.py`|Used to generate static library content|
 
