@@ -3,10 +3,6 @@
 
 """
 Game enumerations.
-
-Epic War has a lot of unit, building and resource types. Some of them are temporary and only
-use during some game events. Thus, some values are added explicitly to be able to use them and
-the others are generated to cover the range of IDs.
 """
 
 import enum
