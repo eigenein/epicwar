@@ -5,10 +5,11 @@
 Epic War bot.
 """
 
-import contextlib
+import asyncio
 import logging
 import typing
 
+import aiohttp
 import click
 
 import epicbot.api
@@ -49,16 +50,26 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
     Runs bot as a service.
     """
     library = epicbot.library.Library(epicbot.content.CONTENT)
+
+    # Initialize chat notifications.
     if configuration.telegram_enabled:
         chat = epicbot.telegram.Chat(configuration.telegram_token, configuration.telegram_chat_id)
     else:
         chat = None
     if not configuration.telegram_enabled:
         logging.warning("Telegram notifications are not configured.")
-    # with contextlib.closing(epicbot.api.Api(obj.user_id, obj.remixsid)) as api:
-    #     api.authenticate()
-    #     epicbot.bot.Bot(api, library, chat).run()
 
+    with aiohttp.ClientSession() as session:
+        # Start bots for all accounts.
+        for account in configuration.accounts:
+            api = epicbot.api.Api(session, account.user_id, account.remixsid)
+            bot = epicbot.bot.Bot(api, library, chat)
+            asyncio.ensure_future(bot.run())
+        # Run bots forever.
+        try:
+            asyncio.get_event_loop().run_forever()
+        finally:
+            asyncio.get_event_loop().close()
 
 if __name__ == "__main__":
     main()

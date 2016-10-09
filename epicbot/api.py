@@ -18,7 +18,7 @@ import typing
 from collections import Counter
 from typing import Dict, List, Optional, Set, Union
 
-import requests
+import aiohttp
 
 from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, NoticeType, SpellType, UnitType
 
@@ -40,13 +40,6 @@ class UnitCounter(Counter):
 
 class Base:
     __slots__ = ()
-
-    def update(self, other: "Base"):
-        """
-        Update object attributes.
-        """
-        for name in self.__slots__:
-            setattr(self, name, getattr(other, name))
 
     def __str__(self):
         return ", ".join("%s: %r" % (name, getattr(self, name)) for name in self.__slots__)
@@ -166,18 +159,19 @@ class Api:
     BATTLE_FIELD_WIDTH = 62
     BATTLE_FIELD_HEIGHT = 62
 
-    def __init__(self, user_id: str, remixsid: str):
+    def __init__(self, session: aiohttp.ClientSession, user_id: str, remixsid: str):
+        self.session = aiohttp.ClientSession()
         self.user_id = user_id
 
         self.auth_token = None
         self.cookies = {"remixsid": remixsid}
-
-        self.session = requests.Session()
         self.session_id = "".join(random.choice(string.ascii_lowercase + string.digits) for _ in range(14))
-
         self.request_id = 0
 
-    def authenticate(self):
+    async def __aenter__(self):
+        await self.session.__aenter__()
+
+    async def authenticate(self):
         """
         Initializes Epic War authentication token.
 
@@ -188,8 +182,12 @@ class Api:
         logging.info("User ID: %s.", self.user_id)
 
         logging.info("Loading game page on VK.com…")
-        app_page = self.session.get(
-            "https://vk.com/app3644106_{}".format(self.user_id), cookies=self.cookies, timeout=15).text
+        async with self.session.get(
+            "https://vk.com/app3644106_{}".format(self.user_id),
+            cookies=self.cookies,
+            timeout=15,
+        ) as response:
+            app_page = await response.text()
 
         # Look for params variable in the script.
         match = re.search(r"var params\s?=\s?(\{[^\}]+\})", app_page)
@@ -200,11 +198,12 @@ class Api:
 
         # Load the proxy page and look for Epic War authentication token.
         logging.info("Authenticating in Epic War…")
-        iframe_new = self.session.get(
+        async with self.session.get(
             "https://i-epicwar-vk.progrestar.net/iframe/vkontakte/iframe.new.php",
             params=params,
             timeout=10,
-        ).text
+        ) as response:
+            iframe_new = await response.text()
         match = re.search(r"auth_key=([a-zA-Z0-9.\-]+)", iframe_new)
         if not match:
             raise ValueError("authentication key is not found: %s" % iframe_new)
@@ -214,11 +213,11 @@ class Api:
     # Public API.
     # ----------------------------------------------------------------------------------------------
 
-    def get_self_info(self) -> SelfInfo:
+    async def get_self_info(self) -> SelfInfo:
         """
         Gets information about the player and its village.
         """
-        result, _ = self.post("getSelfInfo")
+        result, _ = await self.post("getSelfInfo")
         return SelfInfo(
             user_id=result["user"]["id"],
             caption=result["user"]["villageCaption"],
@@ -235,127 +234,127 @@ class Api:
             units=self.parse_units(result["user"]["unit"]),
         )
 
-    def get_gift_receivers(self) -> List[str]:
+    async def get_gift_receivers(self) -> List[str]:
         """
         Gets possible gift receivers.
 
         Note: this method is buggy – sometimes it returns no users.
         """
-        result, _ = self.post("giftGetReceivers")
+        result, _ = await self.post("giftGetReceivers")
         return [receiver["toUserId"] for receiver in result["receivers"]]
 
-    def send_gift(self, users: List[str]):
+    async def send_gift(self, users: List[str]):
         """
         Sends gift to users.
         """
-        result, _ = self.post("giftSend", users=users)
+        result, _ = await self.post("giftSend", users=users)
         return self.parse_error(result)
 
-    def get_gift_available(self) -> List[str]:
+    async def get_gift_available(self) -> List[str]:
         """
         Gets available gifts.
         """
-        result, _ = self.post("giftGetAvailable")
+        result, _ = await self.post("giftGetAvailable")
         return [gift["body"]["fromUserId"] for gift in result["gift"]]
 
-    def farm_gift(self, user_id: str) -> (Error, ResourceCounter):
+    async def farm_gift(self, user_id: str) -> (Error, ResourceCounter):
         """
         Farms gift from the user.
         """
-        result, state = self.post("giftFarm", True, userId=user_id)
+        result, state = await self.post("giftFarm", True, userId=user_id)
         return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
-    def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter, List[Building]):
+    async def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter, List[Building]):
         """
         Collects resource from the building.
         """
-        result, state = self.post("collectResource", True, buildingId=building_id)
+        result, state = await self.post("collectResource", True, buildingId=building_id)
         return (
             self.parse_resource_field(result["reward"]),
             self.parse_resource_field(state),
             [self.parse_building(entry) for entry in state["buildingChanged"]],
         )
 
-    def farm_cemetery(self) -> (ResourceCounter, ResourceCounter):
+    async def farm_cemetery(self) -> (ResourceCounter, ResourceCounter):
         """
         Collects died enemy army.
         """
-        result, state = self.post("cemeteryFarm", True)
+        result, state = await self.post("cemeteryFarm", True)
         return self.parse_resource_field(result["reward"]), self.parse_resource_field(state)
 
-    def get_buildings(self) -> List[Building]:
+    async def get_buildings(self) -> List[Building]:
         """
         Gets all buildings.
         """
-        result, _ = self.post("getBuildings")
+        result, _ = await self.post("getBuildings")
         return [self.parse_building(building) for building in result["building"]]
 
-    def upgrade_building(self, building_id: int) -> (Error, Optional[ResourceCounter], Optional[Building]):
+    async def upgrade_building(self, building_id: int) -> (Error, Optional[ResourceCounter], Optional[Building]):
         """
         Upgrades building to the next level.
         """
-        result, state = self.post("upgradeBuilding", True, buildingId=building_id)
+        result, state = await self.post("upgradeBuilding", True, buildingId=building_id)
         return (
             self.parse_error(result),
             (self.parse_resource_field(state) if state else None),
             (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
-    def destruct_building(self, building_id: int, instant: bool) -> (Error, Optional[ResourceCounter], Optional[Building]):
+    async def destruct_building(self, building_id: int, instant: bool) -> (Error, Optional[ResourceCounter], Optional[Building]):
         """
         Destructs building. Used to clean extended areas.
         """
-        result, state = self.post("destructBuilding", True, buildingId=building_id, instant=instant)
+        result, state = await self.post("destructBuilding", True, buildingId=building_id, instant=instant)
         return (
             self.parse_error(result),
             (self.parse_resource_field(state) if state else None),
             (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
-    def start_research(self, unit_id: int, level: int, forge_building_id: int) -> (Error, Optional[ResourceCounter]):
+    async def start_research(self, unit_id: int, level: int, forge_building_id: int) -> (Error, Optional[ResourceCounter]):
         """
         Start unit research.
         """
-        result, state = self.post("startResearch", True, level=level, unitId=unit_id, buildingId=forge_building_id)
+        result, state = await self.post("startResearch", True, level=level, unitId=unit_id, buildingId=forge_building_id)
         return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
-    def click_alliance_daily_gift(self):
+    async def click_alliance_daily_gift(self):
         """
         Activates alliance daily gift.
         """
-        self.post("alliance_level_clickDailyGift")
+        await self.post("alliance_level_clickDailyGift")
 
-    def send_alliance_help(self):
+    async def send_alliance_help(self):
         """
         Helps your alliance.
         """
-        self.post("alliance_help_sendHelp")
+        await self.post("alliance_help_sendHelp")
 
-    def ask_alliance_help(self):
+    async def ask_alliance_help(self):
         """
         Asks alliance for help.
         """
-        self.post("alliance_help_askForHelp")
+        await self.post("alliance_help_askForHelp")
 
-    def get_buildings_with_help(self) -> Set[int]:
+    async def get_buildings_with_help(self) -> Set[int]:
         """
         Gets building IDs with alliance help available.
         """
-        result, _ = self.post("alliance_help_getMyHelpers")
+        result, _ = await self.post("alliance_help_getMyHelpers")
         return {helper["job"]["buildingId"] for helper in result["helpers"]}
 
-    def farm_alliance_help(self, building_id: int) -> List[int]:
+    async def farm_alliance_help(self, building_id: int) -> List[int]:
         """
         Farms help from alliance member. Gets time per help for each job in list.
         """
-        result, _ = self.post("alliance_help_farm", buildingId=building_id)
+        result, _ = await self.post("alliance_help_farm", buildingId=building_id)
         return [job["timePerHelp"] for job in result["jobs"]]
 
-    def get_notices(self):
+    async def get_notices(self):
         """
         Gets all notices.
         """
-        result, _ = self.post("getNotices")
+        result, _ = await self.post("getNotices")
         # noinspection PyProtectedMember
         return {
             notice["id"]: NoticeType(notice["type"])
@@ -363,11 +362,11 @@ class Api:
             if notice["type"] in NoticeType._value2member_map_
         }
 
-    def notice_farm_reward(self, notice_id: str) -> (RewardCounter, ResourceCounter, UnitCounter):
+    async def notice_farm_reward(self, notice_id: str) -> (RewardCounter, ResourceCounter, UnitCounter):
         """
         Collects notice reward.
         """
-        result, state = self.post("noticeFarmReward", True, id=notice_id)
+        result, state = await self.post("noticeFarmReward", True, id=notice_id)
         if "result" in result:
             return (
                 self.parse_reward(result["result"]),
@@ -378,28 +377,28 @@ class Api:
             return None, None, None
         raise ValueError(result)
 
-    def get_artifacts(self) -> Set[ArtifactType]:
+    async def get_artifacts(self) -> Set[ArtifactType]:
         """
         Gets enabled artifacts.
         """
-        result, _ = self.post("artefactGetList")
+        result, _ = await self.post("artefactGetList")
         return {ArtifactType(int(artifact["typeId"])) for artifact in result["artefact"] if artifact["enabled"]}
 
-    def get_army_queue(self) -> List[ArmyQueue]:
+    async def get_army_queue(self) -> List[ArmyQueue]:
         """
         Gets unit queues.
         """
-        result, _ = self.post("getArmyQueue")
+        result, _ = await self.post("getArmyQueue")
         return [ArmyQueue(building_id=queue["buildingId"]) for queue in result["armyQueue"]]
 
-    def start_units(self, unit_type: UnitType, amount: int, building_id: int) -> Error:
+    async def start_units(self, unit_type: UnitType, amount: int, building_id: int) -> Error:
         """
         Hires units.
         """
-        result, _ = self.post("startUnit", unitId=unit_type.value, amount=amount, buildingId=building_id)
+        result, _ = await self.post("startUnit", unitId=unit_type.value, amount=amount, buildingId=building_id)
         return self.parse_error(result)
 
-    def start_bastion(
+    async def start_bastion(
         self,
         version="93271667fc58c73c37c16d54b913aaaf3517e604",
         for_starmoney=False,
@@ -408,37 +407,37 @@ class Api:
         Starts bastion battle.
         Version is taken from scripts/epicwar/haxe/battle/Battle.as.
         """
-        result, _ = self.post("battle_startBastion", version=version, forStarmoney=for_starmoney)
+        result, _ = await self.post("battle_startBastion", version=version, forStarmoney=for_starmoney)
         if "error" in result:
             return Error(result["error"]["name"]), None
         return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
 
-    def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> Optional[PvpBattle]:
+    async def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> Optional[PvpBattle]:
         """
         Starts PvP battle and returns battle.
         """
-        result, _ = self.post("battle_startPvp", version=version)
+        result, _ = await self.post("battle_startPvp", version=version)
         return PvpBattle(
             battle_id=result["battleId"],
             defender_score=result["defender"]["pvpScore"],
             defender_level=int(result["defender"]["level"]),
         ) if "battleId" in result else None
 
-    def add_battle_commands(self, battle_id: str, commands: str) -> Error:
+    async def add_battle_commands(self, battle_id: str, commands: str) -> Error:
         """
         Adds serialized commands to the battle.
         """
-        result, _ = self.post("battle_addCommands", battleId=battle_id, commands=commands)
+        result, _ = await self.post("battle_addCommands", battleId=battle_id, commands=commands)
         return self.parse_error(result)
 
-    def finish_battle_serialized(self, battle_id: str, commands: str) -> (str, Optional[ResourceCounter]):
+    async def finish_battle_serialized(self, battle_id: str, commands: str) -> (str, Optional[ResourceCounter]):
         """
         Finishes battle with serialized commands and returns serialized battle result and resources.
         """
-        result, state = self.post("battle_finish", True, battleId=battle_id, commands=commands)
+        result, state = await self.post("battle_finish", True, battleId=battle_id, commands=commands)
         return result["battleResult"], (self.parse_resource_field(state) if state else None)
 
-    def finish_battle(self, battle_id: str, commands: List[SpawnCommand]) -> (str, Optional[ResourceCounter]):
+    async def finish_battle(self, battle_id: str, commands: List[SpawnCommand]) -> (str, Optional[ResourceCounter]):
         """
         Finishes battle and returns serialized battle result and resources.
         """
@@ -453,31 +452,31 @@ class Api:
             for _id, command in enumerate(commands)
         ]
         footer = "~0~"
-        return self.finish_battle_serialized(battle_id, header + "".join(serialized_commands) + footer)
+        return await self.finish_battle_serialized(battle_id, header + "".join(serialized_commands) + footer)
 
-    def open_fair_citadel_gate(self) -> (RewardCounter, ResourceCounter, UnitCounter):
+    async def open_fair_citadel_gate(self) -> (RewardCounter, ResourceCounter, UnitCounter):
         """
         Collects bastion gift.
         """
-        result, state = self.post("fairCitadelOpenGate", True)
+        result, state = await self.post("fairCitadelOpenGate", True)
         return self.parse_reward(result), self.parse_resource_field(state), self.parse_units(state.get("unit", []))
 
-    def spin_event_roulette(self, count=1, is_payed=False) -> RewardCounter:
+    async def spin_event_roulette(self, count=1, is_payed=False) -> RewardCounter:
         """
         Spin roulette!
         """
-        result, _ = self.post("event_roulette_spin", count=count, isPayed=is_payed)
+        result, _ = await self.post("event_roulette_spin", count=count, isPayed=is_payed)
         if "reward" in result:
             return self.parse_reward(result["reward"])
         if "error" in result and result["error"]["name"] == Error.not_available.value:
             return {}
         raise ValueError(result)
 
-    def get_random_war_status(self) -> Optional[RandomWarStatus]:
+    async def get_random_war_status(self) -> Optional[RandomWarStatus]:
         """
         Gets random war status.
         """
-        result, _ = self.post("alliance_randomWar_status")
+        result, _ = await self.post("alliance_randomWar_status")
         return RandomWarStatus(
             start_time=datetime.datetime.fromtimestamp(result["war"]["timestampStart"]),
             end_time=datetime.datetime.fromtimestamp(result["war"]["timestampEnd"]),
@@ -485,25 +484,25 @@ class Api:
             score=result["alliance"]["score"],
         ) if result else None
 
-    def get_random_war_tasks(self) -> List[int]:
+    async def get_random_war_tasks(self) -> List[int]:
         """
         Gets task IDs of active random wars tasks.
         """
-        result, _ = self.post("alliance_randomWar_task_get")
+        result, _ = await self.post("alliance_randomWar_task_get")
         return [task["taskId"] for task in result]
 
-    def farm_random_war_task(self, task_id: int) -> Error:
+    async def farm_random_war_task(self, task_id: int) -> Error:
         """
         Complete random wars task.
         """
-        result, _ = self.post("alliance_randomWar_task_farm", taskId=task_id)
+        result, _ = await self.post("alliance_randomWar_task_farm", taskId=task_id)
         return self.parse_error(result)
 
-    def get_heroes(self) -> List[Hero]:
+    async def get_heroes(self) -> List[Hero]:
         """
         Gets heroes list.
         """
-        result, _ = self.post("heroesGetList")
+        result, _ = await self.post("heroesGetList")
         return [Hero(
             level=hero["level"],
             experience=hero["experience"],
@@ -580,7 +579,7 @@ class Api:
     # Making requests to API.
     # ----------------------------------------------------------------------------------------------
 
-    def post(self, name: str, return_state=False, **arguments) -> (dict, Union[bool, dict, list, None]):
+    async def post(self, name: str, return_state=False, **arguments) -> (dict, Union[bool, dict, list, None]):
         """
         Makes request to the game API.
         """
@@ -611,11 +610,15 @@ class Api:
             headers["X-Auth-Session-Init"] = "1"
         headers["X-Auth-Signature"] = self.sign_request(data, headers)
 
-        response = self.session.post(
-            "https://epicwar-vkontakte.progrestar.net/api/", data=data, headers=headers, timeout=10)
+        async with self.session.post(
+            "https://epicwar-vkontakte.progrestar.net/api/",
+            data=data,
+            headers=headers,
+            timeout=10,
+        ) as response:
+            result = await response.json()
 
-        logging.debug("%s", response.text)
-        result = response.json()
+        logging.debug("%s", result)
         if "results" in result:
             return result["results"][0]["result"], (result["results"][1]["result"] if return_state else None)
         if "error" in result:
@@ -644,6 +647,3 @@ class Api:
             fingerprint,
         )).encode("utf-8")
         return hashlib.md5(data).hexdigest()
-
-    def close(self):
-        self.session.close()
