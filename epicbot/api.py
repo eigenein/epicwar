@@ -86,15 +86,14 @@ class Bastion(Base):
 
 
 class Building(Base):
-    __slots__ = ("id", "type", "level", "is_completed", "complete_time", "hitpoints", "storage_fill", "volume")
+    __slots__ = ("id", "type", "level", "is_completed", "complete_time", "storage_fill", "volume")
 
-    def __init__(self, id: int, type: BuildingType, level: int, is_completed: bool, complete_time: int, hitpoints: int, storage_fill: float, volume: int):
+    def __init__(self, id: int, type: BuildingType, level: int, is_completed: bool, complete_time: int, storage_fill: float, volume: int):
         self.id = id
         self.type = type
         self.level = level
         self.is_completed = is_completed
         self.complete_time = complete_time
-        self.hitpoints = hitpoints
         self.storage_fill = storage_fill
         self.volume = volume
 
@@ -169,7 +168,7 @@ class Api:
     BATTLE_FIELD_HEIGHT = 62
 
     def __init__(self, session: aiohttp.ClientSession, user_id: str, remixsid: str):
-        self.session = aiohttp.ClientSession()
+        self.session = session
         self.user_id = user_id
 
         self.auth_token = None
@@ -528,7 +527,6 @@ class Api:
             level=building["level"],
             is_completed=building["completed"],
             complete_time=building["completeTime"],
-            hitpoints=building["hitpoints"],
             storage_fill=building.get("storageFill"),
             volume=building.get("volume"),
         )

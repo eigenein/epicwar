@@ -10,6 +10,7 @@ import gzip
 import json
 import logging
 import pprint
+import sqlite3
 import typing
 
 import aiohttp
@@ -55,16 +56,24 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
     # Initialize chat notifications.
     if configuration.telegram_enabled:
         chat = epicbot.telegram.Chat(configuration.telegram_token, configuration.telegram_chat_id)
+        logging.info("Telegram notifications are enabled.")
     else:
         chat = None
-    if not configuration.telegram_enabled:
         logging.warning("Telegram notifications are not configured.")
+
+    # Initialize database.
+    try:
+        configuration.database.create_schema()
+    except sqlite3.OperationalError:
+        logging.info("Database schema is already created.")
+    else:
+        logging.info("Database schema has been created.")
 
     with aiohttp.ClientSession() as session:
         # Start bots for all accounts.
         for account in configuration.accounts:
             api = epicbot.api.Api(session, account.user_id, account.remixsid)
-            bot = epicbot.bot.Bot(api, chat)
+            bot = epicbot.bot.Bot(configuration.database, api, chat)
             asyncio.ensure_future(bot.run())
         # Run bots forever.
         try:
