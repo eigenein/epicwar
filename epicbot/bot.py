@@ -62,38 +62,39 @@ class Bot:
         # Task loop.
         while True:
             try:
-                task = self.db.pick_task(self.api.user_id)
-                if task:
-                    logging.info("%s: next task at %s: %s(%s).", self.caption, self.strftime(task.scheduled_at), task.type.name, task.arguments)
-                    delay = (task.scheduled_at - datetime.now()).total_seconds()
-                    if delay > 0.0:
-                        await asyncio.sleep(delay)
-                    await self.perform_task(task)
-                else:
-                    logging.info("%s: task queue is empty – schedule sync.", self.caption)
-                    self.schedule(datetime.now(), TaskType.sync, True)
+                await self.step()
             except click.ClickException:
                 raise
             except Exception as ex:
                 logging.error("%s: error.", self.caption, exc_info=ex)
                 await self.send_message("\N{cross mark} Ошибка:\n```\n%s\n```", traceback.format_exc())
 
-    async def perform_task(self, task: Task):
+    async def step(self):
         """
-        Performs a single task.
+        Performs one task loop iteration.
         """
-        if task.type == TaskType.authenticate:
-            await self.authenticate()
-        elif task.type == TaskType.sync:
-            await self.sync()
-        elif task.type == TaskType.collect_resource:
-            await self.collect_resource(*task.arguments)
-        elif task.type == TaskType.check_alliance_help:
-            await self.check_alliance_help()
-        elif task.type == TaskType.send_gifts:
-            await self.send_gifts()
-        elif task.type == TaskType.farm_gifts:
-            await self.farm_gifts()
+        task = self.db.pick_task(self.api.user_id)
+        if task:
+            logging.info("%s: next task at %s: %s(%s).", self.caption, self.strftime(task.scheduled_at), task.type.name, task.arguments)
+            delay = (task.scheduled_at - datetime.now()).total_seconds()
+            if delay > 0.0:
+                await asyncio.sleep(delay)
+            # Dispatch task.
+            if task.type == TaskType.authenticate:
+                await self.authenticate()
+            elif task.type == TaskType.sync:
+                await self.sync()
+            elif task.type == TaskType.collect_resource:
+                await self.collect_resource(*task.arguments)
+            elif task.type == TaskType.check_alliance_help:
+                await self.check_alliance_help()
+            elif task.type == TaskType.send_gifts:
+                await self.send_gifts()
+            elif task.type == TaskType.farm_gifts:
+                await self.farm_gifts()
+        else:
+            logging.info("%s: task queue is empty – schedule sync.", self.caption)
+            self.schedule(datetime.now(), TaskType.sync, True)
 
     # Schedulers.
     # ----------------------------------------------------------------------------------------------

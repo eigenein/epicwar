@@ -53,34 +53,47 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
     Run bot as a service.
     """
 
-    # Initialize chat notifications.
-    if configuration.telegram_enabled:
-        chat = epicbot.telegram.Chat(configuration.telegram_token, configuration.telegram_chat_id)
-        logging.info("Telegram notifications are enabled.")
-    else:
-        chat = None
-        logging.warning("Telegram notifications are not configured.")
-
     # Initialize database.
     try:
         configuration.database.create_schema()
-    except sqlite3.OperationalError:
-        logging.info("Database schema is already created.")
+    except sqlite3.OperationalError as ex:
+        logging.info("Operational error: %s.", str(ex))
     else:
         logging.info("Database schema has been created.")
 
-    with aiohttp.ClientSession() as session:
-        # Start bots for all accounts.
-        for account in configuration.accounts:
-            api = epicbot.api.Api(session, account.user_id, account.remixsid)
-            bot = epicbot.bot.Bot(configuration.database, api, chat)
-            asyncio.ensure_future(bot.run())
-        # Run bots forever.
-        try:
-            asyncio.get_event_loop().run_forever()
-        finally:
-            asyncio.get_event_loop().close()
-            configuration.database.close()
+    async def async_run():
+        """
+        Implements asynchronous part of the command.
+        """
+        async with aiohttp.ClientSession() as session:
+            # Initialize chat notifications.
+            if configuration.telegram_enabled:
+                chat = epicbot.telegram.Chat(session, configuration.telegram_token, configuration.telegram_chat_id)
+                logging.info("Telegram notifications are enabled.")
+            else:
+                chat = None
+                logging.warning("Telegram notifications are not configured.")
+            # Run all bots.
+            await asyncio.gather(*(
+                asyncio.ensure_future(epicbot.bot.Bot(
+                    configuration.database,
+                    epicbot.api.Api(session, account.user_id, account.remixsid),
+                    chat,
+                ).run())
+                for account in configuration.accounts
+            ))
+
+    # Run asynchronous code.
+    try:
+        asyncio.get_event_loop().run_until_complete(asyncio.ensure_future(async_run()))
+    except click.ClickException:
+        raise
+    except Exception as ex:
+        logging.critical("Critical error.", exc_info=ex)
+    finally:
+        # FIXME: Task was destroyed but it is pending.
+        asyncio.get_event_loop().close()
+        configuration.database.close()
 
 
 @main.command("library")

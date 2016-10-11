@@ -38,28 +38,31 @@ class Database:
     def create_schema(self):
         self.connection.executescript("""
             CREATE TABLE state (
-                user_id TEXT NOT NULL PRIMARY KEY,
-                name TEXT NOT NULL PRIMARY KEY,
-                value TEXT
+                user_id TEXT NOT NULL,
+                name TEXT NOT NULL,
+                value TEXT,
+                PRIMARY KEY (user_id, name)
             );
 
             CREATE TABLE tasks (
-                user_id TEXT NOT NULL PRIMARY KEY,    -- In-game user ID.
-                scheduled_at INTEGER NOT NULL,        -- Scheduled execution timestamp.
-                type TEXT NOT NULL PRIMARY KEY,       -- Task type.
-                arguments TEXT NOT NULL PRIMARY KEY   -- JSON-serialized task arguments (keys must be sorted).
+                user_id TEXT NOT NULL,          -- In-game user ID.
+                scheduled_at INTEGER NOT NULL,  -- Scheduled execution timestamp.
+                type TEXT NOT NULL,             -- Task type.
+                arguments TEXT NOT NULL,        -- JSON-serialized task arguments (keys must be sorted).
+                PRIMARY KEY (user_id, type, arguments)
             );
             CREATE INDEX ix_tasks_user_id_scheduled_at ON tasks(user_id, scheduled_at);
 
             CREATE TABLE buildings (
-                user_id TEXT NOT NULL PRIMARY KEY,
-                id INTEGER NOT NULL PRIMARY KEY,
+                user_id TEXT NOT NULL,
+                id INTEGER NOT NULL,
                 type INTEGER NOT NULL,
                 level INTEGER NOT NULL,
                 is_completed INTEGER NOT NULL,
                 complete_timestamp INTEGER NOT NULL,
                 storage_fill REAL NOT NULL,
-                volume INTEGER NOT NULL
+                volume INTEGER NOT NULL,
+                PRIMARY KEY (user_id, id)
             );
             CREATE INDEX ix_buildings_type ON buildings(type);
         """)
@@ -99,7 +102,12 @@ class Database:
             VALUES (?, ?, ?, ?)
         """ % ("REPLACE" if replace else "IGNORE")
         with self.connection:
-            self.connection.execute(query, (user_id, task.scheduled_at.timestamp(), task.type.value, json.dumps(task.arguments)))
+            self.connection.execute(query, (
+                user_id,
+                task.scheduled_at.timestamp(),
+                task.type.value,
+                json.dumps(task.arguments, sort_keys=True),
+            ))
 
     def pick_task(self, user_id: str) -> Task:
         """
