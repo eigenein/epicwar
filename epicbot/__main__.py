@@ -50,7 +50,7 @@ def main(verbose: True, log_file: typing.io.TextIO):
 @click.option("configuration", "-c", "--config", type=epicbot.utils.ConfigurationParamType(), help="Configuration file.")
 def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
     """
-    Runs bot as a service.
+    Run bot as a service.
     """
 
     # Initialize chat notifications.
@@ -87,6 +87,9 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
 @click.option("-o", "--output", type=click.File("wt", encoding="utf-8"))
 @click.argument("url")
 def generate_library(url: str, output: typing.io.TextIO):
+    """
+    Generate library.py from lib.json.gz URL.
+    """
     original_library = json.loads(gzip.decompress(requests.get(url).content).decode("utf-8"))
     output = output or click.get_text_stream("stdout")
     library = epicbot.utils.convert_library(original_library)
