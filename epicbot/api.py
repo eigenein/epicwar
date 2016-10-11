@@ -192,6 +192,7 @@ class Api:
         logging.info("Loading game page on VK.com…")
         async with self.session.get(
             "https://vk.com/app3644106_{}".format(self.user_id),
+            # FIXME: TypeError: _request() got an unexpected keyword argument 'cookies'
             cookies=self.cookies,
             timeout=15,
         ) as response:

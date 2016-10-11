@@ -44,9 +44,9 @@ class Bot:
         self.db = db
         self.api = api
         self.chat = chat
+        self.start_time = None  # type: datetime
         self.caption = None  # type: str
         self.messages = []
-        self.start_time = None  # type: datetime
 
     async def run(self):
         """
