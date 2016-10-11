@@ -6,18 +6,20 @@ Epic War bot.
 """
 
 import asyncio
+import gzip
+import json
 import logging
+import pprint
 import typing
 
 import aiohttp
 import click
+import requests
 
 import epicbot.api
 import epicbot.bastion
 import epicbot.bot
-import epicbot.content
 import epicbot.enums
-import epicbot.library
 import epicbot.telegram
 import epicbot.utils
 
@@ -49,7 +51,6 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
     """
     Runs bot as a service.
     """
-    library = epicbot.library.Library(epicbot.content.CONTENT)
 
     # Initialize chat notifications.
     if configuration.telegram_enabled:
@@ -63,13 +64,39 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
         # Start bots for all accounts.
         for account in configuration.accounts:
             api = epicbot.api.Api(session, account.user_id, account.remixsid)
-            bot = epicbot.bot.Bot(api, library, chat)
+            bot = epicbot.bot.Bot(api, chat)
             asyncio.ensure_future(bot.run())
         # Run bots forever.
         try:
             asyncio.get_event_loop().run_forever()
         finally:
             asyncio.get_event_loop().close()
+
+
+@main.command("library")
+@click.option("-o", "--output", type=click.File("wt", encoding="utf-8"))
+@click.argument("url")
+def generate_library(url: str, output: typing.io.TextIO):
+    original_library = json.loads(gzip.decompress(requests.get(url).content).decode("utf-8"))
+    output = output or click.get_text_stream("stdout")
+    library = epicbot.utils.convert_library(original_library)
+    print("\n".join((
+        "#!/usr/bin/env python3",
+        "# coding: utf-8",
+        "",
+        "\"\"\"",
+        "DO NOT EDIT. AUTOMATICALLY GENERATED FROM %s." % url,
+        "CONTAINS CONVERTED EPIC WAR GAME LIBRARY.",
+        "\"\"\"",
+        "",
+        "",
+        "class Library:",
+        "\n".join(
+            "    %s = %s" % (key, pprint.pformat(library[key], width=1000000, compact=True))
+            for key in sorted(library)
+        ),
+    )), file=output)
+
 
 if __name__ == "__main__":
     main()

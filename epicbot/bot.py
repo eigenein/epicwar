@@ -13,8 +13,9 @@ from typing import Dict, Iterable, List, Optional
 
 import click
 
-from epicbot.api import AllianceMember, Api, Building, Error, ResourceCounter
-from epicbot.enums import Sets
+
+from epicbot.api import AllianceMember, Api, Building, Error, Resources
+from epicbot.enums import BuildingType
 from epicbot.library import Library
 from epicbot.telegram import Chat
 
@@ -46,9 +47,8 @@ class Bot:
     # Sync the whole state periodically.
     SYNC_INTERVAL = timedelta(hours=4)
 
-    def __init__(self, api: Api, library: Library, chat: Optional[Chat]):
+    def __init__(self, api: Api, chat: Optional[Chat]):
         self.api = api
-        self.library = library
         self.chat = chat
         # Task queue.
         self.tasks = {}  # type: Dict[Task, datetime]
@@ -56,7 +56,7 @@ class Bot:
         self.caption = None  # type: str
         self.level = None  # type: int
         self.buildings = None  # type: Dict[int, Building]
-        self.resources = None  # type: ResourceCounter
+        self.resources = None  # type: Resources
         self.alliance_members = None  # type: List[AllianceMember]
         # Chat messages queue.
         self.messages = []
@@ -122,7 +122,7 @@ class Bot:
         """
         Schedules resource collection the building.
         """
-        full_time = (1 - building.storage_fill) * self.library.full_time[building.type, building.level]
+        full_time = (1 - building.storage_fill) * Library.full_time[building.type, building.level]
         self.schedule(datetime.now() + timedelta(seconds=full_time), TaskType.collect_resource, building)
 
     def schedule_collect_resources_from_all(self):
@@ -131,7 +131,7 @@ class Bot:
         Remember to schedule resource collection when any resource is being spent.
         """
         for building in self.buildings.values():
-            if building.type in Sets.production_buildings:
+            if building.type in BuildingType.production:
                 self.schedule_collect_resources(building)
 
     # Tasks.
@@ -167,7 +167,7 @@ class Bot:
         # It's quite difficult to check if there is enough storage space available.
         # Thus, I accept that there will be unsuccessful attempts.
         reward, self.resources, updated_buildings = await self.api.collect_resource(building.id)
-        self.update_buildings(updated_buildings)  # TODO: update database
+        self.update_buildings(updated_buildings)
         resource_type, amount = next(iter(reward.items()))
         logging.info("Collected %s %s from %s.", amount, resource_type.name, building.type.name)
         if amount == 0:

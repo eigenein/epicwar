@@ -8,281 +8,275 @@ Game enumerations.
 import enum
 
 
-class NoticeType(enum.Enum):
-    """
-    Epic War inbox notice type.
-    """
-    alliance_level_daily_gift = "allianceLevelDailyGift"  # ежедневный подарок братства
-    fair_tournament_result = "fairTournamentResult"
-
-
 class Error(enum.Enum):
     """
-    Epic War API error codes.
+    Epic War API errors.
+    These values have got different types (poor Nexters developers!) thus I try to collect them all and
+    make the class be a proper enumeration.
     """
-    ok = True  # not a real error code
-    fail = False  # not a real error code
-    building_dependency = "BuildingDependency"  # higher level of another building is required
+    ok = True                                           # not a real error code
+    fail = False                                        # not a real error code
+    building_dependency = "BuildingDependency"          # higher level of another building is required
     not_enough_resources = r"error\NotEnoughResources"  # not enough resources
-    not_available = r"error\NotAvailable"  # all builders are busy or invalid unit level
-    vip_required = r"error\VipRequired"  # VIP status is required
-    not_enough = r"error\NotEnough"  # not enough… score?
+    not_available = r"error\NotAvailable"               # all builders are busy or invalid unit level
+    vip_required = r"error\VipRequired"                 # VIP status is required
+    not_enough = r"error\NotEnough"                     # not enough… score?
     not_enough_time = r"error\NotEnoughTime"
     too_many = r"error\TooMany"
     user_locked = r"error\UserLocked"
 
 
-def create_enum(class_name: str, prefix: str, members: dict):
-    """
-    Creates enum with the given class name.
-    Adds the specified members and auto-generated unknown members up to ID: 2000.
-    """
-    return enum.Enum(class_name, [
-        (members[_id], _id) if _id in members else ("%s_%s" % (prefix, _id), _id)
-        for _id in range(2000)
-    ])
+class NoticeType(str):
+    pass
 
-ArtifactType = create_enum("ArtifactType", "artifact", {
-    757: "alliance_builder",
-})
-
-BuildingType = create_enum("BuildingType", "building", {
-    1: "castle",                    # замок
-    2: "mine",                      # шахта
-    3: "treasury",                  # казна
-    4: "mill",                      # мельница
-    5: "barn",                      # амбар
-    6: "barracks",                  # казарма
-    7: "staff",                     # штаб
-    8: "builder_hut",               # дом строителя
-    9: "forge",                     # кузница
-    10: "ballista",                 # башня
-    11: "wall",                     # стена
-    12: "archer_tower",             # башня лучников
-    13: "cannon",                   # пушка
-    14: "thunder_tower",            # штормовой шпиль
-    15: "ice_tower",                # зиккурат
-    16: "fire_tower",               # башня огня
-    17: "clan_house",               # дом братства
-    18: "dark_tower",
-    19: "tavern",                   # таверна
-    20: "alchemist",                # дом алхимика
-    22: "liberator",
-    23: "perfectionist",
-    30: "one_year_fire",
-    31: "sand_mine",                # песчаный карьер
-    32: "sand_warehouse",
-    33: "sand_barracks",
-    34: "sand_tower",
-    35: "crystal_tower",
-    36: "sand_forge",
-    37: "artefacts_house",
-    65: "extended_area_1",          # территория
-    66: "extended_area_2",          # территория
-    67: "extended_area_3",          # территория
-    68: "extended_area_4",          # территория
-    69: "extended_area_5",          # территория
-    70: "extended_area_6",          # территория
-    71: "extended_area_7",          # территория
-    72: "extended_area_8",          # территория
-    73: "extended_area_9",          # территория
-    74: "extended_area_10",         # территория
-    75: "extended_area_11",         # территория
-    76: "extended_area_12",         # территория
-    77: "extended_area_13",         # территория
-    78: "extended_area_14",         # территория
-    79: "extended_area_15",         # территория
-    80: "extended_area_16",         # территория
-    81: "extended_area_17",         # территория
-    82: "extended_area_18",         # территория
-    83: "extended_area_19",         # территория
-    84: "extended_area_20",         # территория
-    85: "extended_area_xx",         # территория
-    146: "easter_tree",
-    147: "portal",                  # призрачный портал
-    150: "pirate_lamp",
-    152: "pirate_chest",
-    154: "jeweler_house",           # дом ювелира
-    504: "happy_birthday_fontan",
-    604: "halloween_crypt",
-    626: "elf_pond",
-    631: "ice_obelisk",             # ледяной обелиск
-    637: "global_wars_building",
-    642: "pirate_ship_2016",
-})
-
-ResourceType = create_enum("ResourceType", "resource", {
-    1: "gold",                  # золото
-    2: "food",                  # еда
-    3: "mana",                  # мана
-    4: "enchant_scroll_1",
-    5: "enchant_scroll_2",
-    6: "enchant_scroll_3",
-    7: "enchant_scroll_4",
-    8: "enchant_scroll_5",
-    9: "enchant_scroll_6",
-    26: "sand",                 # песок
-    50: "runes",                # руны бастиона ужаса
-    58: "crystal_green_1",      # зеленый кристалл 1-го уровня
-    59: "crystal_green_2",      # зеленый кристалл 2-го уровня
-    60: "crystal_green_3",      # зеленый кристалл 3-го уровня
-    61: "crystal_green_4",      # зеленый кристалл 4-го уровня
-    62: "crystal_green_5",      # зеленый кристалл 5-го уровня
-    63: "crystal_green_6",      # зеленый кристалл 6-го уровня
-    64: "crystal_green_7",      # зеленый кристалл 7-го уровня
-    65: "crystal_green_8",      # зеленый кристалл 8-го уровня
-    66: "crystal_green_9",      # зеленый кристалл 9-го уровня
-    67: "crystal_green_10",     # зеленый кристалл 10-го уровня
-    68: "crystal_orange_1",     # оранжевый кристалл 1-го уровня
-    69: "crystal_orange_2",     # оранжевый кристалл 2-го уровня
-    70: "crystal_orange_3",     # оранжевый кристалл 3-го уровня
-    71: "crystal_orange_4",     # оранжевый кристалл 4-го уровня
-    72: "crystal_orange_5",     # оранжевый кристалл 5-го уровня
-    73: "crystal_orange_6",     # оранжевый кристалл 6-го уровня
-    74: "crystal_orange_7",     # оранжевый кристалл 7-го уровня
-    75: "crystal_orange_8",     # оранжевый кристалл 8-го уровня
-    76: "crystal_orange_9",     # оранжевый кристалл 9-го уровня
-    77: "crystal_orange_10",    # оранжевый кристалл 10-го уровня
-    78: "crystal_red_1",        # красный кристалл 1-го уровня
-    79: "crystal_red_2",        # красный кристалл 2-го уровня
-    80: "crystal_red_3",        # красный кристалл 3-го уровня
-    81: "crystal_red_4",        # красный кристалл 4-го уровня
-    82: "crystal_red_5",        # красный кристалл 5-го уровня
-    83: "crystal_red_6",        # красный кристалл 6-го уровня
-    84: "crystal_red_7",        # красный кристалл 7-го уровня
-    85: "crystal_red_8",        # красный кристалл 8-го уровня
-    86: "crystal_red_9",        # красный кристалл 9-го уровня
-    87: "crystal_red_10",       # красный кристалл 10-го уровня
-    88: "crystal_blue_1",       # синий кристалл 1-го уровня
-    89: "crystal_blue_2",       # синий кристалл 2-го уровня
-    90: "crystal_blue_3",       # синий кристалл 3-го уровня
-    91: "crystal_blue_4",       # синий кристалл 4-го уровня
-    92: "crystal_blue_5",       # синий кристалл 5-го уровня
-    93: "crystal_blue_6",       # синий кристалл 6-го уровня
-    94: "crystal_blue_7",       # синий кристалл 7-го уровня
-    95: "crystal_blue_8",       # синий кристалл 8-го уровня
-    96: "crystal_blue_9",       # синий кристалл 9-го уровня
-    97: "crystal_blue_10",      # синий кристалл 10-го уровня
-    104: "enchanted_coins",     # зачарованные монеты (прокачивание кристаллов)
-    161: "alliance_runes",      # руна знаний (клановый ресурс)
-    170: "doubloon",            # дублоны для прокачки пирамиды
-    171: "fire_water",          # огненная вода для прокачки шанса
-})
-
-SpellType = create_enum("SpellType", "spell", {
-    1: "lightning",     # небесная молния
-    2: "fire",
-    9: "tornado",       # дыхание смерти
-    12: "easter",       # огненный раскол
-    14: "patronus",     # магическая ловушка
-    104: "silver",      # купол грозы
-})
-
-UnitType = create_enum("UnitType", "unit", {
-    1: "knight",            # рыцарь
-    2: "goblin",            # гоблин
-    3: "orc",               # орк
-    4: "elf",               # эльф
-    5: "troll",             # тролль
-    6: "eagle",             # орел
-    7: "mage",              # маг
-    8: "ghost",             # призрак
-    9: "ent",               # энт
-    10: "dragon",           # дракон
-    11: "palladin",         # пламя возмездия (герой)
-    12: "dwarf",            # гномский пушкарь (герой)
-    13: "halloween",        # ветрокрылая (герой)
-    14: "white_mage",       # повелитель холода (герой)
-    16: "skeleton",         # король проклятых (герой)
-    20: "scorpion",         # скорпион
-    21: "afreet",           # ифрит
-    22: "spider",           # арахнит
-    23: "elephant",         # слон
-    28: "frozen_ent",       # ледяной страж (герой)
-    47: "citadel_santa",    # проклятый гном
-    48: "citadel_yeti",     # хищник
-    49: "citadel_elf",      # стрелок мора
-    50: "citadel_orc",      # урук
-    51: "pirates_sirena",
-    52: "pirates_shark",    # воин глубин
-    53: "pirates_ghost",
-    54: "pirates_crab",
-    103: "angel_knight",    # небожитель (герой)
-    108: "succubus",        # огненная бестия (герой)
-    110: "league_orc_3",    # защитник-сержант
-    115: "league_elf_3",    # страж-сержант
-    117: "league_troll_2",  # урук-рядовой
-    121: "league_eagle_2",  # охотник-рядовой
-    158: "ice_golem",       # (герой)
-})
+NoticeType.alliance_level_daily_gift = NoticeType("allianceLevelDailyGift")  # ежедневный подарок братства
+NoticeType.fair_tournament_result = NoticeType("fairTournamentResult")
 
 
-class Sets:
-    """
-    Some frequently used sets of enum members.
-    """
+# Artifact types.
+class ArtifactType(int):
+    pass
 
-    production_buildings = {BuildingType.mine, BuildingType.mill, BuildingType.sand_mine}
+ArtifactType.alliance_builder = ArtifactType(757)  # дополнительный строитель от братства
 
-    extended_areas = {
-        BuildingType.extended_area_1,
-        BuildingType.extended_area_2,
-        BuildingType.extended_area_3,
-        BuildingType.extended_area_4,
-        BuildingType.extended_area_5,
-        BuildingType.extended_area_6,
-        BuildingType.extended_area_7,
-        BuildingType.extended_area_8,
-        BuildingType.extended_area_9,
-        BuildingType.extended_area_10,
-        BuildingType.extended_area_11,
-        BuildingType.extended_area_12,
-        BuildingType.extended_area_13,
-        BuildingType.extended_area_14,
-        BuildingType.extended_area_15,
-        BuildingType.extended_area_16,
-        BuildingType.extended_area_17,
-        BuildingType.extended_area_18,
-        BuildingType.extended_area_19,
-        BuildingType.extended_area_20,
-        BuildingType.extended_area_xx,
-    }
 
-    upgradable_units = {
-        UnitType.knight,
-        UnitType.goblin,
-        UnitType.orc,
-        UnitType.elf,
-        UnitType.troll,
-        UnitType.eagle,
-        UnitType.mage,
-        UnitType.ghost,
-        UnitType.ent,
-        UnitType.dragon,
-        UnitType.scorpion,
-        UnitType.afreet,
-        UnitType.spider,
-        UnitType.elephant,
-    }
+class BuildingType(int):
+    pass
 
-    startable_units = {
-        UnitType.knight,
-        UnitType.goblin,
-        UnitType.orc,
-        UnitType.elf,
-        UnitType.troll,
-        UnitType.eagle,
-        UnitType.mage,
-        UnitType.ghost,
-        UnitType.ent,
-        UnitType.dragon,
-    }
+BuildingType.castle = BuildingType(1)
+BuildingType.mine = BuildingType(2)
+BuildingType.treasury = BuildingType(3)
+BuildingType.mill = BuildingType(4)
+BuildingType.barn = BuildingType(5)
+BuildingType.barracks = BuildingType(6)
+BuildingType.staff = BuildingType(7)
+BuildingType.builder_hut = BuildingType(8)
+BuildingType.forge = BuildingType(9)
+BuildingType.ballista = BuildingType(10)
+BuildingType.wall = BuildingType(11)
+BuildingType.archer_tower = BuildingType(12)
+BuildingType.cannon = BuildingType(13)
+BuildingType.thunder_tower = BuildingType(14)
+BuildingType.ice_tower = BuildingType(15)
+BuildingType.fire_tower = BuildingType(16)
+BuildingType.clan_house = BuildingType(17)
+BuildingType.dark_tower = BuildingType(18)
+BuildingType.tavern = BuildingType(19)
+BuildingType.alchemist = BuildingType(20)
+BuildingType.liberator = BuildingType(22)
+BuildingType.perfectionist = BuildingType(23)
+BuildingType.one_year_fire = BuildingType(30)
+BuildingType.sand_mine = BuildingType(31)
+BuildingType.sand_warehouse = BuildingType(32)
+BuildingType.sand_barracks = BuildingType(33)
+BuildingType.sand_tower = BuildingType(34)
+BuildingType.crystal_tower = BuildingType(35)
+BuildingType.sand_forge = BuildingType(36)
+BuildingType.artefacts_house = BuildingType(37)
+BuildingType.extended_area_1 = BuildingType(65)
+BuildingType.extended_area_2 = BuildingType(66)
+BuildingType.extended_area_3 = BuildingType(67)
+BuildingType.extended_area_4 = BuildingType(68)
+BuildingType.extended_area_5 = BuildingType(69)
+BuildingType.extended_area_6 = BuildingType(70)
+BuildingType.extended_area_7 = BuildingType(71)
+BuildingType.extended_area_8 = BuildingType(72)
+BuildingType.extended_area_9 = BuildingType(73)
+BuildingType.extended_area_10 = BuildingType(74)
+BuildingType.extended_area_11 = BuildingType(75)
+BuildingType.extended_area_12 = BuildingType(76)
+BuildingType.extended_area_13 = BuildingType(77)
+BuildingType.extended_area_14 = BuildingType(78)
+BuildingType.extended_area_15 = BuildingType(79)
+BuildingType.extended_area_16 = BuildingType(80)
+BuildingType.extended_area_17 = BuildingType(81)
+BuildingType.extended_area_18 = BuildingType(82)
+BuildingType.extended_area_19 = BuildingType(83)
+BuildingType.extended_area_20 = BuildingType(84)
+BuildingType.extended_area_xx = BuildingType(85)
+BuildingType.easter_tree = BuildingType(146)
+BuildingType.portal = BuildingType(147)
+BuildingType.pirate_lamp = BuildingType(150)
+BuildingType.pirate_chest = BuildingType(152)
+BuildingType.jeweler_house = BuildingType(154)
+BuildingType.happy_birthday_fontan = BuildingType(504)
+BuildingType.halloween_crypt = BuildingType(604)
+BuildingType.elf_pond = BuildingType(626)
+BuildingType.ice_obelisk = BuildingType(631)
+BuildingType.global_wars_building = BuildingType(637)
+BuildingType.pirate_ship_2016 = BuildingType(642)
 
-    non_upgradable_buildings = {
-        BuildingType.artefacts_house,
-        BuildingType.clan_house,
-        BuildingType.ice_obelisk,
-        BuildingType.jeweler_house,
-        BuildingType.portal,
-        BuildingType.tavern,
-    }
+
+class ResourceType(int):
+    pass
+
+ResourceType.gold = ResourceType(1)
+ResourceType.food = ResourceType(2)
+ResourceType.mana = ResourceType(3)
+ResourceType.enchant_scroll_1 = ResourceType(4)
+ResourceType.enchant_scroll_2 = ResourceType(5)
+ResourceType.enchant_scroll_3 = ResourceType(6)
+ResourceType.enchant_scroll_4 = ResourceType(7)
+ResourceType.enchant_scroll_5 = ResourceType(8)
+ResourceType.enchant_scroll_6 = ResourceType(9)
+ResourceType.sand = ResourceType(26)
+ResourceType.runes = ResourceType(50)
+ResourceType.crystal_green_1 = ResourceType(58)
+ResourceType.crystal_green_2 = ResourceType(59)
+ResourceType.crystal_green_3 = ResourceType(60)
+ResourceType.crystal_green_4 = ResourceType(61)
+ResourceType.crystal_green_5 = ResourceType(62)
+ResourceType.crystal_green_6 = ResourceType(63)
+ResourceType.crystal_green_7 = ResourceType(64)
+ResourceType.crystal_green_8 = ResourceType(65)
+ResourceType.crystal_green_9 = ResourceType(66)
+ResourceType.crystal_green_10 = ResourceType(67)
+ResourceType.crystal_orange_1 = ResourceType(68)
+ResourceType.crystal_orange_2 = ResourceType(69)
+ResourceType.crystal_orange_3 = ResourceType(70)
+ResourceType.crystal_orange_4 = ResourceType(71)
+ResourceType.crystal_orange_5 = ResourceType(72)
+ResourceType.crystal_orange_6 = ResourceType(73)
+ResourceType.crystal_orange_7 = ResourceType(74)
+ResourceType.crystal_orange_8 = ResourceType(75)
+ResourceType.crystal_orange_9 = ResourceType(76)
+ResourceType.crystal_orange_10 = ResourceType(77)
+ResourceType.crystal_red_1 = ResourceType(78)
+ResourceType.crystal_red_2 = ResourceType(79)
+ResourceType.crystal_red_3 = ResourceType(80)
+ResourceType.crystal_red_4 = ResourceType(81)
+ResourceType.crystal_red_5 = ResourceType(82)
+ResourceType.crystal_red_6 = ResourceType(83)
+ResourceType.crystal_red_7 = ResourceType(84)
+ResourceType.crystal_red_8 = ResourceType(85)
+ResourceType.crystal_red_9 = ResourceType(86)
+ResourceType.crystal_red_10 = ResourceType(87)
+ResourceType.crystal_blue_1 = ResourceType(88)
+ResourceType.crystal_blue_2 = ResourceType(89)
+ResourceType.crystal_blue_3 = ResourceType(90)
+ResourceType.crystal_blue_4 = ResourceType(91)
+ResourceType.crystal_blue_5 = ResourceType(92)
+ResourceType.crystal_blue_6 = ResourceType(93)
+ResourceType.crystal_blue_7 = ResourceType(94)
+ResourceType.crystal_blue_8 = ResourceType(95)
+ResourceType.crystal_blue_9 = ResourceType(96)
+ResourceType.crystal_blue_10 = ResourceType(97)
+ResourceType.enchanted_coins = ResourceType(104)
+ResourceType.alliance_runes = ResourceType(161)
+ResourceType.doubloon = ResourceType(170)
+ResourceType.fire_water = ResourceType(171)
+
+
+class SpellType(int):
+    pass
+
+SpellType.lightning = SpellType(1)
+SpellType.fire = SpellType(2)
+SpellType.tornado = SpellType(9)
+SpellType.easter = SpellType(12)
+SpellType.patronus = SpellType(14)
+SpellType.silver = SpellType(104)
+
+
+class UnitType(int):
+    pass
+
+UnitType.knight = UnitType(1)
+UnitType.goblin = UnitType(2)
+UnitType.orc = UnitType(3)
+UnitType.elf = UnitType(4)
+UnitType.troll = UnitType(5)
+UnitType.eagle = UnitType(6)
+UnitType.mage = UnitType(7)
+UnitType.ghost = UnitType(8)
+UnitType.ent = UnitType(9)
+UnitType.dragon = UnitType(10)
+UnitType.palladin = UnitType(11)
+UnitType.dwarf = UnitType(12)
+UnitType.halloween = UnitType(13)
+UnitType.white_mage = UnitType(14)
+UnitType.skeleton = UnitType(16)
+UnitType.scorpion = UnitType(20)
+UnitType.afreet = UnitType(21)
+UnitType.spider = UnitType(22)
+UnitType.elephant = UnitType(23)
+UnitType.frozen_ent = UnitType(28)
+UnitType.citadel_santa = UnitType(47)
+UnitType.citadel_yeti = UnitType(48)
+UnitType.citadel_elf = UnitType(49)
+UnitType.citadel_orc = UnitType(50)
+UnitType.pirates_sirena = UnitType(51)
+UnitType.pirates_shark = UnitType(52)
+UnitType.pirates_ghost = UnitType(53)
+UnitType.pirates_crab = UnitType(54)
+UnitType.angel_knight = UnitType(103)
+UnitType.succubus = UnitType(108)
+UnitType.league_orc_3 = UnitType(110)
+UnitType.league_elf_3 = UnitType(115)
+UnitType.league_troll_2 = UnitType(117)
+UnitType.league_eagle_2 = UnitType(121)
+UnitType.ice_golem = UnitType(158)
+
+
+# Some frequently used sets of enum members.
+BuildingType.production = {BuildingType.mine, BuildingType.mill, BuildingType.sand_mine}
+BuildingType.extended_areas = {
+    BuildingType.extended_area_1,
+    BuildingType.extended_area_2,
+    BuildingType.extended_area_3,
+    BuildingType.extended_area_4,
+    BuildingType.extended_area_5,
+    BuildingType.extended_area_6,
+    BuildingType.extended_area_7,
+    BuildingType.extended_area_8,
+    BuildingType.extended_area_9,
+    BuildingType.extended_area_10,
+    BuildingType.extended_area_11,
+    BuildingType.extended_area_12,
+    BuildingType.extended_area_13,
+    BuildingType.extended_area_14,
+    BuildingType.extended_area_15,
+    BuildingType.extended_area_16,
+    BuildingType.extended_area_17,
+    BuildingType.extended_area_18,
+    BuildingType.extended_area_19,
+    BuildingType.extended_area_20,
+    BuildingType.extended_area_xx,
+}
+BuildingType.non_upgradable = {
+    BuildingType.artefacts_house,
+    BuildingType.clan_house,
+    BuildingType.ice_obelisk,
+    BuildingType.jeweler_house,
+    BuildingType.portal,
+    BuildingType.tavern,
+}
+
+UnitType.upgradable = {
+    UnitType.knight,
+    UnitType.goblin,
+    UnitType.orc,
+    UnitType.elf,
+    UnitType.troll,
+    UnitType.eagle,
+    UnitType.mage,
+    UnitType.ghost,
+    UnitType.ent,
+    UnitType.dragon,
+    UnitType.scorpion,
+    UnitType.afreet,
+    UnitType.spider,
+    UnitType.elephant,
+}
+UnitType.startable = {
+    UnitType.knight,
+    UnitType.goblin,
+    UnitType.orc,
+    UnitType.elf,
+    UnitType.troll,
+    UnitType.eagle,
+    UnitType.mage,
+    UnitType.ghost,
+    UnitType.ent,
+    UnitType.dragon,
+}

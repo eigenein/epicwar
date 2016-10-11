@@ -16,7 +16,7 @@ import time
 import typing
 
 from collections import Counter
-from typing import Dict, List, Optional, Set, Union
+from typing import Dict, Iterable, List, Optional, Set, Union
 
 import aiohttp
 
@@ -24,18 +24,27 @@ from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, Notic
 
 
 # noinspection PyAbstractClass
-class ResourceCounter(Counter):
+class Resources(Counter):
     pass
 
 
 # noinspection PyAbstractClass
-class RewardCounter(Counter):
+class Spells(Counter):
     pass
 
 
 # noinspection PyAbstractClass
-class UnitCounter(Counter):
+class Units(Counter):
     pass
+
+
+class Reward:
+    __slots__ = ("resources", "spells", "units")
+
+    def __init__(self, resources: Resources, spells: Spells, units: Units):
+        self.resources = resources
+        self.spells = spells
+        self.units = units
 
 
 class Base:
@@ -140,7 +149,7 @@ class SpawnCommand(Base):
 class SelfInfo(Base):
     __slots__ = ("user_id", "caption", "level", "resources", "research", "alliance", "cemetery", "units")
 
-    def __init__(self, user_id: int, caption: str, level: int, resources: ResourceCounter, research: Dict[UnitType, int], alliance: Alliance, cemetery: List[Cemetery], units: UnitCounter):
+    def __init__(self, user_id: int, caption: str, level: int, resources: Resources, research: Dict[UnitType, int], alliance: Alliance, cemetery: List[Cemetery], units: Units):
         self.user_id = user_id
         self.caption = caption
         self.level = level
@@ -257,14 +266,14 @@ class Api:
         result, _ = await self.post("giftGetAvailable")
         return [gift["body"]["fromUserId"] for gift in result["gift"]]
 
-    async def farm_gift(self, user_id: str) -> (Error, ResourceCounter):
+    async def farm_gift(self, user_id: str) -> (Error, Resources):
         """
         Farms gift from the user.
         """
         result, state = await self.post("giftFarm", True, userId=user_id)
         return self.parse_error(result), (self.parse_resource_field(state) if state else None)
 
-    async def collect_resource(self, building_id: int) -> (ResourceCounter, ResourceCounter, List[Building]):
+    async def collect_resource(self, building_id: int) -> (Resources, Resources, List[Building]):
         """
         Collects resource from the building.
         """
@@ -275,7 +284,7 @@ class Api:
             [self.parse_building(entry) for entry in state["buildingChanged"]],
         )
 
-    async def farm_cemetery(self) -> (ResourceCounter, ResourceCounter):
+    async def farm_cemetery(self) -> (Resources, Resources):
         """
         Collects died enemy army.
         """
@@ -289,7 +298,7 @@ class Api:
         result, _ = await self.post("getBuildings")
         return [self.parse_building(building) for building in result["building"]]
 
-    async def upgrade_building(self, building_id: int) -> (Error, Optional[ResourceCounter], Optional[Building]):
+    async def upgrade_building(self, building_id: int) -> (Error, Optional[Resources], Optional[Building]):
         """
         Upgrades building to the next level.
         """
@@ -300,7 +309,7 @@ class Api:
             (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
-    async def destruct_building(self, building_id: int, instant: bool) -> (Error, Optional[ResourceCounter], Optional[Building]):
+    async def destruct_building(self, building_id: int, instant: bool) -> (Error, Optional[Resources], Optional[Building]):
         """
         Destructs building. Used to clean extended areas.
         """
@@ -311,7 +320,7 @@ class Api:
             (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
-    async def start_research(self, unit_id: int, level: int, forge_building_id: int) -> (Error, Optional[ResourceCounter]):
+    async def start_research(self, unit_id: int, level: int, forge_building_id: int) -> (Error, Optional[Resources]):
         """
         Start unit research.
         """
@@ -355,14 +364,9 @@ class Api:
         Gets all notices.
         """
         result, _ = await self.post("getNotices")
-        # noinspection PyProtectedMember
-        return {
-            notice["id"]: NoticeType(notice["type"])
-            for notice in result["notices"]
-            if notice["type"] in NoticeType._value2member_map_
-        }
+        return {notice["id"]: NoticeType(notice["type"]) for notice in result["notices"]}
 
-    async def notice_farm_reward(self, notice_id: str) -> (RewardCounter, ResourceCounter, UnitCounter):
+    async def notice_farm_reward(self, notice_id: str) -> (Reward, Resources, Units):
         """
         Collects notice reward.
         """
@@ -382,7 +386,7 @@ class Api:
         Gets enabled artifacts.
         """
         result, _ = await self.post("artefactGetList")
-        return {ArtifactType(int(artifact["typeId"])) for artifact in result["artefact"] if artifact["enabled"]}
+        return {ArtifactType(artifact["typeId"]) for artifact in result["artefact"] if artifact["enabled"]}
 
     async def get_army_queue(self) -> List[ArmyQueue]:
         """
@@ -395,7 +399,7 @@ class Api:
         """
         Hires units.
         """
-        result, _ = await self.post("startUnit", unitId=unit_type.value, amount=amount, buildingId=building_id)
+        result, _ = await self.post("startUnit", unitId=unit_type, amount=amount, buildingId=building_id)
         return self.parse_error(result)
 
     async def start_bastion(
@@ -430,14 +434,14 @@ class Api:
         result, _ = await self.post("battle_addCommands", battleId=battle_id, commands=commands)
         return self.parse_error(result)
 
-    async def finish_battle_serialized(self, battle_id: str, commands: str) -> (str, Optional[ResourceCounter]):
+    async def finish_battle_serialized(self, battle_id: str, commands: str) -> (str, Optional[Resources]):
         """
         Finishes battle with serialized commands and returns serialized battle result and resources.
         """
         result, state = await self.post("battle_finish", True, battleId=battle_id, commands=commands)
         return result["battleResult"], (self.parse_resource_field(state) if state else None)
 
-    async def finish_battle(self, battle_id: str, commands: List[SpawnCommand]) -> (str, Optional[ResourceCounter]):
+    async def finish_battle(self, battle_id: str, commands: List[SpawnCommand]) -> (str, Optional[Resources]):
         """
         Finishes battle and returns serialized battle result and resources.
         """
@@ -447,21 +451,21 @@ class Api:
                 command,
                 id=_id,
                 time=int(command.time * 1000),
-                type_id=command.unit_type.value,
+                type_id=command.unit_type,
             )
             for _id, command in enumerate(commands)
         ]
         footer = "~0~"
         return await self.finish_battle_serialized(battle_id, header + "".join(serialized_commands) + footer)
 
-    async def open_fair_citadel_gate(self) -> (RewardCounter, ResourceCounter, UnitCounter):
+    async def open_fair_citadel_gate(self) -> (Reward, Resources, Units):
         """
         Collects bastion gift.
         """
         result, state = await self.post("fairCitadelOpenGate", True)
         return self.parse_reward(result), self.parse_resource_field(state), self.parse_units(state.get("unit", []))
 
-    async def spin_event_roulette(self, count=1, is_payed=False) -> RewardCounter:
+    async def spin_event_roulette(self, count=1, is_payed=False) -> Reward:
         """
         Spin roulette!
         """
@@ -530,33 +534,33 @@ class Api:
         )
 
     @staticmethod
-    def parse_resources(resources: List[Dict]) -> ResourceCounter:
-        """
-        Helper method to parse a resource collection method result.
-        """
-        return Counter({ResourceType(resource["id"]): resource["amount"] for resource in resources})
+    def parse_resources(items: Iterable[Dict]) -> Resources:
+        return Resources({ResourceType(item["id"]): item["amount"] for item in items})
 
     @staticmethod
-    def parse_reward(reward: dict) -> RewardCounter:
+    def parse_spells(items: Iterable[Dict]) -> Spells:
+        return Spells({SpellType(item["id"]): item["amount"] for item in items})
+
+    @staticmethod
+    def parse_units(items: Iterable[Dict]) -> Units:
+        return Units({UnitType(item["id"]): item["amount"] for item in items})
+
+    def parse_reward(self, reward: dict) -> Reward:
         """
         Helper method to parse alliance or bastion reward.
         """
-        return {
-            reward_type(obj["id"]): obj["amount"]
-            for key, reward_type in (("resource", ResourceType), ("unit", UnitType), ("spell", SpellType))
-            for obj in reward.get(key, ())
-        }
+        return Reward(
+            resources=self.parse_resources(reward.get("resource", ())),
+            spells=self.parse_spells(reward.get("spell", ())),
+            units=self.parse_units(reward.get("unit", ())),
+        )
 
-    def parse_resource_field(self, result: Optional[dict]) -> ResourceCounter:
+    def parse_resource_field(self, result: Optional[dict]) -> Resources:
         """
         Helper method to parse resource collection result.
         """
         assert isinstance(result, dict), result
-        return self.parse_resources(result.get("resource", []))
-
-    @staticmethod
-    def parse_units(units: List[Dict]) -> UnitCounter:
-        return UnitCounter({UnitType(int(unit["id"])): unit["amount"] for unit in units})
+        return self.parse_resources(result.get("resource", ()))
 
     @staticmethod
     def parse_error(result: Union[bool, dict]) -> Error:
