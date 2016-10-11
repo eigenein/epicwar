@@ -71,6 +71,7 @@ def run(configuration: epicbot.utils.ConfigurationParamType.Configuration):
             asyncio.get_event_loop().run_forever()
         finally:
             asyncio.get_event_loop().close()
+            configuration.database.close()
 
 
 @main.command("library")

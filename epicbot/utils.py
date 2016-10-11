@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import configparser
+import sqlite3
 import logging
 
 from collections import defaultdict
+from configparser import ConfigParser
 from itertools import chain
 from typing import Dict, List, Optional, Set, Tuple
 
 import click
 
+from epicbot.db import Database
 from epicbot.enums import BuildingType, ResourceType, UnitType
 
 
@@ -50,6 +52,7 @@ class ConfigurationParamType(click.ParamType):
             return "%s(user_id=%r)" % (self.__class__.__name__, self.user_id)
 
     class Configuration:
+        database = None  # type: Database
         telegram_enabled = False  # type: bool
         telegram_token = None  # type: str
         telegram_chat_id = None  # type: str
@@ -57,11 +60,13 @@ class ConfigurationParamType(click.ParamType):
 
     def convert(self, value, param, ctx):
         logging.debug("Reading configuration…")
-        parser = configparser.ConfigParser(default_section=self.default_section, allow_no_value=True)
+        parser = ConfigParser(default_section=self.default_section, allow_no_value=True)
         configuration = ConfigurationParamType.Configuration()
         try:
             parser.read(value, encoding="utf-8")
             # Read general section.
+            configuration.database = Database(sqlite3.connect(parser[self.default_section]["database"]))
+            configuration.database.quick_check()
             configuration.telegram_token = parser[self.default_section].get("telegram-token")
             configuration.telegram_chat_id = parser[self.default_section].get("telegram-chat-id")
             configuration.telegram_enabled = bool(configuration.telegram_token and configuration.telegram_chat_id)

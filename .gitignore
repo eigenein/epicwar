@@ -1,6 +1,8 @@
 *.json
 *.log
-production.ini
+*.sqlite3
+production*.ini
+testing*.ini
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
