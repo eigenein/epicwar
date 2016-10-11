@@ -20,7 +20,7 @@ from typing import Dict, Iterable, List, Optional, Set, Union
 
 import aiohttp
 
-from epicbot.enums import ArtifactType, BuildingType, Error, ResourceType, NoticeType, SpellType, UnitType
+from epicbot.enums import ArtifactType, BuildingType, ApiError, ResourceType, NoticeType, SpellType, UnitType
 
 
 # noinspection PyAbstractClass
@@ -266,7 +266,7 @@ class Api:
         result, _ = await self.post("giftGetAvailable")
         return [gift["body"]["fromUserId"] for gift in result["gift"]]
 
-    async def farm_gift(self, user_id: str) -> (Error, Resources):
+    async def farm_gift(self, user_id: str) -> (ApiError, Resources):
         """
         Farms gift from the user.
         """
@@ -298,7 +298,7 @@ class Api:
         result, _ = await self.post("getBuildings")
         return [self.parse_building(building) for building in result["building"]]
 
-    async def upgrade_building(self, building_id: int) -> (Error, Optional[Resources], Optional[Building]):
+    async def upgrade_building(self, building_id: int) -> (ApiError, Optional[Resources], Optional[Building]):
         """
         Upgrades building to the next level.
         """
@@ -309,7 +309,7 @@ class Api:
             (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
-    async def destruct_building(self, building_id: int, instant: bool) -> (Error, Optional[Resources], Optional[Building]):
+    async def destruct_building(self, building_id: int, instant: bool) -> (ApiError, Optional[Resources], Optional[Building]):
         """
         Destructs building. Used to clean extended areas.
         """
@@ -320,7 +320,7 @@ class Api:
             (self.parse_building(state["buildingChanged"][0]) if state else None),
         )
 
-    async def start_research(self, unit_id: int, level: int, forge_building_id: int) -> (Error, Optional[Resources]):
+    async def start_research(self, unit_id: int, level: int, forge_building_id: int) -> (ApiError, Optional[Resources]):
         """
         Start unit research.
         """
@@ -377,7 +377,7 @@ class Api:
                 self.parse_resource_field(state),
                 self.parse_units(state.get("unit", [])),
             )
-        if "error" in result and result["error"]["name"] == Error.not_enough.value:
+        if "error" in result and result["error"]["name"] == ApiError.not_enough.value:
             return None, None, None
         raise ValueError(result)
 
@@ -395,7 +395,7 @@ class Api:
         result, _ = await self.post("getArmyQueue")
         return [ArmyQueue(building_id=queue["buildingId"]) for queue in result["armyQueue"]]
 
-    async def start_units(self, unit_type: UnitType, amount: int, building_id: int) -> Error:
+    async def start_units(self, unit_type: UnitType, amount: int, building_id: int) -> ApiError:
         """
         Hires units.
         """
@@ -406,15 +406,15 @@ class Api:
         self,
         version="93271667fc58c73c37c16d54b913aaaf3517e604",
         for_starmoney=False,
-    ) -> (Error, Optional[Bastion]):
+    ) -> (ApiError, Optional[Bastion]):
         """
         Starts bastion battle.
         Version is taken from scripts/epicwar/haxe/battle/Battle.as.
         """
         result, _ = await self.post("battle_startBastion", version=version, forStarmoney=for_starmoney)
         if "error" in result:
-            return Error(result["error"]["name"]), None
-        return Error.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
+            return ApiError(result["error"]["name"]), None
+        return ApiError.ok, Bastion(fair_id=result["fairId"], battle_id=result["battleId"], config=result["config"])
 
     async def start_pvp_battle(self, version="93271667fc58c73c37c16d54b913aaaf3517e604") -> Optional[PvpBattle]:
         """
@@ -427,7 +427,7 @@ class Api:
             defender_level=int(result["defender"]["level"]),
         ) if "battleId" in result else None
 
-    async def add_battle_commands(self, battle_id: str, commands: str) -> Error:
+    async def add_battle_commands(self, battle_id: str, commands: str) -> ApiError:
         """
         Adds serialized commands to the battle.
         """
@@ -472,7 +472,7 @@ class Api:
         result, _ = await self.post("event_roulette_spin", count=count, isPayed=is_payed)
         if "reward" in result:
             return self.parse_reward(result["reward"])
-        if "error" in result and result["error"]["name"] == Error.not_available.value:
+        if "error" in result and result["error"]["name"] == ApiError.not_available.value:
             return {}
         raise ValueError(result)
 
@@ -495,7 +495,7 @@ class Api:
         result, _ = await self.post("alliance_randomWar_task_get")
         return [task["taskId"] for task in result]
 
-    async def farm_random_war_task(self, task_id: int) -> Error:
+    async def farm_random_war_task(self, task_id: int) -> ApiError:
         """
         Complete random wars task.
         """
@@ -563,21 +563,21 @@ class Api:
         return self.parse_resources(result.get("resource", ()))
 
     @staticmethod
-    def parse_error(result: Union[bool, dict]) -> Error:
+    def parse_error(result: Union[bool, dict]) -> ApiError:
         """
         Helper method to parse an error.
         """
         if isinstance(result, bool):
-            return Error(result)
+            return ApiError(result)
         if "success" in result:
-            return Error(bool(result["success"]))
+            return ApiError(bool(result["success"]))
         if "result" in result:
             if result["result"]:
-                return Error(bool(result["result"]))
+                return ApiError(bool(result["result"]))
         if "errorCode" in result:
-            return Error(result["errorCode"])
+            return ApiError(result["errorCode"])
         if "error" in result:
-            return Error(result["error"]["name"])
+            return ApiError(result["error"]["name"])
         raise ValueError(result)
 
     # Making requests to API.

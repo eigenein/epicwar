@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Set, Tuple
 import click
 
 from epicbot.db import Database
-from epicbot.enums import BuildingType, ResourceType, UnitType
+from epicbot.enums import BuildingType, BuildingTypes, ResourceType, UnitType, UnitTypes
 
 
 class ColoredStreamHandler(logging.StreamHandler):
@@ -78,7 +78,7 @@ class ConfigurationParamType(click.ParamType):
                 account.castle_enabled = parser.getboolean(section, "enable-castle")
                 account.bastion_enabled = parser.getboolean(section, "enable-bastion")
                 pvp_unit_type = parser[section].get("pvp")
-                account.pvp_unit_type = UnitType(int(pvp_unit_type)) if pvp_unit_type else None
+                account.pvp_unit_type = getattr(UnitTypes, pvp_unit_type) if pvp_unit_type else None
                 configuration.accounts.append(account)
                 logging.debug("Read account: %s.", account)
         except Exception as ex:
@@ -115,20 +115,20 @@ def convert_library(content: Dict) -> Dict:
         # Remember construction time.
         construction_time[building_type, building_level] = entry["constructionTime"]
         # Remember barracks production unit types.
-        if building_type == BuildingType.barracks:
+        if building_type == BuildingTypes.barracks:
             barracks_production[building_level] = {
                 UnitType(unit["unitId"])
                 for unit in entry["production"]["unit"]
             }
         # Remember units amounts.
-        if building_type == BuildingType.staff:
+        if building_type == BuildingTypes.staff:
             units_amount[building_level] = entry["perks"][0]["value"]
         # Process build or upgrade cost.
         for resource in entry["cost"].get("resource", []):
             resource_type = ResourceType(resource["id"])
             building_resources[building_type, building_level][resource_type] = resource["amount"]
         # Process resource production.
-        if building_type in BuildingType.production:
+        if building_type in BuildingTypes.production:
             full_time[building_type, building_level] = entry["production"]["resource"]["fullTime"]
         if "unlock" not in entry:
             continue
@@ -156,7 +156,7 @@ def convert_library(content: Dict) -> Dict:
     for entry in content["building"]:
         building_type = BuildingType(entry["id"])
         # Remember castle level to destroy this extended area.
-        if building_type in BuildingType.extended_areas:
+        if building_type in BuildingTypes.extended_areas:
             destroy_levels[building_type] = entry["destroyConditions"]["building"][0]["level"]
     # Process unit research cost.
     for entry in content["unitLevel"]:

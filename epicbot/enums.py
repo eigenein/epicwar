@@ -8,7 +8,7 @@ Game enumerations.
 import enum
 
 
-class Error(enum.Enum):
+class ApiError(enum.Enum):
     """
     Epic War API errors.
     These values have got different types (poor Nexters developers!) thus I try to collect them all and
@@ -29,254 +29,242 @@ class Error(enum.Enum):
 class NoticeType(str):
     pass
 
-NoticeType.alliance_level_daily_gift = NoticeType("allianceLevelDailyGift")  # ежедневный подарок братства
-NoticeType.fair_tournament_result = NoticeType("fairTournamentResult")
+
+class NoticeTypes:
+    T = NoticeType
+
+    alliance_level_daily_gift = T("allianceLevelDailyGift")  # ежедневный подарок братства
+    fair_tournament_result = T("fairTournamentResult")
 
 
-# Artifact types.
 class ArtifactType(int):
     pass
 
-ArtifactType.alliance_builder = ArtifactType(757)  # дополнительный строитель от братства
+
+class ArtifactTypes:
+    T = ArtifactType
+
+    alliance_builder = T(757)  # дополнительный строитель от братства
 
 
 class BuildingType(int):
     pass
 
-BuildingType.castle = BuildingType(1)
-BuildingType.mine = BuildingType(2)
-BuildingType.treasury = BuildingType(3)
-BuildingType.mill = BuildingType(4)
-BuildingType.barn = BuildingType(5)
-BuildingType.barracks = BuildingType(6)
-BuildingType.staff = BuildingType(7)
-BuildingType.builder_hut = BuildingType(8)
-BuildingType.forge = BuildingType(9)
-BuildingType.ballista = BuildingType(10)
-BuildingType.wall = BuildingType(11)
-BuildingType.archer_tower = BuildingType(12)
-BuildingType.cannon = BuildingType(13)
-BuildingType.thunder_tower = BuildingType(14)
-BuildingType.ice_tower = BuildingType(15)
-BuildingType.fire_tower = BuildingType(16)
-BuildingType.clan_house = BuildingType(17)
-BuildingType.dark_tower = BuildingType(18)
-BuildingType.tavern = BuildingType(19)
-BuildingType.alchemist = BuildingType(20)
-BuildingType.liberator = BuildingType(22)
-BuildingType.perfectionist = BuildingType(23)
-BuildingType.one_year_fire = BuildingType(30)
-BuildingType.sand_mine = BuildingType(31)
-BuildingType.sand_warehouse = BuildingType(32)
-BuildingType.sand_barracks = BuildingType(33)
-BuildingType.sand_tower = BuildingType(34)
-BuildingType.crystal_tower = BuildingType(35)
-BuildingType.sand_forge = BuildingType(36)
-BuildingType.artefacts_house = BuildingType(37)
-BuildingType.extended_area_1 = BuildingType(65)
-BuildingType.extended_area_2 = BuildingType(66)
-BuildingType.extended_area_3 = BuildingType(67)
-BuildingType.extended_area_4 = BuildingType(68)
-BuildingType.extended_area_5 = BuildingType(69)
-BuildingType.extended_area_6 = BuildingType(70)
-BuildingType.extended_area_7 = BuildingType(71)
-BuildingType.extended_area_8 = BuildingType(72)
-BuildingType.extended_area_9 = BuildingType(73)
-BuildingType.extended_area_10 = BuildingType(74)
-BuildingType.extended_area_11 = BuildingType(75)
-BuildingType.extended_area_12 = BuildingType(76)
-BuildingType.extended_area_13 = BuildingType(77)
-BuildingType.extended_area_14 = BuildingType(78)
-BuildingType.extended_area_15 = BuildingType(79)
-BuildingType.extended_area_16 = BuildingType(80)
-BuildingType.extended_area_17 = BuildingType(81)
-BuildingType.extended_area_18 = BuildingType(82)
-BuildingType.extended_area_19 = BuildingType(83)
-BuildingType.extended_area_20 = BuildingType(84)
-BuildingType.extended_area_xx = BuildingType(85)
-BuildingType.easter_tree = BuildingType(146)
-BuildingType.portal = BuildingType(147)
-BuildingType.pirate_lamp = BuildingType(150)
-BuildingType.pirate_chest = BuildingType(152)
-BuildingType.jeweler_house = BuildingType(154)
-BuildingType.happy_birthday_fontan = BuildingType(504)
-BuildingType.halloween_crypt = BuildingType(604)
-BuildingType.elf_pond = BuildingType(626)
-BuildingType.ice_obelisk = BuildingType(631)
-BuildingType.global_wars_building = BuildingType(637)
-BuildingType.pirate_ship_2016 = BuildingType(642)
+
+class BuildingTypes:
+    T = BuildingType
+
+    castle = T(1)
+    mine = T(2)
+    treasury = T(3)
+    mill = T(4)
+    barn = T(5)
+    barracks = T(6)
+    staff = T(7)
+    builder_hut = T(8)
+    forge = T(9)
+    ballista = T(10)
+    wall = T(11)
+    archer_tower = T(12)
+    cannon = T(13)
+    thunder_tower = T(14)
+    ice_tower = T(15)
+    fire_tower = T(16)
+    clan_house = T(17)
+    dark_tower = T(18)
+    tavern = T(19)
+    alchemist = T(20)
+    liberator = T(22)
+    perfectionist = T(23)
+    one_year_fire = T(30)
+    sand_mine = T(31)
+    sand_warehouse = T(32)
+    sand_barracks = T(33)
+    sand_tower = T(34)
+    crystal_tower = T(35)
+    sand_forge = T(36)
+    artefacts_house = T(37)
+    extended_area_1 = T(65)
+    extended_area_2 = T(66)
+    extended_area_3 = T(67)
+    extended_area_4 = T(68)
+    extended_area_5 = T(69)
+    extended_area_6 = T(70)
+    extended_area_7 = T(71)
+    extended_area_8 = T(72)
+    extended_area_9 = T(73)
+    extended_area_10 = T(74)
+    extended_area_11 = T(75)
+    extended_area_12 = T(76)
+    extended_area_13 = T(77)
+    extended_area_14 = T(78)
+    extended_area_15 = T(79)
+    extended_area_16 = T(80)
+    extended_area_17 = T(81)
+    extended_area_18 = T(82)
+    extended_area_19 = T(83)
+    extended_area_20 = T(84)
+    extended_area_xx = T(85)
+    easter_tree = T(146)
+    portal = T(147)
+    pirate_lamp = T(150)
+    pirate_chest = T(152)
+    jeweler_house = T(154)
+    happy_birthday_fontan = T(504)
+    halloween_crypt = T(604)
+    elf_pond = T(626)
+    ice_obelisk = T(631)
+    global_wars_building = T(637)
+    pirate_ship_2016 = T(642)
+
+    production = {mine, mill, sand_mine}
+    non_upgradable = {artefacts_house, clan_house, ice_obelisk, jeweler_house, portal, tavern}
+    extended_areas = {
+        extended_area_1,
+        extended_area_2,
+        extended_area_3,
+        extended_area_4,
+        extended_area_5,
+        extended_area_6,
+        extended_area_7,
+        extended_area_8,
+        extended_area_9,
+        extended_area_10,
+        extended_area_11,
+        extended_area_12,
+        extended_area_13,
+        extended_area_14,
+        extended_area_15,
+        extended_area_16,
+        extended_area_17,
+        extended_area_18,
+        extended_area_19,
+        extended_area_20,
+        extended_area_xx,
+    }
 
 
 class ResourceType(int):
     pass
 
-ResourceType.gold = ResourceType(1)
-ResourceType.food = ResourceType(2)
-ResourceType.mana = ResourceType(3)
-ResourceType.enchant_scroll_1 = ResourceType(4)
-ResourceType.enchant_scroll_2 = ResourceType(5)
-ResourceType.enchant_scroll_3 = ResourceType(6)
-ResourceType.enchant_scroll_4 = ResourceType(7)
-ResourceType.enchant_scroll_5 = ResourceType(8)
-ResourceType.enchant_scroll_6 = ResourceType(9)
-ResourceType.sand = ResourceType(26)
-ResourceType.runes = ResourceType(50)
-ResourceType.crystal_green_1 = ResourceType(58)
-ResourceType.crystal_green_2 = ResourceType(59)
-ResourceType.crystal_green_3 = ResourceType(60)
-ResourceType.crystal_green_4 = ResourceType(61)
-ResourceType.crystal_green_5 = ResourceType(62)
-ResourceType.crystal_green_6 = ResourceType(63)
-ResourceType.crystal_green_7 = ResourceType(64)
-ResourceType.crystal_green_8 = ResourceType(65)
-ResourceType.crystal_green_9 = ResourceType(66)
-ResourceType.crystal_green_10 = ResourceType(67)
-ResourceType.crystal_orange_1 = ResourceType(68)
-ResourceType.crystal_orange_2 = ResourceType(69)
-ResourceType.crystal_orange_3 = ResourceType(70)
-ResourceType.crystal_orange_4 = ResourceType(71)
-ResourceType.crystal_orange_5 = ResourceType(72)
-ResourceType.crystal_orange_6 = ResourceType(73)
-ResourceType.crystal_orange_7 = ResourceType(74)
-ResourceType.crystal_orange_8 = ResourceType(75)
-ResourceType.crystal_orange_9 = ResourceType(76)
-ResourceType.crystal_orange_10 = ResourceType(77)
-ResourceType.crystal_red_1 = ResourceType(78)
-ResourceType.crystal_red_2 = ResourceType(79)
-ResourceType.crystal_red_3 = ResourceType(80)
-ResourceType.crystal_red_4 = ResourceType(81)
-ResourceType.crystal_red_5 = ResourceType(82)
-ResourceType.crystal_red_6 = ResourceType(83)
-ResourceType.crystal_red_7 = ResourceType(84)
-ResourceType.crystal_red_8 = ResourceType(85)
-ResourceType.crystal_red_9 = ResourceType(86)
-ResourceType.crystal_red_10 = ResourceType(87)
-ResourceType.crystal_blue_1 = ResourceType(88)
-ResourceType.crystal_blue_2 = ResourceType(89)
-ResourceType.crystal_blue_3 = ResourceType(90)
-ResourceType.crystal_blue_4 = ResourceType(91)
-ResourceType.crystal_blue_5 = ResourceType(92)
-ResourceType.crystal_blue_6 = ResourceType(93)
-ResourceType.crystal_blue_7 = ResourceType(94)
-ResourceType.crystal_blue_8 = ResourceType(95)
-ResourceType.crystal_blue_9 = ResourceType(96)
-ResourceType.crystal_blue_10 = ResourceType(97)
-ResourceType.enchanted_coins = ResourceType(104)
-ResourceType.alliance_runes = ResourceType(161)
-ResourceType.doubloon = ResourceType(170)
-ResourceType.fire_water = ResourceType(171)
+
+class ResourceTypes:
+    T = ResourceType
+
+    gold = T(1)
+    food = T(2)
+    mana = T(3)
+    enchant_scroll_1 = T(4)
+    enchant_scroll_2 = T(5)
+    enchant_scroll_3 = T(6)
+    enchant_scroll_4 = T(7)
+    enchant_scroll_5 = T(8)
+    enchant_scroll_6 = T(9)
+    sand = T(26)
+    runes = T(50)
+    crystal_green_1 = T(58)
+    crystal_green_2 = T(59)
+    crystal_green_3 = T(60)
+    crystal_green_4 = T(61)
+    crystal_green_5 = T(62)
+    crystal_green_6 = T(63)
+    crystal_green_7 = T(64)
+    crystal_green_8 = T(65)
+    crystal_green_9 = T(66)
+    crystal_green_10 = T(67)
+    crystal_orange_1 = T(68)
+    crystal_orange_2 = T(69)
+    crystal_orange_3 = T(70)
+    crystal_orange_4 = T(71)
+    crystal_orange_5 = T(72)
+    crystal_orange_6 = T(73)
+    crystal_orange_7 = T(74)
+    crystal_orange_8 = T(75)
+    crystal_orange_9 = T(76)
+    crystal_orange_10 = T(77)
+    crystal_red_1 = T(78)
+    crystal_red_2 = T(79)
+    crystal_red_3 = T(80)
+    crystal_red_4 = T(81)
+    crystal_red_5 = T(82)
+    crystal_red_6 = T(83)
+    crystal_red_7 = T(84)
+    crystal_red_8 = T(85)
+    crystal_red_9 = T(86)
+    crystal_red_10 = T(87)
+    crystal_blue_1 = T(88)
+    crystal_blue_2 = T(89)
+    crystal_blue_3 = T(90)
+    crystal_blue_4 = T(91)
+    crystal_blue_5 = T(92)
+    crystal_blue_6 = T(93)
+    crystal_blue_7 = T(94)
+    crystal_blue_8 = T(95)
+    crystal_blue_9 = T(96)
+    crystal_blue_10 = T(97)
+    enchanted_coins = T(104)
+    alliance_runes = T(161)
+    doubloon = T(170)
+    fire_water = T(171)
 
 
 class SpellType(int):
     pass
 
-SpellType.lightning = SpellType(1)
-SpellType.fire = SpellType(2)
-SpellType.tornado = SpellType(9)
-SpellType.easter = SpellType(12)
-SpellType.patronus = SpellType(14)
-SpellType.silver = SpellType(104)
+
+class SpellTypes:
+    T = SpellType
+
+    lightning = T(1)
+    fire = T(2)
+    tornado = T(9)
+    easter = T(12)
+    patronus = T(14)
+    silver = T(104)
 
 
 class UnitType(int):
     pass
 
-UnitType.knight = UnitType(1)
-UnitType.goblin = UnitType(2)
-UnitType.orc = UnitType(3)
-UnitType.elf = UnitType(4)
-UnitType.troll = UnitType(5)
-UnitType.eagle = UnitType(6)
-UnitType.mage = UnitType(7)
-UnitType.ghost = UnitType(8)
-UnitType.ent = UnitType(9)
-UnitType.dragon = UnitType(10)
-UnitType.palladin = UnitType(11)
-UnitType.dwarf = UnitType(12)
-UnitType.halloween = UnitType(13)
-UnitType.white_mage = UnitType(14)
-UnitType.skeleton = UnitType(16)
-UnitType.scorpion = UnitType(20)
-UnitType.afreet = UnitType(21)
-UnitType.spider = UnitType(22)
-UnitType.elephant = UnitType(23)
-UnitType.frozen_ent = UnitType(28)
-UnitType.citadel_santa = UnitType(47)
-UnitType.citadel_yeti = UnitType(48)
-UnitType.citadel_elf = UnitType(49)
-UnitType.citadel_orc = UnitType(50)
-UnitType.pirates_sirena = UnitType(51)
-UnitType.pirates_shark = UnitType(52)
-UnitType.pirates_ghost = UnitType(53)
-UnitType.pirates_crab = UnitType(54)
-UnitType.angel_knight = UnitType(103)
-UnitType.succubus = UnitType(108)
-UnitType.league_orc_3 = UnitType(110)
-UnitType.league_elf_3 = UnitType(115)
-UnitType.league_troll_2 = UnitType(117)
-UnitType.league_eagle_2 = UnitType(121)
-UnitType.ice_golem = UnitType(158)
 
+class UnitTypes:
+    T = UnitType
 
-# Some frequently used sets of enum members.
-BuildingType.production = {BuildingType.mine, BuildingType.mill, BuildingType.sand_mine}
-BuildingType.extended_areas = {
-    BuildingType.extended_area_1,
-    BuildingType.extended_area_2,
-    BuildingType.extended_area_3,
-    BuildingType.extended_area_4,
-    BuildingType.extended_area_5,
-    BuildingType.extended_area_6,
-    BuildingType.extended_area_7,
-    BuildingType.extended_area_8,
-    BuildingType.extended_area_9,
-    BuildingType.extended_area_10,
-    BuildingType.extended_area_11,
-    BuildingType.extended_area_12,
-    BuildingType.extended_area_13,
-    BuildingType.extended_area_14,
-    BuildingType.extended_area_15,
-    BuildingType.extended_area_16,
-    BuildingType.extended_area_17,
-    BuildingType.extended_area_18,
-    BuildingType.extended_area_19,
-    BuildingType.extended_area_20,
-    BuildingType.extended_area_xx,
-}
-BuildingType.non_upgradable = {
-    BuildingType.artefacts_house,
-    BuildingType.clan_house,
-    BuildingType.ice_obelisk,
-    BuildingType.jeweler_house,
-    BuildingType.portal,
-    BuildingType.tavern,
-}
+    knight = T(1)
+    goblin = T(2)
+    orc = T(3)
+    elf = T(4)
+    troll = T(5)
+    eagle = T(6)
+    mage = T(7)
+    ghost = T(8)
+    ent = T(9)
+    dragon = T(10)
+    palladin = T(11)
+    dwarf = T(12)
+    halloween = T(13)
+    white_mage = T(14)
+    skeleton = T(16)
+    scorpion = T(20)
+    afreet = T(21)
+    spider = T(22)
+    elephant = T(23)
+    frozen_ent = T(28)
+    citadel_santa = T(47)
+    citadel_yeti = T(48)
+    citadel_elf = T(49)
+    citadel_orc = T(50)
+    pirates_sirena = T(51)
+    pirates_shark = T(52)
+    pirates_ghost = T(53)
+    pirates_crab = T(54)
+    angel_knight = T(103)
+    succubus = T(108)
+    league_orc_3 = T(110)
+    league_elf_3 = T(115)
+    league_troll_2 = T(117)
+    league_eagle_2 = T(121)
+    ice_golem = T(158)
 
-UnitType.upgradable = {
-    UnitType.knight,
-    UnitType.goblin,
-    UnitType.orc,
-    UnitType.elf,
-    UnitType.troll,
-    UnitType.eagle,
-    UnitType.mage,
-    UnitType.ghost,
-    UnitType.ent,
-    UnitType.dragon,
-    UnitType.scorpion,
-    UnitType.afreet,
-    UnitType.spider,
-    UnitType.elephant,
-}
-UnitType.startable = {
-    UnitType.knight,
-    UnitType.goblin,
-    UnitType.orc,
-    UnitType.elf,
-    UnitType.troll,
-    UnitType.eagle,
-    UnitType.mage,
-    UnitType.ghost,
-    UnitType.ent,
-    UnitType.dragon,
-}
+    upgradable = {knight, goblin, orc, elf, troll, eagle, mage, ghost, ent, dragon, scorpion, afreet, spider, elephant}
+    startable = {knight, goblin, orc, elf, troll, eagle, mage, ghost, ent, dragon}

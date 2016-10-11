@@ -14,8 +14,8 @@ from typing import Dict, Iterable, List, Optional
 import click
 
 
-from epicbot.api import AllianceMember, Api, Building, Error, Resources
-from epicbot.enums import BuildingType
+from epicbot.api import AllianceMember, Api, Building, ApiError, Resources
+from epicbot.enums import BuildingTypes
 from epicbot.library import Library
 from epicbot.telegram import Chat
 
@@ -131,7 +131,7 @@ class Bot:
         Remember to schedule resource collection when any resource is being spent.
         """
         for building in self.buildings.values():
-            if building.type in BuildingType.production:
+            if building.type in BuildingTypes.production:
                 self.schedule_collect_resources(building)
 
     # Tasks.
@@ -200,7 +200,7 @@ class Bot:
         """
         member_ids = [member.id for member in self.alliance_members]
         error = await self.api.send_gift(member_ids)
-        if error == Error.ok:
+        if error == ApiError.ok:
             await self.send_message("\N{candy} Отправлена мана")
         else:
             logging.warning("Failed to send gifts to alliance members: %s.", error.name)
@@ -216,7 +216,7 @@ class Bot:
         for user_id in user_ids:
             error, new_resources = await self.api.farm_gift(user_id)
             self.resources = new_resources or self.resources
-            if error == Error.ok:
+            if error == ApiError.ok:
                 self.queue_message("\N{candy} Собрана мана")
             else:
                 logging.warning("Farmed gift from user #%s: %s.", user_id, error.name)
