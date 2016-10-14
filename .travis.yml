@@ -2,5 +2,7 @@ language: python
 python: "3.5"
 install:
 - "pip install -r requirements.txt"
-- "pip install flake8"
-script: "flake8 --ignore F401,E501 ."
+- "pip install flake8 mypy-lang"
+script:
+- "flake8 --ignore F401,E501 ."
+- "mypy --check-untyped-defs -m epicbot"
